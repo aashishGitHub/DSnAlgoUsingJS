@@ -1,0 +1,19 @@
+{
+  "name": "dsnalgousingjs",
+  "version": "1.0.0",
+  "description": "Data Structures and Algorithms",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SabatJitendra/DSnAlgoUsingJS.git"
+  },
+  "author": "Jitendra Sabat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SabatJitendra/DSnAlgoUsingJS/issues"
+  },
+  "homepage": "https://github.com/SabatJitendra/DSnAlgoUsingJS#readme"
+}
