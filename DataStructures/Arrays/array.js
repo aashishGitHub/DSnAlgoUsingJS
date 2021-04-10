@@ -1,6 +1,6 @@
 'use strict'
 
-class CustomArray {
+class MyArray {
     constructor(){
         this.length = 0;
         this.data = {};        
@@ -15,7 +15,7 @@ class CustomArray {
 }
 
 function checkArray(){
-    var arr = new CustomArray();
+    var arr = new MyArray();
     arr.push('a');
     arr.push('b');
     console.log(arr);
