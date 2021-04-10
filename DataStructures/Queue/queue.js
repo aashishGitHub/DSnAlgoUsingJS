@@ -2,7 +2,7 @@
 
 In order to implement a queue we need to restrict shift,push,splice,slice methods provided by native javascript. Only unshift() of Array will be used for adding new record and pop() will be used for removing record.*/
 
-class MyQueue{
+class Queue{
     constructor(){
         this.data = []
     }
@@ -17,7 +17,7 @@ class MyQueue{
 }
 
 function checkQueue(param) {  
-    var queue = new MyQueue();
+    var queue = new Queue();
     console.log("Queue first item insertion");
     queue.add(1);
     console.log(queue);
@@ -30,3 +30,5 @@ function checkQueue(param) {
 }
 
 checkQueue();
+
+module.exports = Queue;

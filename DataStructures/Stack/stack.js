@@ -32,3 +32,5 @@ function checkStack(){
 
 checkStack();
 
+module.exports = Stack;
+
