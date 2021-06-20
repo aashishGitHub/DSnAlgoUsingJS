@@ -137,6 +137,19 @@ function LinkedList(){
             ++counter;            
         }
     }
+
+    //find mid point of a linked list with out using counter and by traversing the list only once
+    this.findMidPoint = function(linkedList){
+        //take 2 pointers 'fast' and 'slow'.Make them point first node of list
+        let slow = linkedList.head;
+        let fast = linkedList.head;
+        //check for existance of 2 nodes for fast pointer.If 2 nodes are there, then move slow by 1 node and fast by 2.If not then mid point will be position of slow
+        while(fast.next && fast.next.next){
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
 }
 
 function checkLinkedList(){    
@@ -156,12 +169,13 @@ function checkLinkedList(){
     // list.removeLastNode();
     // list.printLinkedList();
     // list.getLastNode();
-     list.reverseLinkedList();
-     list.printLinkedList();
+    //list.reverseLinkedList();
+    list.printLinkedList();
     //var itemAt2ndIndex = list.getItemAt(1);
     //console.log(itemAt2ndIndex);
     //list.removeItemAt(4);
     //list.printLinkedList();
+    list.findMidPoint();
 }
 
 checkLinkedList();
