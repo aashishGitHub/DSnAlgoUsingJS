@@ -42,32 +42,126 @@ function LinkedList(){
         }                
     }
 
-    //ToDo: It's not working now.Make it working
-    this.reverseLinkedList = function(){
-        var tempNode = this.head;
-        if(tempNode === null){
-            console.log("Linked list is empty");
+    this.clear = function(){
+        this.head = null;
+    }
+
+    this.removeFirstNode = function(){
+        if(this.head === null){
+            console.log("List is empty");
+            return;
+        }
+        if(this.size === 1){
+            this.head = this.lastNode = this.head.next;
+            return;
+        }            
+        this.head = this.head.next;
+        --this.size;
+    }
+
+    this.getLastNode = function(){
+        console.log(this.lastNode);
+        return this.lastNode;
+    }
+
+    this.removeLastNode = function(){
+        if(this.head === null){
+            console.log("Linked lsit is empty");
+            return;
+        }
+        if(this.size === 1){
+            this.head = this.lastNode = null;
+            --this.size;
         }else{
-            this.lastNode = this.head;  
-            var temp = tempNode.next;          
-            tempNode.next = null;
-            while(temp !== null){
-                temp = temp.next;
+            var tempNode = this.head;
+            while(tempNode.next.next !== null){
+                tempNode = tempNode.next;
             }
+            this.lastNode = tempNode;
+            tempNode.next = null;
+            --this.size;
+        }
+    }
+
+    this.reverseLinkedList = function(){
+        if(this.head === null){
+            console.log("Linked list is empty");
+            return;
+        }
+        var tempNode = this.head;
+        var prevNode = null;
+        var nextNode = null;
+        while(tempNode){
+            //save next before we overwrite tempNode.xext
+            nextNode = tempNode.next;
+            //reverse pointer
+            tempNode.next = prevNode;
+            //step forward in the list
+            prevNode = tempNode;
+            tempNode = nextNode;            
+        }
+        this.head = prevNode;
+    }
+
+    this.getItemAt = function(itemIndex){
+        var counter = 0;
+        if(this.head === null){
+            console.log("Linked list is empty");
+            return;
+        }
+        var tempNode = this.head;
+        while(tempNode !== null){            
+            if(counter === itemIndex){
+                return tempNode.data;
+            }
+            tempNode = tempNode.next;
+            ++counter;
+        }
+    }
+
+    this.removeItemAt = function(itemIndex){
+        var counter = 0;
+        if(this.head === null){
+            console.log("Linked list is blank");
+            return;
+        }
+        var tempNode = this.head;
+        while(tempNode !== null){
+            if(counter === itemIndex-1){
+                var temp = tempNode.next.next;
+                tempNode.next.next = null;
+                tempNode.next = temp;
+                --this.size;
+            }
+            tempNode = tempNode.next;
+            ++counter;            
         }
     }
 }
 
 function checkLinkedList(){    
-    var list = new LinkedList();
-    list.printLinkedList();
+    var list = new LinkedList();    
     list.addNodeAtLastOfLinkedList(7);    
     list.addNodeAtLastOfLinkedList(9);  
     list.addNodeAtLastOfLinkedList(57);   
     list.addNodeAtLastOfLinkedList(17);    
     list.addNodeAtLastOfLinkedList(4);
-    list.printLinkedList();
-    console.log(list.lastNode);
+    // list.printLinkedList();
+    // //list.clear();
+    // list.removeFirstNode
+    // list.printLinkedList();
+    // list.removeFirstNode();
+    // list.printLinkedList();
+    // list.getLastNode();
+    // list.removeLastNode();
+    // list.printLinkedList();
+    // list.getLastNode();
+     list.reverseLinkedList();
+     list.printLinkedList();
+    //var itemAt2ndIndex = list.getItemAt(1);
+    //console.log(itemAt2ndIndex);
+    //list.removeItemAt(4);
+    //list.printLinkedList();
 }
 
 checkLinkedList();
