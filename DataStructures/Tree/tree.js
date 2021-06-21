@@ -28,7 +28,7 @@ class Tree {
     traverseBreadthFirst(callbackFunction){
         const arr = [this.root];
         while(arr.length){
-            const node = arr.shift();
+            const node = arr.shift();//shift() removes the first item in an array and returns that removed element.It changes the length of array 
             arr.push(...node.children);
             callbackFunction(node);
         }
