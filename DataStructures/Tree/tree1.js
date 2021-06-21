@@ -27,10 +27,10 @@ var Tree = function(){
         }
     }
 
-    /*********************************************************************************************
-     * The only difference in BFS to DFS is following                                            *
-     * In BFS we push the children of node to the last of array.To push we use push() method.    *
-     * In DFS we push the children of node to the first of arrayTo push we use unshift() method. *
+    /**********************************************************************************************
+     * The only difference in BFS to DFS is following                                             *
+     * In BFS we push the children of node to the last of array.To push we use push() method.     *
+     * In DFS we push the children of node to the first of array.To push we use unshift() method. *
     **********************************************************************************************/
     this.depthFirstTraversal = function(callbackFn){
         var arr = [this.root];
