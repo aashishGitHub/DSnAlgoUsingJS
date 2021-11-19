@@ -24,6 +24,20 @@ function palindrome2(inputString){
     return isPalindrome;
 }
 
+function palindrome3(inputString){
+    var originalString = inputString.toLowerCase();
+    var stringArray = originalString.split("");
+
+   // We can iterate only till half the length of Array and compare with the other half.
+    for(let i = 0; i< (stringArray.length/2); i++) {
+        if(stringArray[i] != stringArray[stringArray.length-1 -i]) {
+            return false;
+        }   
+    }   
+    return true; 
+}
+
+
 function checkPalindrome(){
     var str = "abbas";
     console.log(palindrome(str));
@@ -34,5 +48,11 @@ function checkPalindrome2(){
     console.log(palindrome2(str));
 }
 
+function checkPalindrome3(){
+    var str = "abba";
+    console.log(palindrome3(str));
+}
+
 //checkPalindrome();
 checkPalindrome2();
+checkPalindrome3();
