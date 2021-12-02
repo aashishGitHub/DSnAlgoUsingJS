@@ -24,6 +24,8 @@ function palindrome2(inputString){
     return isPalindrome;
 }
 
+
+// COMPARE TILL HALF OF THE ARRAY
 function palindrome3(inputString){
     var originalString = inputString.toLowerCase();
     var stringArray = originalString.split("");

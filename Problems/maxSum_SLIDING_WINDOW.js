@@ -1,5 +1,5 @@
 /** 
- * Find the sum of sub arrays of length N, from the given array 
+ * Find the sum of any sub-arrays of length N, from the given array so that this sum is maximum possible
  * Approch in 2nd solution is called SLIDING WINDOW PATTERN 
  * 
  * 
@@ -11,10 +11,11 @@ function maxSubarraySum(arr, num) {
     }
     var max = -Infinity;
     for (let i = 0; i < arr.length - num + 1; i ++){
-      temp = 0;
-      for (let j = 0; j < num; j++){
+     var temp = 0;
+      for (let j = 0; j < num; j++) {
         temp += arr[i + j];
       }
+
       if (temp > max) {
         max = temp;
       }
@@ -24,23 +25,40 @@ function maxSubarraySum(arr, num) {
   
   maxSubarraySum([2,6,9,2,1,8,5,6,3],3)
 
-
+/**
+ * SLIDING WINDOW PATTERN
+ * @param {*} arr 
+ * @param {*} num 
+ * @returns 
+ */
   function maxSubarraySum2(arr, num) {
     let maxSum = 0;
     let tempSum = 0;
     if (arr.length < num) return null;
+
+    // Calculate the sum of 1st subarray of length num from the start.
     for (let i = 0; i < num; i++) {
       maxSum += arr[i];
     }
+
+    // Store this sum temporarily
     tempSum = maxSum;
+
+    // Start from suze (in a 0 indexed loop, starting from length num, means we are now starting from the (num+1) th item )
+    // and we will loop till last
     for (let i = num; i < arr.length; i++) {
+      // Substaract item from Array at index i-num is the 1st index of last sub-array,
+      // And add the ith item
+      // this calculates the sum of new subarray 
       tempSum = tempSum - arr[i - num] + arr[i];
+
+      // Now we check and update the max of the calculated and previous sum of array
       maxSum = Math.max(maxSum, tempSum);
     }
     return maxSum;
   }
   
-  maxSubarraySum2([2,6,9,2,1,8,5,6,3],3)
+  maxSubarraySum2([2,6,9,2,1,8,5,6,3],3)  // results 19
   
 
   /**

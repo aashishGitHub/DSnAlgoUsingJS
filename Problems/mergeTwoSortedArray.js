@@ -1,4 +1,9 @@
-function mergeTwoSortedArray(array1,array2){
+
+// Merge sorted arrays to obtain a sorted array again
+// APPROACH
+// Take a pointer for each of the arrays
+// 
+function mergeTwoSortedArray(array1, array2){
     var resultantArray = [];
     var i = 0;
     var j = 0;

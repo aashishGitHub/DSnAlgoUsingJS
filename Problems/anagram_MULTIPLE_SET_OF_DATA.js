@@ -1,5 +1,5 @@
 /*
-This approach is useful whenever you have multiple sets of data, and we have to check if they are same/ if they are same values squared
+This approach is useful whenever you have multiple sets of data, and we have to check if they are same/related if they are same values squared
 or somehow mapped by some formula.
 */
 
