@@ -1,3 +1,4 @@
+
 class Node {
     constructor(value) {
         this.value = value;
@@ -43,23 +44,20 @@ class BinarySearchTree {
         }
 
         let current = this.root;
-        if (current.value == value) {
-            return current;
-        } else {
-            while (current) {
-                if (current.value < value) {
-                    // move right
-                    current = current.right;
+        while (current) {
+            if (current.value < value) {
+                // move right
+                current = current.right;
 
-                } else if (current.value > value) {
-                    // move left
-                    return current = current.left;
-                } else {
-                    return current;
-                }
+            } else if (current.value > value) {
+                // move left
+                return current = current.left;
+            } else {
+                return current;
             }
         }
     }
+
 
     find2(value) {
         if (this.root === null) return false;
@@ -93,7 +91,7 @@ class BinarySearchTree {
         return false;
     }
 
-
+    // BFS traversal    
     BFS() {
         var node = this.root,
             data = [],
@@ -112,6 +110,7 @@ class BinarySearchTree {
 
     DFSPreOrder() {
         var data = [];
+
         function traverse(node) {
             data.push(node.value);
             if (node.left) traverse(node.left);
@@ -130,6 +129,7 @@ class BinarySearchTree {
         traverse(this.root);
         return data;
     }
+    // This will arrange the value in ascending order
     DFSInOrder() {
         var data = [];
         function traverse(node) {
@@ -158,7 +158,20 @@ tree.insert(13);
 
 tree.find(7);
 
+//  BFS output ->  [10, 7, 15, 3, 9, 13, 17]
+// ﻿
+// DFS DFSPreOrder  10,7,3,9,15,13,17
+// DFSPostOrder     3,9,7,13,17,15,10
+// DFSInOrder       3,7,9,10,13,15,17 <-- Ascending order
+/*
+                10 
+                
+                
+        7                       15
 
+              
+    3       9              13               17    
+*/
 
 
 
