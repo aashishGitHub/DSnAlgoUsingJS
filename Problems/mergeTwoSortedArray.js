@@ -12,12 +12,12 @@ function mergeTwoSortedArray(array1, array2){
             resultantArray.push(array2[j]);
             ++j;
             if(j===array2.length)
-                resultantArray.push(array1[i]);
+                resultantArray.push(array1);
         }else{
             resultantArray.push(array1[i]);
             ++i;
             if(i===array1.length)
-                resultantArray.push(array2[j]);
+                resultantArray.push(array2);
         }
     }  
     return resultantArray;
