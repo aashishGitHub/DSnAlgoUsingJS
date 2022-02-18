@@ -1,9 +1,9 @@
 /****************************************************************************
- * Given a string find the maximum number of repeated character in the string
+ * Given a string find the character in the string which is repeated max no of times
 *****************************************************************************/
-function maxChars(inputString){
+function maxChars(inputString) {
     let charObj = getCharacterMap(inputString.toLowerCase());
-    
+    Object.entries(charObj).sort(x=>x.values);
 }
 
 function getCharacterMap(word){

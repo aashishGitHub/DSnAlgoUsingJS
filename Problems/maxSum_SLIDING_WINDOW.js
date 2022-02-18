@@ -1,5 +1,5 @@
 /** 
- * Find the sum of any sub-arrays of length N, from the given array so that this sum is maximum possible
+ * Find the sum of any sub-arrays of given length N, from the given array so that this sum is maximum possible
  * Approch in 2nd solution is called SLIDING WINDOW PATTERN 
  * 
  * 
@@ -44,7 +44,7 @@ function maxSubarraySum(arr, num) {
     // Store this sum temporarily
     tempSum = maxSum;
 
-    // Start from suze (in a 0 indexed loop, starting from length num, means we are now starting from the (num+1) th item )
+    // Start from size (in a 0 indexed loop, starting from length num, means we are now starting from the (num+1) th item )
     // and we will loop till last
     for (let i = num; i < arr.length; i++) {
       // Substaract item from Array at index i-num is the 1st index of last sub-array,

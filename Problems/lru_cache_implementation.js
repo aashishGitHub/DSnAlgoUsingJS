@@ -20,8 +20,11 @@ class LRUCache {
         let newNode
 
         // if the key not present in cache
-        if (this.cache[key] === undefined) newNode = new  LruNode(key, value);
-
+        if (this.cache[key] === undefined) {
+            newNode = new  LruNode(key, value);
+        } else {
+            newNode = this.cache[key];
+        }
         //if we have an empty list
         if (this.size === 0) {
             this.head = newNode;
@@ -30,7 +33,17 @@ class LRUCache {
             this.cache[key] = newNode;
             return this;
         }
+       
+        let nodeToDelete = {};
+        if(this.cache[key] !== undefined) {
+            nodeToDelete = newNode;
+            delete this.cache[nodeToDelete.key];
 
+            nodeToDelete.prev.next = nodeToDelete.next;
+            nodeToDelete.next.prev = nodeToDelete.prev;
+        }
+
+        // When a new value is being added but cache is already full
         if (this.size === this.maxSize) {
             //remove from cache
             delete this.cache[this.tail.key]
