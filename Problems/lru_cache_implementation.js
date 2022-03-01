@@ -1,4 +1,4 @@
-class  LruNode {    
+class  LruNode {
     constructor(key, value) {
         this.key = key;
         this.value = value;
@@ -21,7 +21,7 @@ class LRUCache {
 
         // if the key not present in cache
         if (this.cache[key] === undefined) {
-            newNode = new  LruNode(key, value);
+            newNode = new  LruNode(key, value); 
         } else {
             newNode = this.cache[key];
         }
@@ -39,6 +39,7 @@ class LRUCache {
             nodeToDelete = newNode;
             delete this.cache[nodeToDelete.key];
 
+            //TODO check for null
             nodeToDelete.prev.next = nodeToDelete.next;
             nodeToDelete.next.prev = nodeToDelete.prev;
         }

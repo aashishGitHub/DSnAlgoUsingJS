@@ -5,6 +5,7 @@ let k = 8;
 
 function listAllUniquePairsOfSum_K(arr, k) {
     let hash = {};
+    // TODO: Complete this
     arr.forEach(element => {
 
        console.log("hi"+ element); 
