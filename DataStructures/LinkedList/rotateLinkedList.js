@@ -56,7 +56,7 @@ Time Comolexitv: O(N). where N is the lenath of the list.
         }
         this.tail.next = null;
         return this;
-    }          
+    }    
 }
     
 var linkedList = new SinglyLinkedList();

@@ -3,7 +3,7 @@ function Node(data){
     this.next = null;
 }
 
-function LinkedList(){
+function LinkedList() {
     this.head = null;
     this.size = 0;
     this.lastNode = null;
