@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toggle images</title>
+    <style>
+        img {
+            /* for our fade effect */
+            transition: opacity 1.5s cubic-bezier(0.4, 0.0, 0.2, 1), left 1s cubic-bezier(0.4, 0.0, 0.2, 1);
+
+            width: 100vw;
+            max-width: 300px;
+            height: auto;
+            position: relative;
+            left: 0px;
+        }
+
+        img.peace-out {
+            /* to fade out */
+            opacity: 0;
+            left : -1000px;
+            /* visibility: hidden; */
+        }
+        .img2 {
+            left:-300px;
+        }
+
+        /* you can ignore the rest of this */
+
+        body {
+            margin: 0;
+        }
+
+        button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: white;
+            border-radius: 3px;
+            border: none;
+            font-size: 20px;
+            box-shadow: 0 5px 10px #3337;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Repellat iure quaerat quod distinctio aperiam! Iste
+        adipisci ipsum, magni odit quam vel, error tempore repellat, molestiae libero magnam numquam illum est!</p>
+    <img class="img1" src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
+        alt="peace out1">
+    <img class="img2 peace-out"
+        src="https://lh3.googleusercontent.com/ogw/AOLn63FhHcdTLFB9_bp3Bnt-9EpH67YelEbIgMUyhtg0=s64-c-mo"
+        alt="peace out2">
+
+    <button>Click to peace out</button>
+    <div>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptate temporibus optio eum, commodi totam cumque
+        recusandae placeat consectetur ducimus? Totam repellendus quia enim repudiandae alias suscipit nisi modi a
+        consequatur.</div>
+    <script>
+        const img1 = document.querySelector(".img1");
+        const img2 = document.querySelector(".img2");
+
+        document.querySelector("button").addEventListener("click", () => {
+            img1.classList.toggle("peace-out");
+            img2.classList.toggle("peace-out");
+        });
+    </script>
+</body>
+
+</html>
