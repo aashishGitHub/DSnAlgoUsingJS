@@ -12,7 +12,7 @@ function maxSubarraySum(nums) {
   let S_sumIncCurr = nums[0];
 
   for (let i = 1; i < arr.length; i++) {
-    // Either take the ith element  (nums[i]) and discard the others
+    // Either take the ith element (nums[i]) and discard the others
     // or carry the previous sequence and add the new element to move forward inorder to
     // calculate the Max
     S_sumIncCurr = Math.max(nums[i], S_sumIncCurr + nums[i]);
@@ -72,3 +72,41 @@ function maxSubArraySum(nums) {
 let input = [-2, 1, -3, 4, -1, 2, 1, -5, 4];
 let result = maxSubArraySum(input);
 console.log(result);
+
+
+
+/***
+ * The basic idea of Kadane’s algorithm is to scan the entire array and at each position
+ *  find the maximum sum of the subarray ending there. This is achieved by keeping a current_max
+ *  for the current array index and a global_max. The algorithm is as follows:
+
+current_max = A[0]
+global_max = A[0]
+for i = 1 -> size of A
+    if current_max is less than 0
+        then current_max = A[i]
+    otherwise 
+        current_max = current_max + A[i]
+    if global_max is less than current_max
+        then global_max = current_max
+
+
+ */
+
+const kadence = (numArr) => {
+  let current_max = numArr[0];
+  let global_max = numArr[0];
+
+  for (let i = 1; i < numArr.length; i++) {
+
+    // If i'th item is a negative number then start fresh sequence. Means currentMax is reset and we are already keeping a record of maxSoFar
+    // otherwise for a positive number, add the new item to the current sequence 
+    if (numArr[i] < 0 ) {
+      current_max = numArr[i];
+    } else current_max = current_max + numArr[i];
+
+    if(current_max > global_max) 
+    global_max = current_max;
+  }
+  return global_max;
+}
