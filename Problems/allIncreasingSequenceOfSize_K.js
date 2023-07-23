@@ -29,4 +29,10 @@ Approach
 
 // Solution 1 : Brut force way
 let arr = [1,2,3,5,1,77,8,4,2,9,12,56,83,3];
-// result = 
+
+const increasingSequences = (arr, k) => {
+    if (arr && arr.length <k) return []; // no sequence found 
+
+    
+
+}

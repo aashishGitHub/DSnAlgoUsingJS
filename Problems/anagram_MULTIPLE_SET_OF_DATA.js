@@ -23,7 +23,8 @@ function validAnagram(first, second) {
       if (!lookup[letter]) {
         return false;
       } else {
-        lookup[letter] -= 1;
+        // this is not required for this solution, it is only for future use
+        // lookup[letter] -= 1;
       }
     }
   
