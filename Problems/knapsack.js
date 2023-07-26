@@ -1,4 +1,8 @@
 
+/**
+ * given n numbers of balls of given values and weights, 
+ * A final bag of W capacity
+ * **/ 
 
 const knapsack = (W, values, weights, n) => {
     // Base case: if Weight or n i.e. last element is reached

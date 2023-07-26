@@ -7,7 +7,8 @@ function same(arr1, arr2) {
         return false;
     }
     let frequencyCounter1 = {}
-    let frequencyCounter2 = {}
+    let frequencyCounter2 = {} // NOTE: We donot need 2 lookups, It can be just 1 hashMap stored at start 
+    // and then checked for other array for presence. If size and all are present. Then these are same
     for(let val of arr1) {
         frequencyCounter1[val] = (frequencyCounter1[val] || 0) + 1
     }
