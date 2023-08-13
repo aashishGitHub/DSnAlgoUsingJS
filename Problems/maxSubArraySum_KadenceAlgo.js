@@ -102,7 +102,8 @@ const kadence = (numArr) => {
 
   for (let i = 1; i < numArr.length; i++) {
 
-    // If i'th item is a negative number then start fresh sequence. Means currentMax is reset and we are already keeping a record of maxSoFar
+    // If i'th item is a negative number then start fresh sequence.
+    // Means currentMax is reset and we are already keeping a record of maxSoFar
     // otherwise for a positive number, add the new item to the current sequence 
     if (numArr[i] < 0 ) {
       current_max = numArr[i];

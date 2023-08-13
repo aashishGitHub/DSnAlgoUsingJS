@@ -37,7 +37,6 @@ class BinarySearchTree {
             this.preOrderPrint(currentNode.leftChild);
             this.preOrderPrint(currentNode.rightChild);
         }
-
     }
 
     inOrderPrint(currentNode) {
@@ -46,7 +45,6 @@ class BinarySearchTree {
             console.log(currentNode.val);
             this.inOrderPrint(currentNode.rightChild);
         }
-
     }
     postOrderPrint(currentNode) {
         if (currentNode !== null) {
@@ -54,7 +52,6 @@ class BinarySearchTree {
             this.postOrderPrint(currentNode.rightChild);
             console.log(currentNode.val);
         }
-
     }
     search(currentNode, value) {
 

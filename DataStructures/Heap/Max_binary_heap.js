@@ -61,7 +61,7 @@ class MaxBinaryHeap {
         }
       }
 
-
+      
 }
 
 let heap = new MaxBinaryHeap();

@@ -8,7 +8,8 @@ module.exports = class BinarySearchTree {
 
     insert(currentNode, newValue) {
         if (currentNode === null) {
-            currentNode = new Node(newValue);
+            // currentNode = new Node(newValue);
+            this.insert(this.root, newValue);
         } else if (newValue < currentNode.val) {
             currentNode.leftChild = this.insert(currentNode.leftChild, newValue);
         } else {
