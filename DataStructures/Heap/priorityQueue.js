@@ -1,3 +1,4 @@
+// Priority queue with minimum binary heap of priority property for each nodes of valies and priority property
 class PriorityQueue {
     constructor(){
         this.values = [];
@@ -81,10 +82,5 @@ console.log(ER.dequeue());
 console.log(ER.dequeue());
 console.log(ER.dequeue());
 console.log(ER.dequeue());
-
-
-
-
-
 
 

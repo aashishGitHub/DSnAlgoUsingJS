@@ -10,6 +10,8 @@ class MaxBinaryHeap {
         let idx = this.values.length - 1;
         const element = this.values[idx];
         while(idx > 0) {
+          // I guess here we should update the element with this.values[idx] 
+          // so, the line 11 should come here
             let parentIdx = Math.floor((idx - 1)/2);
             let parent = this.values[parentIdx];
             if(element <= parent) break;
@@ -28,6 +30,7 @@ class MaxBinaryHeap {
         }
         return max
       }
+
       sinkDown() {
         let idx = 0
         const length = this.values.length
@@ -38,12 +41,15 @@ class MaxBinaryHeap {
           let leftChild, rightChild
           let swap = null
      
+          // its left child exists
           if (leftChildIdx < length) {
             leftChild = this.values[leftChildIdx]
             if (leftChild > element) {
               swap = leftChildIdx
             }
           }
+
+          // its right child exists
           if (rightChildIdx < length) {
             rightChild = this.values[rightChildIdx]
             if (
@@ -60,8 +66,6 @@ class MaxBinaryHeap {
           idx = swap
         }
       }
-
-      
 }
 
 let heap = new MaxBinaryHeap();

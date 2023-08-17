@@ -4,6 +4,20 @@
 // Memory Complexity
 // Constant, O(1).
 
+/*
+74. Search a 2D Matrix
+Medium
+You are given an m x n integer matrix matrix with the following two properties:
+
+Each row is sorted in non-decreasing order.
+The first integer of each row is greater than the last integer of the previous row.
+Given an integer target, return true if target is in matrix or false otherwise.
+
+You must write a solution in O(log(m * n)) time complexity.
+
+ 
+*/
+
 let search_in_matrix = function(matrix, value) {
     let M = matrix.length; // rows
     let N = matrix[0].length; // columns

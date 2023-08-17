@@ -1,25 +1,25 @@
 class Node {
     constructor(val) {
         this.val = val;
-        this.next = null;   
+        this.next = null;
     }
 }
 
 class SinglyLinkedList {
-    constructor(){
+    constructor() {
         this.head = null;
         this.tail = null;
         this.length = 0;
     }
     push(val) {
-        
+
         let newNode = new Node(val);
         if (!this.head) {
             this.head = newNode;
             this.tail = this.head;
         } else {
             this.tail.next = newNode;
-            this.tail = newNode;
+            this.tail = newNode; // This seems to be incorrect, and not required as it will cause LL to loop in a circular loop
         }
         this.length++;
         return this;
@@ -39,8 +39,8 @@ Time Comolexitv: O(N). where N is the lenath of the list.
      */
 
     rotate(val) {
-        if(val === 0) { return this;}
-        if(val >= this.length) {
+        if (val === 0) { return this; }
+        if (val >= this.length) {
             let rotateBy = val % this.length;
             return this.rotate(rotateBy);
         } else if (val < 0) {
@@ -48,17 +48,19 @@ Time Comolexitv: O(N). where N is the lenath of the list.
             return this.rotate(rotateBy);
         }
 
-        for(let i = 0; i< val; i++) {
+        for (let i = 0; i < val; i++) {
 
-            this.tail.next = this.head;
+            this.tail.next = this.head; // this is required so that the last element if it is not already connected in the linkedList as a loop
+            // It will now be connected
+
             this.tail = this.head;
             this.head = this.head.next;
         }
-        this.tail.next = null;
+        this.tail.next = null; // again assigning the tail's next to null so that we can know  when the Likedlist ends
         return this;
-    }    
+    }
 }
-    
+
 var linkedList = new SinglyLinkedList();
 linkedList.push(5);
 linkedList.push(10);

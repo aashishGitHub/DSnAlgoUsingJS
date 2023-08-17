@@ -5,6 +5,7 @@
  * 
 */
 
+// variation where k 
 // brut force way
 function maxSubarraySum(arr, num) {
     if ( num > arr.length){
