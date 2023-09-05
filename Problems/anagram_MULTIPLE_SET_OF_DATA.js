@@ -33,3 +33,19 @@ function validAnagram(first, second) {
   
   // {a: 0, n: 0, g: 0, r: 0, m: 0,s:1}
   validAnagram('anagrams', 'nagaramm')
+
+
+// gpt solution
+function isAnagram(s, t) {
+  if (s.length !== t.length) return false;
+  const map = {};
+  for (const char of s) {
+    map[char] = (map[char] || 0) + 1;
+  }
+  for (const cha                                                                                                                                                   r of t) {
+    if (!map[char]) return false;
+    map[char]--;
+  }
+  return true;
+}
+

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toggle images</title>
+
+</head>
+
+<body>
+    <style>
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .bouncing-element {
+            padding: 2rem;
+            animation: bounce 2s infinite;
+        }
+
+
+        .rotating-box {
+            width: 100px;
+            height: 100px;
+            background-color: #f39c12;
+            transition: transform 0.5s ease;
+        }
+
+        .rotating-box:hover {
+            transform: rotate(45deg) scale(1.2);
+        }
+
+        .parallax-container {
+            background: url('background-image.jpg') center/cover no-repeat;
+            height: 30vh;
+            perspective: 1px;
+            /* Helps control the intensity of parallax */
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .parallax-content {
+            transform: translateZ(-2px) scale(3);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .grid-item {
+            background-color: #3498db;
+            color: #fff;
+            transition: transform 0.3s ease;
+        }
+
+        .grid-item:hover {
+            transform: translateY(-10px);
+        }
+    </style>
+
+    <body>
+        <header>Ref:
+            <a
+                href="https://www.linkedin.com/pulse/modern-css-techniques-creating-stunning-animations-divyansh-singh%3FtrackingId=dDxdMLYA1NSXfni%252BTFBK%252BQ%253D%253D/?trackingId=dDxdMLYA1NSXfni%2BTFBK%2BQ%3D%3D">Source</a>
+        </header>
+        <div>
+            <aside class="bouncing-element">So happy that I am bouncing!</aside>
+        </div>
+        <section class="rotating-box">
+            this is magic rolling box
+
+        </section>
+        <section class="parallax-container">
+            <div class="parallax-content">This is parallax-content 1</div>
+            <div class="parallax-content">This is parallax-content 1</div>
+            <div class="parallax-content">This is parallax-content 1</div>
+            <div class="parallax-content">This is parallax-content 1</div>
+        </section>
+        <div class="grid-container">
+            <div class="grid-item">Hello this is item no 1</div>
+            <div class="grid-item">Hello this is item no 1</div>
+            <div class="grid-item">Hello this is item no 1</div>
+
+        </div>
+    </body>
+</body>
+
+</html>

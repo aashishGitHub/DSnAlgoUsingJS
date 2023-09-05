@@ -30,4 +30,21 @@ console.log(result);
 
 
 // *************************
-// It is same as Kadence algorithem
+var lengthOfLIS = function (arr) {
+  const LIF = new Array(arr.length).fill(1);
+
+  for (let i = arr.length - 1; i >= 0; i--) {
+    for (let j = i + 1; j <= arr.length - 1; j++) {
+
+      if (arr[i] < arr[j]) {
+        LIF[i] = Math.max(LIF[i], 1 + LIF[j])
+      }
+    }
+
+  }
+
+  return Math.max(...LIF);
+};
+let input2 = [10, 9, 2, 5, 3, 7, 101, 18];
+let result2 = lengthOfLIS(input2);
+console.log(result2);
