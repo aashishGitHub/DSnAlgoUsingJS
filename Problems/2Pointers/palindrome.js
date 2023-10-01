@@ -39,6 +39,30 @@ function palindrome3(inputString){
     return true; 
 }
 
+// Simple and 2 pointer based solution
+export function isPalindrome(s) {
+
+    // Replace this placeholder return statement with your code
+    if(typeof s != "string") return false;
+
+    let start = 0;
+    let end = s.length - 1;
+    while (start <= end) {
+        if (s[start] !== s[end]) {
+            return false;
+        } else {
+            start++;
+            end--;
+        }
+    }
+
+    return true;
+}
+// Time complexity
+// The time complexity is
+
+// O(n), where n is the number of characters in the string.However, our algorithm will only run(n / 2)
+// times, since two pointers are traversing toward each other.
 
 function checkPalindrome(){
     var str = "abbas";

@@ -1,7 +1,34 @@
 /**
  * Print all triplets/ group of 3 numbers in an array whose sum is 0
  */
+function findSumOfThree1(nums, target) {
+    if (!Array.isArray(nums) || typeof target !== 'number') {
+        return [];
+    }
 
+    nums.sort((a, b) => a - b);
+
+    for (let i = 0; i < nums.length - 2; i++) {
+        let low = i + 1;
+        let high = nums.length - 1;
+
+        while (low < high) {
+            if (nums[i] + nums[low] + nums[high] < target) {
+                low++;
+            } else if (nums[i] + nums[low] + nums[high] === target) {
+                return [nums[i], nums[low], nums[high]];
+            } else {
+                high--;
+            }
+        }
+    }
+
+    return [];
+}
+
+findSumOfThree1([3, 7, 1, 2, 8, 4, 5], 10);
+
+// considering duplicates
 function threeSum(arr) {
     if(arr.length < 3) {
         return [];

@@ -122,7 +122,7 @@ class BinarySearchTree {
         traverse(this.root);
         return data;
     }
-    
+
     DFSPostOrder() {
         var data = [];
         function traverse(node) {
