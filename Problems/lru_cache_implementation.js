@@ -21,7 +21,7 @@ class LRUCache {
 
         // if the key not present in cache
         if (this.cache[key] === undefined) {
-            newNode = new  LruNode(key, value); 
+            newNode = new  LruNode(key, value);
         } else {
             newNode = this.cache[key];
         }
