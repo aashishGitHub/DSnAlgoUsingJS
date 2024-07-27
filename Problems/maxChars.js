@@ -3,7 +3,7 @@
 *****************************************************************************/
 function maxChars(inputString) {
     let charObj = getCharacterMap(inputString.toLowerCase());
-    Object.entries(charObj).sort(x=>x.values);
+    return Object.entries(charObj).sort(x=>x.values);
 }
 
 function getCharacterMap(word){
@@ -14,9 +14,10 @@ function getCharacterMap(word){
     return characterMap;
 }
 
-function checkMaxChars(){
-    let word = "Bhubaneswar";
-    maxChars(word);
+function checkMaxChars(word){
+   
+    return maxChars(word)[0];
 }
 
-checkMaxChars();
+let word = "Bhubaneswar";
+console.log(checkMaxChars(word)); // [b: 2]

@@ -11,7 +11,7 @@ function isPair(start: string | undefined, end: string) {
 function isValid(s: string): boolean {
   
   const stack: string[] = [];
-  
+
     for (let item of s) {
       if(stack.length > 0 && closingBrackets.includes(item)) {
         // closing bracket is found

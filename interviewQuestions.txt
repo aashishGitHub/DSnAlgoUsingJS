@@ -1,0 +1,202 @@
+Recursion
+
+https://www.geeksforgeeks.org/recursive-programs-to-find-minimum-and-maximum-elements-of-array/
+
+ii) First Index of Occurrence in Array using Recursion 
+Ex: arr = [1,2,4,5,6,7,2,9]
+Number to find- 2
+Outcome: Index: 1
+
+
+Arrays/Math
+https://leetcode.com/problems/check-if-it-is-a-straight-line/description/
+
+https://leetcode.com/problems/max-points-on-a-line/description/
+Bit Manipulation: https://leetcode.com/problems/single-number/description/ 
+Merge Sort: https://leetcode.com/problems/sort-an-array/description/ 
+https://leetcode.com/problems/container-with-most-water/description/
+
+https://leetcode.com/problems/kth-largest-element-in-an-array/description/
+
+Stack
+https://leetcode.com/problems/valid-parentheses/description/
+https://leetcode.com/problems/removing-stars-from-a-string/description/
+https://leetcode.com/problems/palindrome-linked-list/description/
+
+https://leetcode.com/problems/asteroid-collision/description/
+https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string-ii/description/
+https://leetcode.com/problems/daily-temperatures/description/
+
+
+Linked List
+
+https://leetcode.com/problems/middle-of-the-linked-list/description/
+
+https://leetcode.com/problems/swapping-nodes-in-a-linked-list/description/
+https://leetcode.com/problems/intersection-of-two-linked-lists/description/
+https://leetcode.com/problems/add-two-numbers/description/
+https://leetcode.com/problems/linked-list-cycle-ii/description/
+https://leetcode.com/problems/palindrome-linked-list/description/
+
+https://leetcode.com/problems/employee-importance/description/
+https://leetcode.com/problems/permutations/description/
+https://leetcode.com/problems/lru-cache/description/
+
+
+https://leetcode.com/problems/longest-substring-without-repeating-characters/description/
+
+https://www.geeksforgeeks.org/trapping-rain-water/
+
+BackEnd:
+
+You are given a text (string) containing words separated by spaces. Your task is to write an efficient program to count the frequency of each word in the document while considering the following enhancements:
+The word frequency counter should be case-insensitive, meaning "Hello" and "hello" should be treated as the same word.
+Common punctuation marks should be excluded from the words when counting their frequencies.
+Common stop words, such as "is," "a," "the," "and," etc., should also be excluded from the word count.
+The function should handle contractions like "can't," "I'm," and "you're," treating them as "can not," "I am," and "you are," respectively.
+The function should handle hyphenated words like "well-known," considering them as separate words "well" and "known."
+The program should return a table containing the word frequency, where the keys are the words, and the values are their respective frequencies. Write a program that takes the following inputs
+Example inputs [15 mins]
+String containing the text for example - “I can't believe it's well-known that you're a programmer. I'm loving Golang!"
+A list of stop words that should be excluded, for example -  "is", "a", "that", "you're", "I'm"
+
+Example output
+believe 		1 
+can 		1 
+golang 		1 
+it 		1 
+know 		1 
+loving 		1 
+programmer 	1 
+well 		1
+—-----------------------------------------------------------------------------------------------------------------------------
+
+Given a sequence arr[] of size n, Write a function int equilibrium(int[] arr, int n) that returns an equilibrium index (if any) or -1 if no equilibrium index exists. 
+The equilibrium index of an array is an index such that the sum of elements at lower indexes equals the sum of elements at higher indexes. [15mins]
+Examples: 
+Input: A[] = {-7, 1, 5, 2, -4, 3, 0} 
+Output: 3 
+
+Expectation: T: O(N), S: O(1)
+Source: Equilibrium index of an array - GeeksforGeeks
+—-----------------------------------------------------------------------------------------------------------------------------
+Given an integer value, convert it to time in format HH:MM:SSS [Simple]
+—-----------------------------------------------------------------------------------------------------------------------------
+Given a string and a dictionary of words, determine if the string can be segmented into a space separated sequence of one or more dictionary words. 
+	
+	Example inputs
+String - “softwaredeveloper”
+Word dictionary - “software”, “developer”
+
+	Example output - true
+deadlocks why they happen, how to resolve
+How does url resolution work?
+Find all the anagrams of a given input word which exist in a given dictionary.
+Example:
+if dictionary contains below words
+{"apple", "stop", "deposit", "play", "topside", "pots"}
+and given word is "tops"
+then output should be {"stop", "pots"}
+
+Solution: We can use a map and the key in the map could be the sorted string. As all anagrams of a string will have the same sorted string, we just have to sort the input string and get results from the map using that.
+Write a program to count the words in a given file. [what if the file is 100GB. Using Multithreading]
+
+
+******************** Some popular DSA questions ********************
+
+Given a string find the character in the string which is repeated max no of times
+"Bhubaneswar"; // b:2 
+
+Given 2 strings s and t, WAP to return if s is a Subsequence of t or not
+S = abc
+T = jgyeabcdfufu
+Returns true
+
+Find the sum of any sub-arrays of given length N, from the given array so that this sum is maximum possible
+ maxSubarraySum( [2,6,9,2,1,8,5,6,3], 3 )  // results 19
+rotateArrayByKthPosition(array,k)
+Find the sum of any continuous sub-arrays from the given array so that this sum is maximum possible
+listAllPairsOfSum_K(arr, k)
+
+
+
+2nd round
+
+
+
+Basic Concepts
+What is an operating system? What are its primary functions? An operating system is a software that manages computer hardware and software resources and provides common services for computer programs. Its primary functions include process management, memory management, file system management, input/output (I/O) management, and security.  
+1. itsmyschoollibrary.com
+itsmyschoollibrary.com
+
+
+Explain the difference between a process and a thread. A process is an instance of a program in execution, including its own address space, resources, and a program counter. A thread, on the other hand, is a lightweight process that shares the same address space and resources with other threads within the same process.
+Describe the different types of scheduling algorithms (e.g., FCFS, SJF, Priority, Round Robin).
+FCFS (First-Come, First-Served): Processes are executed in the order they arrive in the ready queue.
+SJF (Shortest Job First): The process with the shortest estimated burst time is executed next.
+Priority Scheduling: Processes are assigned priorities, and the process with the highest priority is executed first.
+Round Robin: Each process is allocated a fixed time quantum, and processes are executed in a circular manner.
+What is memory management? Explain paging and segmentation. Memory management is the process of allocating and deallocating memory to processes. Paging divides physical memory into fixed-sized blocks called frames and virtual memory into equal-sized blocks called pages. Segmentation divides memory into variable-sized blocks based on program modules.
+What is virtual memory? How does it work? Virtual memory is a memory management technique that gives an application the illusion of having contiguous memory, even though it might be physically non-contiguous. It uses paging and swapping to manage memory efficiently.
+Explain the concept of deadlock. How can it be prevented? Deadlock occurs when two or more processes are blocked, each waiting for the other to release a resource. It can be prevented by using techniques like resource allocation graphs, deadlock detection, and deadlock recovery.
+What is file system? Explain different types of file systems. A file system is a method for organizing and storing data on a storage device. Types of file systems include FAT, NTFS, ext2/ext3/ext4, and HFS+.
+Explain the concept of I/O management. I/O management handles communication between the computer and external devices. It involves buffering, caching, spooling, and device drivers.
+Specific Questions
+How does a kernel mode differ from a user mode? Kernel mode provides complete access to system resources and can execute privileged instructions, while user mode has restricted access and cannot execute privileged instructions.
+Explain the role of system calls. System calls provide an interface between user programs and the operating system, allowing programs to request services from the kernel.
+What is the difference between monolithic and microkernel architecture? A monolithic kernel combines all OS components into a single executable image, while a microkernel provides basic services and loads other services as needed.
+Describe the different file access methods. Sequential access, direct access, and indexed sequential access are common file access methods.
+How does demand paging work? Demand paging loads pages into memory only when they are needed, improving memory utilization.
+Explain the concept of synchronization in OS. Synchronization ensures that multiple processes or threads access shared resources correctly and consistently. Techniques include semaphores, mutexes, and monitors.
+Networking
+Basic Concepts
+What is a network? Explain different types of networks (LAN, MAN, WAN). A network is a collection of interconnected devices that can communicate with each other. LAN (Local Area Network) covers a small area, MAN (Metropolitan Area Network) covers a city, and WAN (Wide Area Network) covers a large geographic area.
+Explain the OSI model and its layers. The OSI model is a conceptual framework for understanding network communication. It consists of seven layers: Physical, Data Link, Network, Transport, Session, Presentation, and Application.  
+1. www.powerwaf.com
+www.powerwaf.com
+
+
+What is TCP/IP? Explain its role in networking. TCP/IP is a suite of protocols used for communication over networks. TCP (Transmission Control Protocol) provides reliable, connection-oriented communication, while IP (Internet Protocol) handles packet routing.
+Describe the difference between TCP and UDP. TCP is connection-oriented, reliable, and slower, while UDP is connectionless, unreliable, and faster.
+What is IP addressing? Explain IPv4 and IPv6. IP addressing assigns unique addresses to devices on a network. IPv4 uses 32-bit addresses, while IPv6 uses 128-bit addresses.
+What is subnet masking? Subnet masking divides an IP address into a network address and a host address.
+Explain routing protocols (e.g., RIP, OSPF, BGP). Routing protocols determine the best path for data packets to travel through a network. RIP (Routing Information Protocol) is a distance-vector protocol, OSPF (Open Shortest Path First) is a link-state protocol, and BGP (Border Gateway Protocol) is used in the Internet.
+What is DNS? How does it work? DNS (Domain Name System) translates domain names into IP addresses. It works by using a hierarchical system of DNS servers.
+Specific Questions
+Explain the concept of ARP and RARP. ARP (Address Resolution Protocol) maps IP addresses to MAC addresses, while RARP (Reverse ARP) maps MAC addresses to IP addresses.
+What is a MAC address? How is it different from an IP address? A MAC address is a unique hardware identifier assigned to network interfaces, while an IP address is a logical address assigned to a device on a network.
+Describe the process of establishing a TCP connection (three-way handshake). The three-way handshake involves SYN, SYN-ACK, and ACK packets exchanged between two hosts to establish a TCP connection.
+What is HTTP? Explain different HTTP methods (GET, POST, PUT, DELETE). HTTP (Hypertext Transfer Protocol) is used for transferring data on the web. GET is used to retrieve data, POST is used to submit data, PUT is used to update data, and DELETE is used to delete data.
+Explain the concept of network security. Network security protects networks from unauthorized access, use, disclosure, disruption, modification, or destruction.
+What is a firewall? How does it work? A firewall is a network security system that monitors and controls incoming and outgoing network traffic based on predefined security rules.  
+1. www.testpreptraining.com
+www.testpreptraining.com
+
+
+Computer Science Basics
+Data Structures and Algorithms
+Explain different data structures (arrays, linked lists, stacks, queues, trees, graphs).
+Arrays: A collection of elements of the same data type stored in contiguous memory locations.
+Linked lists: A linear data structure where elements are not stored in contiguous memory locations but are linked using pointers.
+Stacks: A LIFO (Last In, First Out) data structure.
+Queues: A FIFO (First In, First Out) data structure.
+Trees: A hierarchical data structure with a root node and child nodes.
+Graphs: A non-linear data structure consisting of nodes (vertices) and edges.
+Describe common algorithms (sorting, searching, graph algorithms). Sorting algorithms include bubble sort, insertion sort, selection sort, merge sort, quicksort, and heapsort. Searching algorithms include linear search and binary search. Graph algorithms include depth-first search (DFS) and breadth-first search (BFS).
+Analyze time and space complexity of algorithms. Time complexity measures the efficiency of an algorithm in terms of the time taken as input size grows, while space complexity measures the amount of memory used by an algorithm.
+Programming Fundamentals
+Explain object-oriented programming concepts (inheritance, polymorphism, encapsulation).
+Inheritance: The ability of a class to inherit properties and methods from another class.
+Polymorphism: The ability of an object to take on multiple forms.
+Encapsulation: The bundling of data and methods that operate on that data within a single unit.
+Write a simple program in a programming language of your choice (e.g., C++, Java, Python).
+Explain the difference between compilation and interpretation. Compilation translates source code into machine code before execution, while interpretation executes code line by line without creating a separate executable file.
+What is a pointer? Explain its use and potential pitfalls. A pointer is a variable that stores the memory address of another variable. It can be used to access and manipulate data efficiently, but it can also lead to memory errors if not used carefully.
+Database Concepts
+Explain the concept of database management systems (DBMS). A DBMS is a software application used to create, store, and manage databases.
+Describe different database models (relational, hierarchical, network).
+Relational model: Data is organized into tables with rows and columns.
+Hierarchical model: Data is organized in a tree-like structure.
+Network model: Data is organized as a graph with multiple parent-child relationships.
+What is SQL? Explain basic SQL queries (SELECT, INSERT, UPDATE, DELETE). SQL (Structured Query Language) is a language used to interact with databases. SELECT is used to retrieve data, INSERT is used to insert data, UPDATE is used to modify data, and DELETE is
+
