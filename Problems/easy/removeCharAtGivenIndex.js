@@ -7,9 +7,9 @@ function removeCharAtIndex(str, index) {
   
   // Example usage:
   const originalString = "Hello, World!";
-  const indexToRemove = 7;
+  const indexToRemove = 8;
   const newString = removeCharAtIndex(originalString, indexToRemove);
-  console.log(newString); // Output: "Hello, Wrld!"
+  console.log(newString); // Output: "Hello, Wold!"
 
 
 
