@@ -1,4 +1,41 @@
 # Data Structures and Algorithms
+📚 Data Structures and Algorithms in JavaScript
+A comprehensive collection of Data Structures and Algorithms implementations and problem-solving solutions written in JavaScript. This repository serves as a complete learning resource for coding interviews, competitive programming, and mastering fundamental computer science concepts.
+
+🎯 What's Inside
+📊 Data Structures Implementations:
+
+Arrays & 2D Arrays - Matrix operations and array manipulations
+Linked Lists - Singly linked lists with rotation and swapping operations
+Stacks & Queues - LIFO and FIFO data structures with practical applications
+Trees - Binary Trees, Binary Search Trees with traversal algorithms (BFS, DFS, In-order, Pre-order, Post-order)
+Hash Tables - Custom hash table implementation with collision handling
+Heaps - Max Binary Heap and Priority Queue implementations
+Tries - Prefix tree for efficient string operations
+🧩 Problem Solving Categories:
+
+Two Pointers Technique - Palindrome check, 3Sum, and more
+Sliding Window - Maximum sum subarrays and subsequences
+Dynamic Programming - Fibonacci, Knapsack, Longest Common Subsequence, Coin Change
+Graph Algorithms - BFS, DFS, and pathfinding solutions
+String Algorithms - Anagram detection, palindromes, pattern matching
+Array Problems - Container with most water, trapping rainwater, product of arrays
+Sorting & Searching - Binary search and bubble sort implementations
+🔥 Featured Problem Solutions:
+
+LRU Cache Implementation
+Serialize/Deserialize Binary Search Tree
+Kadane's Algorithm for Maximum Subarray
+House Robber (Dynamic Programming)
+Kth Largest Element in Array
+Interview Questions Collection
+🚀 Perfect For
+Job Interview Preparation - Practice problems commonly asked in technical interviews
+Computer Science Students - Learn and understand core data structures and algorithms
+Competitive Programming - Sharpen problem-solving skills with optimized solutions
+JavaScript Developers - Master algorithmic thinking in your preferred language
+
+
 Learn Time Complexity: 
 https://youtu.be/luXiytGnYpY
 
