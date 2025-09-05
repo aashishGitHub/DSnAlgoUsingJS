@@ -4,6 +4,26 @@
 
 const input1 = "albcadbk" // 4 for "bcadk"
 
+function lengthOfLongestSubstringWorking(s) {
+    let globalMaxVal = 0;
+    let low = 0;
+    const charSet = new Set();
+
+    for (let high = 0; high < s.length; high++) {
+        while (charSet.has(s[high])) {
+            charSet.delete(s[low]);
+            low++;
+        }
+        charSet.add(s[high]);
+        globalMaxVal = Math.max(globalMaxVal, high - low + 1);
+    }
+
+    return globalMaxVal;
+}
+
+const inputString2 = "abcajdgwt"; // Expected output: 7 for "bcajdgw"
+console.log(lengthOfLongestSubstring2(inputString2)); // Output: 7
+
 //Try 1st But Buggy as the repeat char needs to be removed
 const lcsNoDuplicate_BuggyTrial = (str) => {
     let result = [];

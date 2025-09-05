@@ -1,7 +1,7 @@
 /**
  *
  * Find the sum of any continuous sub-arrays from the given array so that this sum is maximum possible
- * Approch is called Kadance's algorithm.
+ * Approach is called Kadance's algorithm.
  * [1,2,-1,3,4,5,6,7,8,9,10,11]
  * Smax 1 3 9
  * Ak   1 2 -1 3
@@ -117,3 +117,37 @@ const kadence = (numArr) => {
   console.log("startIndex " + startIndex + " lastendex " + endIndex);
   return global_max;
 }
+
+
+// Check this worked 
+/*
+const solution = (s: string): string => {
+  // write your solution here..
+  let maxLength: number = 0;
+  let start = 0;
+  let longestSubstring = '';
+     const charIndexMap = new Map<string, number>();
+  for(let end = 0; end < s.length; end++) {
+     const char = s[end];
+ 
+     if(charIndexMap.has(char) && charIndexMap.get(char)! >= start) {
+         start = charIndexMap.get(char)! + 1;
+     }
+ 
+     charIndexMap.set(char, end)
+ 
+     if(end - start + 1 > maxLength) {
+         maxLength = end - start + 1;
+         longestSubstring = s.substring(start, end + 1)
+     }
+  }
+  return longestSubstring;
+ };
+ 
+ // console.log(solution("abc"))
+ // console.log(solution("abcb"))
+ // console.log(solution("abcdabcdef"))
+ console.log(solution("abcderfgb"))
+
+
+ */
