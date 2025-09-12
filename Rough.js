@@ -53,3 +53,6 @@ console.log(moveZero([0,1,0,3,12]));
 [1,2,0,0,3]
 [1,2,3,0,0]
  */
+
+
+// twoSum examples

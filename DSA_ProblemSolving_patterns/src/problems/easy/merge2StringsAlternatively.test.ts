@@ -1,4 +1,4 @@
-import { mergeAlternately } from './merge2StringsAlternatively';
+import { mergeAlternately } from './merge2StringsAlternatively.ts';
 
 describe('mergeAlternately', () => {
   it('should merge two strings alternately', () => {

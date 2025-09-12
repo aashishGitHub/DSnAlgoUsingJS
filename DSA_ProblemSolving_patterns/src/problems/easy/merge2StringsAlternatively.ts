@@ -1,4 +1,4 @@
-function mergeAlternately(word1: string, word2: string): string {
+export function mergeAlternately(word1: string, word2: string): string {
     let shortestLength = Math.min(word1.length, word2.length);
     let i = 0;
     let result = '';
