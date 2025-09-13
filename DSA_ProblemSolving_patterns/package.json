@@ -1,21 +1,25 @@
- {
+{
    "name": "dsa-problemsolving-patterns",
    "private": true,
    "version": "0.0.0",
    "type": "module",
    "scripts": {
-     "dev": "vite",
-     "build": "tsc && vite build",
-     "preview": "vite preview",
-     "test": "vitest",
-     "test:ui": "vitest --ui",
-     "test:run": "vitest run",
-     "test:coverage": "vitest run --coverage"
+      "dev": "vite",
+      "build": "tsc && vite build",
+      "preview": "vite preview",
+      "test": "vitest",
+      "test:ui": "vitest --ui",
+      "test:run": "vitest run",
+      "test:coverage": "vitest run --coverage",
+      "test:file": "vitest run --reporter=verbose",
+      "test:watch": "vitest --watch",
+      "test:watch-file": "vitest --watch --reporter=verbose",
+      "test:specific": "vitest run --reporter=verbose -t"
    },
    "devDependencies": {
-     "typescript": "^5.0.2",
-     "vite": "^4.4.5",
-     "vitest": "^0.34.6",
-     "@vitest/ui": "^0.34.6"
+      "@vitest/ui": "^3.2.4",
+      "typescript": "^5.0.2",
+      "vite": "^7.1.5",
+      "vitest": "^3.2.4"
    }
- }
+}

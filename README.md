@@ -35,6 +35,20 @@ Computer Science Students - Learn and understand core data structures and algori
 Competitive Programming - Sharpen problem-solving skills with optimized solutions
 JavaScript Developers - Master algorithmic thinking in your preferred language
 
+## 🧪 Running Tests
+
+Navigate to the `DSA_ProblemSolving_patterns` directory and use the following commands:
+
+```bash
+# Run only the 3Sum tests
+npm run test:file src/problems/2Pointers/3Sum.test.ts
+
+# Run only the failing test
+npm run test:specific "should handle edge case with all zeros"
+
+# Watch the 3Sum tests while you fix them
+npm run test:watch-file src/problems/2Pointers/3Sum.test.ts
+```
 
 Learn Time Complexity: 
 https://youtu.be/luXiytGnYpY

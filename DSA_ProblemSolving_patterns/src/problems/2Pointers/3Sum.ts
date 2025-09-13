@@ -58,7 +58,8 @@ export function threeSum(arr: number[]): number[][] {
 
     return result;
 }
-let in1 = [6,3,9,1,4,-1,-5,-2,-7, -3];
+// Example usage:
+// let in1 = [6,3,9,1,4,-1,-5,-2,-7, -3];
 let in2 = [-1,0, 1,2,-1,-4];
 let result = threeSum(in2);
 console.log(result);
@@ -96,35 +97,54 @@ Explanation: The only possible triplet sums up to 0.
  
  * @returns 
  */
-export function threeSum2(nums: number[]): number[] {
+export function threeSum2(nums: number[]): number[][] {
     if (!nums || nums.length < 3) {
         return [];
     }
 
-    const sortedNums = nums.sort();
-    for (let i = 0; i < sortedNums.length - 3; i++) {
+    const result: number[][] = [];
+
+    const sortedNums = nums.sort((a, b) => a - b);
+    for (let i = 0; i < sortedNums.length - 2; i++) {
         const first = sortedNums[i];
-        if (first >= 0) {
-            return [];
+        
+        // Skip duplicates for the first element
+        if (i > 0 && sortedNums[i] === sortedNums[i - 1]) {
+            continue;
         }
 
-        // find 2 elements whose sum is Math.Mod(first)
-        const twoSumResult = twoSum(sortedNums.slice(i + 1), Math.abs(first));
+        // find all pairs whose sum is -first (so that first + second + third = 0)
+        const twoSumResults = twoSumAll(sortedNums.slice(i + 1), -first);
 
-        if (twoSumResult.length > 0) {
-            return [first, ...twoSumResult]
+        for (const pair of twoSumResults) {
+            result.push([first, ...pair]);
         }
     }
-    return [];
+    return result;
 };
-// nums is sorted
-function twoSum(nums: number[], target: number) {
-    const hashMap = new Set<number>(nums);
-    for (let i = 0; i < nums.length - 2; i++) {
-        let first = nums[i];
-        if (hashMap.has(target - first)) {
-            return [first, target - first]
+// nums is sorted - find all valid pairs that sum to target
+function twoSumAll(nums: number[], target: number): number[][] {
+    const result: number[][] = [];
+    let left = 0;
+    let right = nums.length - 1;
+
+    while (left < right) {
+        const sum = nums[left] + nums[right];
+        
+        if (sum === target) {
+            const leftVal = nums[left];
+            const rightVal = nums[right] === 0 ? 0 : nums[right]; // Handle -0 vs 0
+            result.push([leftVal, rightVal]);
+            
+            // Skip duplicates
+            while (left < right && nums[left] === leftVal) left++;
+            while (left < right && nums[right] === rightVal) right--;
+        } else if (sum < target) {
+            left++;
+        } else {
+            right--;
         }
     }
-    return [];
+    
+    return result;
 }
