@@ -25,20 +25,20 @@ function longestConsecutive1(nums: number[]): number {
     let maxLength = 0;
     
     for (const num of numSet) {
-        // Only start counting if this is the beginning of a sequence
-        // i.e., num-1 is not in the set
-        if (!numSet.has(num - 1)) {
-            let currentNum = num;
-            let currentLength = 1;
-            
-            // Count consecutive numbers
-            while (numSet.has(currentNum + 1)) {
-                currentNum++;
-                currentLength++;
-            }
-            
-            maxLength = Math.max(maxLength, currentLength);
+      // Only start counting if this is the beginning of a sequence
+      // i.e., num-1 is not in the set.
+      if (!numSet.has(num - 1)) {
+        let currentNum = num;
+        let currentLength = 1;
+
+        // Count consecutive numbers
+        while (numSet.has(currentNum + 1)) {
+          currentNum++;
+          currentLength++;
         }
+
+        maxLength = Math.max(maxLength, currentLength);
+      }
     }
     
     return maxLength;
