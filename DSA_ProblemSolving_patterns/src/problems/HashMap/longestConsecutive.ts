@@ -12,11 +12,14 @@
 // Output: 9
 
 /**
- * Approach 1: Hash Set - Optimal Solution
+ * HASH SET PATTERN - Optimal Solution
+ * 
+ * Pattern: Use Hash Set for O(1) lookups to avoid nested loops
  * Time: O(n) - each number is visited at most twice
  * Space: O(n) for the hash set
  * 
  * Key insight: Only start counting from the beginning of a sequence
+ * This avoids redundant work and ensures O(n) time complexity
  */
 function longestConsecutive1(nums: number[]): number {
     if (nums.length === 0) return 0;
@@ -45,42 +48,14 @@ function longestConsecutive1(nums: number[]): number {
 }
 
 /**
- * Approach 2: Sort and count (not optimal due to O(n log n) time)
- * Time: O(n log n) - due to sorting
- * Space: O(1) if we ignore sorting space
- */
-function longestConsecutive2(nums: number[]): number {
-    if (nums.length === 0) return 0;
-    
-    // Remove duplicates and sort
-    const uniqueNums = [...new Set(nums)].sort((a, b) => a - b);
-    
-    let maxLength = 1;
-    let currentLength = 1;
-    
-    for (let i = 1; i < uniqueNums.length; i++) {
-        if (uniqueNums[i] === uniqueNums[i - 1] + 1) {
-            // Consecutive number found
-            currentLength++;
-        } else {
-            // Sequence broken, update max and reset current
-            maxLength = Math.max(maxLength, currentLength);
-            currentLength = 1;
-        }
-    }
-    
-    // Don't forget to check the last sequence
-    return Math.max(maxLength, currentLength);
-}
-
-/**
- * Approach 3: HashMap with Union-Find concept (advanced)
+ * HASH MAP PATTERN - Union-Find approach
  * Time: O(n)
  * Space: O(n)
  * 
  * This approach treats consecutive numbers as components that need to be merged
+ * Uses HashMap to track sequence lengths and merge adjacent sequences
  */
-function longestConsecutive3(nums: number[]): number {
+function longestConsecutive2(nums: number[]): number {
     if (nums.length === 0) return 0;
     
     const map = new Map<number, number>(); // number -> length of sequence it belongs to
@@ -114,11 +89,13 @@ function longestConsecutive3(nums: number[]): number {
 }
 
 /**
- * Approach 4: Using Map to track sequence boundaries
+ * HASH MAP PATTERN - Boundary tracking approach
  * Time: O(n)
  * Space: O(n)
+ * 
+ * Uses HashMap to track sequence boundaries and merge adjacent sequences
  */
-function longestConsecutive4(nums: number[]): number {
+function longestConsecutive3(nums: number[]): number {
     const boundaries = new Map<number, number>(); // Maps sequence boundary to sequence length
     let maxLength = 0;
     
@@ -142,6 +119,37 @@ function longestConsecutive4(nums: number[]): number {
     return maxLength;
 }
 
+/**
+ * SORTING APPROACH - Not optimal but educational
+ * Time: O(n log n) - due to sorting
+ * Space: O(1) if we ignore sorting space
+ * 
+ * This approach shows why Hash Set is better for this problem
+ */
+function longestConsecutive4(nums: number[]): number {
+    if (nums.length === 0) return 0;
+    
+    // Remove duplicates and sort
+    const uniqueNums = [...new Set(nums)].sort((a, b) => a - b);
+    
+    let maxLength = 1;
+    let currentLength = 1;
+    
+    for (let i = 1; i < uniqueNums.length; i++) {
+        if (uniqueNums[i] === uniqueNums[i - 1] + 1) {
+            // Consecutive number found
+            currentLength++;
+        } else {
+            // Sequence broken, update max and reset current
+            maxLength = Math.max(maxLength, currentLength);
+            currentLength = 1;
+        }
+    }
+    
+    // Don't forget to check the last sequence
+    return Math.max(maxLength, currentLength);
+}
+
 // Test cases
 function runTests(): void {
     const testCases = [
@@ -158,9 +166,9 @@ function runTests(): void {
     testCases.forEach((nums, index) => {
         console.log(`Test case ${index + 1}: [${nums}]`);
         console.log('Hash Set approach:', longestConsecutive1(nums));
-        console.log('Sort approach:', longestConsecutive2(nums));
-        console.log('Union-Find approach:', longestConsecutive3(nums));
-        console.log('Boundary approach:', longestConsecutive4(nums));
+        console.log('Hash Map Union-Find:', longestConsecutive2(nums));
+        console.log('Hash Map Boundaries:', longestConsecutive3(nums));
+        console.log('Sort approach:', longestConsecutive4(nums));
         console.log('---');
     });
 }
@@ -176,23 +184,29 @@ function performanceTest(): void {
     const result1 = longestConsecutive1(nums);
     console.timeEnd('Hash Set approach');
     
-    console.time('Sort approach');
+    console.time('Hash Map approach');
     const result2 = longestConsecutive2(nums);
+    console.timeEnd('Hash Map approach');
+    
+    console.time('Sort approach');
+    const result3 = longestConsecutive4(nums);
     console.timeEnd('Sort approach');
     
-    console.log('Results match:', result1 === result2);
+    console.log('Results match:', result1 === result2 && result2 === result3);
 }
 
-// Key insights for Longest Consecutive Sequence:
+// HASH SET/MAP PATTERN INSIGHTS:
 // 1. Hash Set allows O(1) lookups, enabling O(n) solution
 // 2. Key optimization: only start counting from sequence beginnings
 // 3. Each number is visited at most twice (once in outer loop, once in inner while)
 // 4. This problem demonstrates the power of hash sets for sequence problems
+// 5. Hash Map can be used for more complex sequence merging scenarios
 
-// Pattern Recognition:
-// - When you see "consecutive" and need O(n) time, think hash set
+// PATTERN RECOGNITION:
+// - When you see "consecutive" and need O(n) time, think hash set/map
 // - Look for opportunities to avoid unnecessary work (sequence beginnings)
-// - Hash sets are perfect for "membership testing" operations
+// - Hash sets/maps are perfect for "membership testing" operations
+// - Use Hash Set for simple lookups, Hash Map for complex state tracking
 
 export { 
     longestConsecutive1, 
