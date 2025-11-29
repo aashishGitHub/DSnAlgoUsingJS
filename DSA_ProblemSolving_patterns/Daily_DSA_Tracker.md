@@ -313,3 +313,8 @@ Ready for Week 2: Sliding Window ✅
 4. **Celebrate small wins** - every problem solved is progress!
 
 **Remember**: The goal is building a sustainable practice habit, not perfection. Start today, stay consistent, and trust the process! 🎯
+
+
+
+- debounce
+

@@ -1,0 +1,126 @@
+
+Slack AI
+fts
+Summary of #fts
+Jan 1 - Sep 27
+1k messages1k
+
+
+
+76 users76
+Vector Typed Fields Not Supported
+@Matthew Groves reported an issue with vector typed fields not being supported in Couchbase Enterprise Edition 7.6.4 on Windows, and @AD provided an update that Windows remains unsupported and they are working on a memory management situation blocking this functionality.
+
+More details
+@Matthew Groves reported getting an error "vector typed fields not supported in this cluster" when trying to create a vector index [1]
+@AD mentioned that Windows remains unsupported and they are working on a memory management situation blocking this functionality [2]
+Pagination and Pushing Down to FTS
+@AD discussed that pagination in N1QL and pushing down to FTS would be comparable, as both services would need to fetch all hits before applying sort and pagination, but using FTS store would be faster for retrieving fields.
+
+More details
+@AD stated that pagination in N1QL and pushing down to FTS would be comparable, as both services would need to fetch all hits before applying sort and pagination [3]
+@AD mentioned that using FTS store would be faster for retrieving fields, which is likely the reason for retrieving fields from search_meta() [3]
+@AD suggested an approach to speed things up significantly by pushing the compute from query time to index time using a custom analyzer with an ngram token filter over the city field [3]
+Couchbase vs Solr Performance
+@Kavya Parag reported that a similar search query takes around 20ms in their current Solr environment, but 400ms or more in Couchbase, even after query and index optimizations.
+
+More details
+@Kavya Parag stated that a search query takes around 20ms in their Solr environment, but 400ms or more in Couchbase, even after optimizations [4]
+Sync Gateway Data Structures and Checkpointing
+@tor.colvin provided an overview of Sync Gateway's data structures and checkpoint process, noting that there is no on-disk storage and that they checkpoint the DCP feed to avoid processing older mutations.
+
+More details
+@tor.colvin explained that Sync Gateway is a stateless, horizontally sharded process that partitions the DCP feed across nodes, and checkpoints the feed to avoid processing older mutations [5]
+@tor.colvin mentioned that there is no on-disk storage for any Sync Gateway nodes [5]
+Inconsistent Search Results
+@Ritesh investigated an issue where the customer was seeing inconsistent search results, but was unable to reproduce it without the customer providing the specific queries and indexes being used.
+
+More details
+@Ritesh noted that the customer had not shared the queries or indexes being used, which was making it difficult to investigate the inconsistent search results they were seeing [6]
+@Ritesh observed that the rest_create_index requests were being spread out over an hour, with the biggest gap between two indexes being created around 30 minutes [7]
+Monitoring FTS Metrics
+@Eyal sought to understand the difference between the gRPC and non-gRPC FTS metrics, and what the customer should be monitoring, specifically regarding fts_avg_grpc_queries_latency and fts_avg_queries_latency.
+
+More details
+@AD explained that the gRPC metrics refer to the internal scatter-gather requests between the coordinating node and the nodes where the index partitions reside, while the non-gRPC metrics represent the total latency seen by the caller [8]
+@Eyal asked if they should only see the gRPC metrics if the customer is using the SQL++ SEARCH() method, and not if they are using the Search Service API/SDK directly [9]
+Index Not Found Error in Capella
+@Anthony Gutierrez[C] reported that a client is getting an "Index not found" error when trying to use a Java code to search in Capella, even after importing the search index definition, and the team discussed a potential workaround that does not require an SDK upgrade.
+
+More details
+<@Anthony Gutierrez[C]> mentioned that a client is getting an "Index not found" error when trying to use Java code to search in Capella, even after importing the search index definition [10]
+@nithishr suggested that the client can try creating the scoped index using the Java SDK, as the SDK calls the same server REST endpoints under the hood [11]
+@nithishr noted that the Capella UI may be expecting the index name to be in the format "bucket.scope.index" instead of just the index name, which could be causing the issue [11]
+FTS Index Deletion and Metrics Scraping Failure
+@deacon reported an issue where FTS metrics scraping started failing after an index was deleted on one of the nodes, and they had questions about safely restarting the cbft process and collecting additional information for a post-mortem.
+
+More details
+@deacon mentioned that after an index was deleted, the FTS metrics scraping started failing, resulting in alerts for the service being down on that node [12]
+@deacon asked if it would be safe to kill the cbft process to give it a kick, and what additional information would be useful to collect for a post-mortem [12]
+@AD suggested that killing cbft should allow the scrapes to resume, and provided a link to a related MB ticket that may have been hit [13]
+Indexer Crashes
+@brian.king shared a couple of forum posts related to indexer crashes, which the team may want to review to understand potential causes and mitigations.
+
+More details
+@brian.king shared two forum posts related to indexer crashes, one discussing crashes due to a high number of indexes on a single collection, and another discussing crashes due to a high number of indexes in general [14]
+Handling No Indexes in the System
+@Kaustav encountered an issue where the get_all_indexes() method was returning an InternalServerFailureException when there were no indexes in the system, and @AD and @grahamp provided insights on why this was happening and how it should be handled.
+
+More details
+@Kaustav encountered an InternalServerFailureException when calling get_all_indexes() on a system with no indexes [15]
+@AD explained that the response with indexDefs being null is the expected behavior when there are no indexes in the system [16], [17]
+@grahamp noted that the Python SDK was incorrectly generating the InternalServerFailureException in this case, and that the root cause was the null indexDefs response, which should be handled as a special case [18]
+Handling Null indexDefs Response
+@AD and @grahamp further discussed the null indexDefs response when there are no indexes in the system, and @vishal.dhiman was made aware of the need to add handling for this case in the SDKs.
+
+More details
+@AD confirmed that the indexDefs field will be null in a brand new cluster with no indexes, and will have a version and UUID associated with it even after an index is deleted [19], [20]
+@grahamp noted that this null indexDefs response is not handled well by at least 4 SDKs, and that it should be added as a special case to avoid issues [21]
+@Kaustav continued to see the InternalServerFailureException when running the tutorials, indicating the issue has not been resolved [22]
+Resolving "pindex not available" Errors
+@Jack relayed a question from @Kaustav about experiencing "pindex not available" errors, which @AD suspected could be due to memory pressure in the FTS service.
+
+More details
+@Kaustav was experiencing "pindex not available" errors when querying an FTS index [23]
+@AD suggested the "pindex not available" errors could be due to memory pressure in the FTS service, and recommended investigating further [23]
+Geospatial Search Capabilities
+@Eyal requested a deeper technical understanding of how the Search service indexes and handles geospatial data, and @AD provided documentation on the new geoshape field type and related spatial querying capabilities.
+
+More details
+@Eyal requested a deeper technical understanding of the Search service's geospatial indexing and querying capabilities for a customer focused on GIS searches [24]
+@AD provided detailed documentation on the geoshape field type and the various geospatial shapes and queries that are supported [25]
+Handling Null indexDefs in Python SDK
+@Kaustav had previously encountered the null indexDefs issue and had implemented a workaround, and @AD confirmed that this is an expected server response that should be handled in the SDKs.
+
+More details
+@Kaustav had already handled the null indexDefs issue in their code by inserting/removing an index and adding a bypass with a warning [26]
+@AD confirmed that the null indexDefs response is the expected behavior when there are no indexes in the system [26]
+Dropped Scope and Bucket Impact on FTS Indexes
+@Prasad encountered an issue where FTS indexes remained visible even after the scope and bucket they were associated with were deleted, and sought guidance on properly cleaning up these orphaned indexes.
+
+More details
+@Prasad reported that FTS indexes remained visible even after the scope and bucket they were associated with were deleted [27]
+@AD provided a workaround by suggesting to set the default_analyzer to keyword in the index edit page, until a fix is available for the underlying issue [28]
+Analyzer Changes and Index Behavior
+@harshini.pande inquired about the impact of changing the analyzer for a field in an existing FTS index, and how to confirm if the tokens created by the previous analyzer were removed.
+
+More details
+@harshini.pande reported that a customer changed the analyzer for the PlayerId field in an FTS index, but did not get the expected results, and reverted the change [29]
+@harshini.pande asked if the back-and-forth change in analyzer would affect the index in any way, and how to confirm if the tokens created by the previous analyzer were removed [29]
+Investigating Longer Index Build Times
+@pruthvi.kodmurgi investigated an issue where one of the FTS nodes was experiencing high CPU usage during index building, while the other node had much lower usage, and sought to understand the reasons behind this behavior.
+
+More details
+@pruthvi.kodmurgi noticed that during index building, one FTS node had a CPU spike up to 90-95%, while the other node had much lower CPU usage [30]
+@AD suggested checking the resource usage and partition layout across the nodes, and offered to help investigate further if a CBSE was set up with the relevant logs [31]
+Handling Repeated merIDs in Search Results
+@divya.kapu investigated an issue where the search results were not matching the expected output, and found that the customer had multiple documents with the same merId value, which was causing the inconsistency.
+
+More details
+@divya.kapu discovered that the customer had multiple documents with the same merId value, which was causing the inconsistent search results [32]
+@divya.kapu noted that the query behavior was different when using smaller size and from parameters compared to larger ones, and suspected this could be related to how the query fetches and sorts the results [32]
+Vector Search in Python SDK
+The @Couchbase Assistant provided an overview of how vector search is supported in the Python SDK, including the use of the VectorSearchQuery object and the need to specify the index name as a string rather than a class.
+
+More details
+AI-generated answers may be inaccurate.

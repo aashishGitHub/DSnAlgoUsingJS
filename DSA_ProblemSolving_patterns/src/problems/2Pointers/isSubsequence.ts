@@ -23,3 +23,8 @@ function isSubsequence2(s: string, t: string): boolean {
     }
     return false;
 };
+
+
+
+console.log(isSubsequence("abc", "anbkch"));
+  

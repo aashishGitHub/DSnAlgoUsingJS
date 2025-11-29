@@ -56,27 +56,32 @@ console.log("Concat('Hello', ' ', 'World', '!'):", concat('Hello', ' ', 'World',
 console.log("\n=== LEVEL 2: INTERMEDIATE EXAMPLES ===");
 
 // Example 4: Recursive Filter
-function recursiveFilter<T>(predicate: (item: T) => boolean, ...args: T[]): T[] {
+function recursiveFilter<T>(
+  predicate: (item: T) => boolean,
+  ...args: T[]
+): T[] {
   console.log("recursiveFilter called with:", args);
-  
+
   if (args.length === 0) return [];
-  
+
   const [first, ...rest] = args;
   const filteredRest = recursiveFilter(predicate, ...rest);
-  
+  // We are keeping the first element if it passes the predicate, otherwise we are returning the filteredRest
   return predicate(first) ? [first, ...filteredRest] : filteredRest;
 }
 
 const isEven = (n: number) => n % 2 === 0;
-console.log("Filter even numbers from [1,2,3,4,5,6]:", 
-  recursiveFilter(isEven, 1, 2, 3, 4, 5, 6)); // [2, 4, 6]
+console.log(
+  "Filter even numbers from [1,2,3,4,5,6]:",
+  recursiveFilter(isEven, 1, 2, 3, 4, 5, 6)
+); // [2, 4, 6]
 
 // Example 5: Recursive Map
 function recursiveMap<T, U>(transform: (item: T) => U, ...args: T[]): U[] {
   console.log("recursiveMap called with:", args);
-  
+
   if (args.length === 0) return [];
-  
+
   const [first, ...rest] = args;
   return [transform(first), ...recursiveMap(transform, ...rest)];
 }
@@ -85,16 +90,16 @@ const double = (n: number) => n * 2;
 console.log("Double [1,2,3,4]:", recursiveMap(double, 1, 2, 3, 4)); // [2, 4, 6, 8]
 
 // Example 6: Nested Function Builder
-function createNestedFunction(...args: string[]) {
+function createNestedFunction(...args: string[]): (...values: any[]) => any {
   console.log("createNestedFunction called with:", args);
-  
+
   if (args.length === 0) {
     return () => "base case";
   }
-  
+
   const [first, ...rest] = args;
   const innerFunction = createNestedFunction(...rest);
-  
+
   return (value: any) => {
     console.log(`Processing ${first} with value:`, value);
     return innerFunction;
@@ -102,7 +107,7 @@ function createNestedFunction(...args: string[]) {
 }
 
 const nested = createNestedFunction("step1", "step2", "step3");
-console.log("Nested function result:", nested("input1")("input2")("input3")()); 
+console.log("Nested function result:", nested("input1")("input2")("input3")());
 
 // ============================================================================
 // LEVEL 3: ADVANCED EXAMPLES
@@ -111,15 +116,18 @@ console.log("Nested function result:", nested("input1")("input2")("input3")());
 console.log("\n=== LEVEL 3: ADVANCED EXAMPLES ===");
 
 // Example 7: Recursive Compose Function
-function compose<T>(...fns: Array<(arg: T) => T>) {
-  console.log("compose called with functions:", fns.map(f => f.name));
-  
+function compose<T>(...fns: Array<(arg: T) => T>): (arg: T) => T {
+  console.log(
+    "compose called with functions:",
+    fns.map((f) => f.name)
+  );
+
   if (fns.length === 0) return (x: T) => x;
   if (fns.length === 1) return fns[0];
-  
+
   const [first, ...rest] = fns;
   const composedRest = compose(...rest);
-  
+
   return (x: T) => first(composedRest(x));
 }
 
@@ -131,15 +139,18 @@ const composedFn = compose(square, multiplyByTwo, addOne);
 console.log("Compose square(multiplyByTwo(addOne(5))):", composedFn(5)); // 144
 
 // Example 8: Recursive Pipe Function
-function pipe<T>(...fns: Array<(arg: T) => T>) {
-  console.log("pipe called with functions:", fns.map(f => f.name));
-  
+export function pipe<T>(...fns: Array<(arg: T) => T>): (arg: T) => T {
+  console.log(
+    "pipe called with functions:",
+    fns.map((f) => f.name)
+  );
+
   if (fns.length === 0) return (x: T) => x;
   if (fns.length === 1) return fns[0];
-  
+
   const [first, ...rest] = fns;
   const pipedRest = pipe(...rest);
-  
+
   return (x: T) => pipedRest(first(x));
 }
 

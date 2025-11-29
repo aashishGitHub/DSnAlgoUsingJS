@@ -1,0 +1,72 @@
+
+Slack AI
+uxui-ai
+Summary of #uxui-ai
+Jan 2 - Sep 26
+2k messages2k
+
+
+
+54 users54
+Bedrock UX and API Spec Review
+@Talina and @paulomee.de provided comments on the Bedrock UX Figma, and @aditya.venkatesan was asked to update the Figma based on those comments. A call was proposed to review the UX and API specs.
+
+More details
+@Talina and @paulomee.de provided comments on the Bedrock UX Figma [1]
+@aditya.venkatesan was asked to update the Bedrock Figma based on the comments [1]
+A call was proposed to review the UX and API specs for Bedrock [1]
+Bedrock Integration API Handoff
+@paulomee.de handed over the Bedrock integration APIs to the UI team, and @Soham requested that the branch be updated with the latest changes from the main branch.
+
+More details
+@paulomee.de handed over the Bedrock integration APIs to the UI team [2]
+@Soham requested that the branch be updated with the latest changes from the main branch [2]
+Bedrock Model Creation Handoff
+@Pramada outlined several action items related to the Bedrock model creation flow, including video references, compute section behavior, model creation trigger, API key editing, and API & token metrics. The team discussed these items and planned to hand off the feature to the engineering team.
+
+More details
+@Pramada outlined several action items related to the Bedrock model creation flow [3]
+The team discussed these items and planned to hand off the feature to the engineering team [4]
+Bedrock Model Deployment Design Updates
+@aditya.venkatesan shared the updated model deployment designs and requested feedback from @vishwa and @Talina on several open comments, including compute section behavior, model creation trigger, API key editing, dropdown behavior for API key selection, API & token metrics, video references, failed state handling, and text updates to the entire flow.
+
+More details
+@aditya.venkatesan shared the updated model deployment designs and requested feedback [5]
+@Talina provided responses to some of the open comments [6]
+@vishwa provided responses to the remaining open comments [7]
+Bedrock Feature Branch Management
+@Pramada proposed merging all individual feature branches into a single "feature/AV-92790_ai_services_ga" branch to better test the overall AI Services functionality before merging to the main branch.
+
+More details
+@Pramada proposed merging all individual feature branches into a single "feature/AV-92790_ai_services_ga" branch [8]
+Private Networking for Bedrock
+@Talina noted that there was no UX for Private Networking so far and requested that @vishwa and @Rahul Pradhan confirm if this needs to be done for GA and provide UX requirements.
+
+More details
+@Talina noted the lack of UX for Private Networking and requested confirmation from @vishwa and @Rahul Pradhan [9]
+AI Functions Design and Implementation
+@Pranav and @sufyan.mahmood had several questions and clarifications around the AI Functions design, including whether functions should be enabled by default for all clusters, how to handle clusters without the query service, and how to provide the option for private networking.
+
+More details
+@Pranav and @sufyan.mahmood had several questions and clarifications around the AI Functions design [10]
+Bedrock Model Update Capabilities
+@Vishnu proposed decoupling the model update operations (renaming, instance count, value-add configurations) into separate flows to better align with their underlying complexity and impact.
+
+More details
+@Vishnu proposed decoupling the model update operations [11]
+Bedrock API Key Management
+@Soham and @paulomee.de discussed the requirements for the API key management functionality, including the need for pagination, sorting, and aligning the API key paths with the organization management APIs.
+
+More details
+@Soham and @paulomee.de discussed the requirements for the API key management functionality [12], [13]
+Bedrock Monitoring and Observability
+@santosh.hegde and @Santhosh Karuhatty discussed the monitoring and observability requirements for the Bedrock service, including the need to add new metric charts for AI.
+
+More details
+@santosh.hegde and @Santhosh Karuhatty discussed the monitoring and observability requirements for the Bedrock service [14], [15]
+Bedrock Customer Support for New Models
+@Talina requested designs for the flow to allow customers to request support for new models, and @vishwa and @aditya.venkatesan were tasked with providing the UX requirements.
+
+More details
+@Talina requested designs for the flow to allow customers to request support for new models [16]
+AI-generated answers may be inaccurate.

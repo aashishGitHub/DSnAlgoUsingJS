@@ -1,4 +1,5 @@
 import { describe, test, expect } from 'vitest';
+import { pipe } from "./args-recursion-examples";
 
 /**
  * TESTS for ...args Recursion Examples
@@ -9,18 +10,17 @@ import { describe, test, expect } from 'vitest';
 // LEVEL 1: SIMPLE ACCUMULATOR TESTS
 // ============================================================================
 
-describe('Level 1: Simple Accumulator Examples', () => {
-  
+describe("Level 1: Simple Accumulator Examples", () => {
   // Simple Sum Accumulator
   function sum(...args: number[]): number {
     if (args.length === 0) return 0;
     if (args.length === 1) return args[0];
-    
+
     const [first, ...rest] = args;
     return first + sum(...rest);
   }
 
-  test('sum function', () => {
+  test("sum function", () => {
     expect(sum()).toBe(0);
     expect(sum(5)).toBe(5);
     expect(sum(1, 2, 3, 4)).toBe(10);
@@ -31,13 +31,13 @@ describe('Level 1: Simple Accumulator Examples', () => {
   function findMax(...args: number[]): number {
     if (args.length === 0) return -Infinity;
     if (args.length === 1) return args[0];
-    
+
     const [first, ...rest] = args;
     const maxOfRest = findMax(...rest);
     return first > maxOfRest ? first : maxOfRest;
   }
 
-  test('findMax function', () => {
+  test("findMax function", () => {
     expect(findMax()).toBe(-Infinity);
     expect(findMax(5)).toBe(5);
     expect(findMax(5, 2, 8, 1, 9, 3)).toBe(9);
@@ -48,15 +48,15 @@ describe('Level 1: Simple Accumulator Examples', () => {
   function concat(...args: string[]): string {
     if (args.length === 0) return "";
     if (args.length === 1) return args[0];
-    
+
     const [first, ...rest] = args;
     return first + concat(...rest);
   }
 
-  test('concat function', () => {
+  test("concat function", () => {
     expect(concat()).toBe("");
     expect(concat("Hello")).toBe("Hello");
-    expect(concat('Hello', ' ', 'World', '!')).toBe("Hello World!");
+    expect(concat("Hello", " ", "World", "!")).toBe("Hello World!");
   });
 });
 
@@ -64,22 +64,24 @@ describe('Level 1: Simple Accumulator Examples', () => {
 // LEVEL 2: INTERMEDIATE TRANSFORMATION TESTS
 // ============================================================================
 
-describe('Level 2: Intermediate Transformation Examples', () => {
-  
+describe("Level 2: Intermediate Transformation Examples", () => {
   // Recursive Filter
-  function recursiveFilter<T>(predicate: (item: T) => boolean, ...args: T[]): T[] {
+  function recursiveFilter<T>(
+    predicate: (item: T) => boolean,
+    ...args: T[]
+  ): T[] {
     if (args.length === 0) return [];
-    
+
     const [first, ...rest] = args;
     const filteredRest = recursiveFilter(predicate, ...rest);
-    
+
     return predicate(first) ? [first, ...filteredRest] : filteredRest;
   }
 
-  test('recursiveFilter function', () => {
+  test("recursiveFilter function", () => {
     const isEven = (n: number) => n % 2 === 0;
     const isPositive = (n: number) => n > 0;
-    
+
     expect(recursiveFilter(isEven)).toEqual([]);
     expect(recursiveFilter(isEven, 1, 2, 3, 4, 5, 6)).toEqual([2, 4, 6]);
     expect(recursiveFilter(isPositive, -2, -1, 0, 1, 2)).toEqual([1, 2]);
@@ -88,18 +90,18 @@ describe('Level 2: Intermediate Transformation Examples', () => {
   // Recursive Map
   function recursiveMap<T, U>(transform: (item: T) => U, ...args: T[]): U[] {
     if (args.length === 0) return [];
-    
+
     const [first, ...rest] = args;
     return [transform(first), ...recursiveMap(transform, ...rest)];
   }
 
-  test('recursiveMap function', () => {
+  test("recursiveMap function", () => {
     const double = (n: number) => n * 2;
     const toString = (n: number) => n.toString();
-    
+
     expect(recursiveMap(double)).toEqual([]);
     expect(recursiveMap(double, 1, 2, 3, 4)).toEqual([2, 4, 6, 8]);
-    expect(recursiveMap(toString, 1, 2, 3)).toEqual(['1', '2', '3']);
+    expect(recursiveMap(toString, 1, 2, 3)).toEqual(["1", "2", "3"]);
   });
 });
 
@@ -107,20 +109,19 @@ describe('Level 2: Intermediate Transformation Examples', () => {
 // LEVEL 3: ADVANCED FUNCTION COMPOSITION TESTS
 // ============================================================================
 
-describe('Level 3: Advanced Function Composition', () => {
-  
+describe("Level 3: Advanced Function Composition", () => {
   // Recursive Compose
   function compose<T>(...fns: Array<(arg: T) => T>): (arg: T) => T {
     if (fns.length === 0) return (x: T) => x;
     if (fns.length === 1) return fns[0];
-    
+
     const [first, ...rest] = fns;
     const composedRest = compose(...rest);
-    
+
     return (x: T) => first(composedRest(x));
   }
 
-  test('compose function', () => {
+  test("compose function", () => {
     const addOne = (x: number) => x + 1;
     const multiplyByTwo = (x: number) => x * 2;
     const square = (x: number) => x * x;
@@ -138,18 +139,7 @@ describe('Level 3: Advanced Function Composition', () => {
     expect(composedFn(5)).toBe(144); // ((5+1)*2)^2 = (6*2)^2 = 12^2 = 144
   });
 
-  // Recursive Pipe
-  function pipe<T>(...fns: Array<(arg: T) => T>): (arg: T) => T {
-    if (fns.length === 0) return (x: T) => x;
-    if (fns.length === 1) return fns[0];
-    
-    const [first, ...rest] = fns;
-    const pipedRest = pipe(...rest);
-    
-    return (x: T) => pipedRest(first(x));
-  }
-
-  test('pipe function', () => {
+  test("pipe function", () => {
     const addOne = (x: number) => x + 1;
     const multiplyByTwo = (x: number) => x * 2;
     const square = (x: number) => x * x;

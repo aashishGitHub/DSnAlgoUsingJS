@@ -64,7 +64,7 @@ export function middleNode(head: ListNode | null): ListNode | null {
 
 /**
  * Detect if a linked list has a cycle
- * 
+ * Floyd's Cycle Detection Algorithm (Tortoise and Hare)    Leetcode 142: Linked List Cycle II.
  * @param head - Head of the linked list
  * @returns True if cycle exists, false otherwise
  * 

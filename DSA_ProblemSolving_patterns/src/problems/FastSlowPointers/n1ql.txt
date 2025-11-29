@@ -1,0 +1,123 @@
+
+Slack AI
+n1ql
+Summary of #n1ql
+Feb 14 - Sep 25
+2k messages2k
+
+
+
+107 users107
+MTLS and Certificates
+@istvan.orban explains that for MTLS, a private key is needed, and the cacert is used to talk to a TLS endpoint where the endpoint certificate needs to be trusted.
+
+More details
+@istvan.orban mentioned that for MTLS, you need a private key, and the cacert is used to talk to a TLS endpoint where you need to trust the endpoint certificate [1]
+Couchbase SDK Documentation and Troubleshooting
+@Ihor mentions they need to speak with the SDK team as they don't have much documentation for cbc create, and @Sitaram provides some sample cbc commands to try.
+
+More details
+@Ihor said they need to speak with the SDK team as they don't have much documentation for cbc create [2]
+@Sitaram provided sample cbc commands to try, including cbc subdoc, upsert, and get [3]
+Query Performance Issues
+@thilak.shriyan reports a customer is seeing a "Query node has run out of memory" error when using named parameters, but not when using plain text. @Dhanya Gowrish suggests using the USE INDEX clause as a workaround.
+
+More details
+@thilak.shriyan reported a customer is seeing a "Query node has run out of memory" error when using named parameters, but not when using plain text [4]
+@Dhanya Gowrish suggested using the USE INDEX clause as a workaround [5]
+Query Workbench Issues
+@Sitaram explains that the error is not from the query itself, but from the Query Workbench not being able to recognize something in the plan text, and that the UI has fixed this issue.
+
+More details
+@Sitaram said the error is not from the query, but from the Query Workbench not being able to recognize something in the plan text, and that the UI has fixed this issue [6]
+Query Performance Regression After Upgrade
+@tejas.kumar reports a customer is seeing a significant delay in query execution after upgrading from 7.1.5 to 7.6.3, and @Sitaram provides several suggestions to investigate the issue, including checking the index definitions and plan text differences between the two versions.
+
+More details
+@tejas.kumar reported a customer is seeing a significant delay in query execution after upgrading from 7.1.5 to 7.6.3 [7]
+@Sitaram suggested checking the index definitions, plan text differences between the two versions, and using CBSE to investigate further [8]
+Rebalance and Alter Index Operations
+@Deepkaran explains that rebalance and alter index are independent operations, and shuffling nodes may not help with indexes unless the nodes have different capacities.
+
+More details
+@Deepkaran said that rebalance and alter index are independent operations, and shuffling nodes may not help with indexes unless the nodes have different capacities [9]
+Index Selection Issues
+@divya.kapu explains that the CBO chose the wrong index (idx_MLEsrc_Primary_Active_005) in one instance, but they didn't see this issue again after enabling and disabling the CBO, and the expected index (idx_MLEsrc_OneMap_LM_Primary_Active_003) was used.
+
+More details
+@divya.kapu said the CBO chose the wrong index (idx_MLEsrc_Primary_Active_005) in one instance, but they didn't see this issue again after enabling and disabling the CBO, and the expected index (idx_MLEsrc_OneMap_LM_Primary_Active_003) was used [10]
+Correlated Subqueries and Index Usage
+@Sitaram explains that in 6.6.2, correlated subqueries required the USE KEYS clause, which was improved in 7.0.0, and questions why the customer is still developing queries for the EOL 6.6.5 product.
+
+More details
+@Sitaram explained that in 6.6.2, correlated subqueries required the USE KEYS clause, which was improved in 7.0.0, and questioned why the customer is still developing queries for the EOL 6.6.5 product [11]
+Upgrade and High Availability Strategies
+@divya.kapu states that the customer is upgrading all their data centers to 7.6 and 7.2.2, and they currently have a mix of 6.6 and 7.2 versions across their data centers.
+
+More details
+@divya.kapu said the customer is upgrading all their data centers to 7.6 and 7.2.2, and they currently have a mix of 6.6 and 7.2 versions across their data centers [12]
+Troubleshooting Query Performance Regression
+@Sitaram suggests that the working query uses the RBO and intersectScan, which uses early termination, while the slower query using the CBO does not, and recommends running UPDATE STATS and checking the stats.
+
+More details
+@Sitaram suggested the working query uses the RBO and intersectScan with early termination, while the slower CBO query does not, and recommended running UPDATE STATS and checking the stats [13]
+<@Mark Huelgas[C]> provided the plan text for the working and slower queries [14], [15]
+Monitoring Query Memory Usage
+@Sitaram requests more information, including the output of "select q.*, META(q).id AS docKey from pcbms._system._query AS q;" and the index definitions, to further investigate the high memory usage.
+
+More details
+@Sitaram requested more information, including the output of a query to get metadata on the _query system collection, and the index definitions, to investigate the high memory usage [16]
+Rebalance and Alter Index Coordination
+@Deepkaran explains that rebalance and alter index are independent operations, and that adding a higher capacity node may help if the nodes have different capacities.
+
+More details
+@Deepkaran said that rebalance and alter index are independent operations, and that adding a higher capacity node may help if the nodes have different capacities [9]
+Index Selection Improvements in 7.6.5
+@divya.kapu explains that with the CBO enabled, the expected index (idx_MLEsrc_OneMap_LM_Primary_Active_003) was used, and the query executed in 19ms, while with the CBO disabled, the query took 20 seconds, likely due to differences between the indexes used in 6.6 and 7.6.5.
+
+More details
+@divya.kapu said that with the CBO enabled, the expected index was used and the query executed in 19ms, while with the CBO disabled, the query took 20 seconds, likely due to differences between the indexes used in 6.6 and 7.6.5 [10]
+Correlated Subqueries and Index Usage Improvements
+@Sitaram explains that in 6.6.2, correlated subqueries required the USE KEYS clause, which was improved in 7.0.0, and questions why the customer is still developing queries for the EOL 6.6.5 product.
+
+More details
+@Sitaram explained that in 6.6.2, correlated subqueries required the USE KEYS clause, which was improved in 7.0.0, and questioned why the customer is still developing queries for the EOL 6.6.5 product [11]
+@divya.kapu said the customer is upgrading all their data centers to 7.6 and 7.2.2, and they currently have a mix of 6.6 and 7.2 versions across their data centers [12]
+Handling Concurrent Modifications
+@divya.kapu explains that the customer is upgrading all their data centers to 7.6 and 7.2.2 for high availability, and they currently have a mix of 6.6 and 7.2 versions across their data centers.
+
+More details
+@divya.kapu said the customer is upgrading all their data centers to 7.6 and 7.2.2 for high availability, and they currently have a mix of 6.6 and 7.2 versions across their data centers [12]
+Troubleshooting Slow Queries
+@Sitaram suggests that the working query uses the RBO and intersectScan, which uses early termination, while the slower query using the CBO does not, and recommends running UPDATE STATS and checking the stats.
+
+More details
+@Sitaram suggested the working query uses the RBO and intersectScan with early termination, while the slower CBO query does not, and recommended running UPDATE STATS and checking the stats [13]
+<@Mark Huelgas[C]> provided the plan text for the working and slower queries [14], [15]
+Monitoring Query Memory Usage and Statistics
+@Sitaram requests more information, including the output of "select q.*, META(q).id AS docKey from pcbms._system._query AS q;" and the index definitions, to further investigate the high memory usage.
+
+More details
+@Sitaram requested more information, including the output of a query to get metadata on the _query system collection, and the index definitions, to investigate the high memory usage [16]
+Rebalance and Alter Index Coordination
+@Deepkaran explains that rebalance and alter index are independent operations, and that adding a higher capacity node may help if the nodes have different capacities.
+
+More details
+@Deepkaran said that rebalance and alter index are independent operations, and that adding a higher capacity node may help if the nodes have different capacities [9]
+Index Selection Improvements in 7.6.5
+@divya.kapu explains that with the CBO enabled, the expected index (idx_MLEsrc_OneMap_LM_Primary_Active_003) was used, and the query executed in 19ms, while with the CBO disabled, the query took 20 seconds, likely due to differences between the indexes used in 6.6 and 7.6.5.
+
+More details
+@divya.kapu said that with the CBO enabled, the expected index was used and the query executed in 19ms, while with the CBO disabled, the query took 20 seconds, likely due to differences between the indexes used in 6.6 and 7.6.5 [10]
+Correlated Subqueries and Index Usage Improvements
+@Sitaram explains that in 6.6.2, correlated subqueries required the USE KEYS clause, which was improved in 7.0.0, and questions why the customer is still developing queries for the EOL 6.6.5 product.
+
+More details
+@Sitaram explained that in 6.6.2, correlated subqueries required the USE KEYS clause, which was improved in 7.0.0, and questioned why the customer is still developing queries for the EOL 6.6.5 product [11]
+@divya.kapu said the customer is upgrading all their data centers to 7.6 and 7.2.2, and they currently have a mix of 6.6 and 7.2 versions across their data centers [12]
+Handling Concurrent Modifications
+@divya.kapu explains that the customer is upgrading all their data centers to 7.6 and 7.2.2 for high availability, and they currently have a mix of 6.6 and 7.2 versions across their data centers.
+
+More details
+@divya.kapu said the customer is upgrading all their data centers to 7.6 and 7.2.2 for high availability, and they currently have a mix of 6.6 and 7.2 versions across their data centers [12]
+AI-generated answers may be inaccurate.
