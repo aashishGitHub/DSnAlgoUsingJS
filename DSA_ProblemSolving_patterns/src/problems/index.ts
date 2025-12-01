@@ -42,6 +42,29 @@ export * from './MergeIntervals';
 // Cyclic Sort Pattern
 export * from './CyclicSort';
 
+// Arrays Pattern
+// Note: Array problems are in ./Arrays/ folder
+// - flattenArray.js
+// - productExceptSelf.js
+// - mergeTwoSortedArrays.js
+// - rotateArray.js
+// - rotateArrayOptimized.js
+// - maxMin.js
+// - increasingSequencesOfSizeK.js
+// - kthLargest.js
+
+// Strings Pattern
+// Note: String problems are in ./Strings/ folder
+// - reverseString.js
+// - findSubstring.js
+// - longestPalindrome.js
+// - binaryAdd.js
+
+// Graph Pattern
+// Note: Graph problems are in ./Graph/ folder
+// - traversePath.js
+// - findPath.js
+
 /**
  * Pattern Categories Overview
  * 
@@ -84,6 +107,18 @@ export * from './CyclicSort';
  * 10. CYCLIC SORT (10+ problems)
  *     - Missing Numbers, Duplicate Numbers, Array Sorting
  *     - Time: O(n), Space: O(1)
+ * 
+ * 11. ARRAYS (8 problems)
+ *     - Array manipulation, rotation, flattening
+ *     - Time: O(n) to O(n²), Space: O(1) to O(n)
+ * 
+ * 12. STRINGS (4 problems)
+ *     - String manipulation, palindromes, substring search
+ *     - Time: O(n) to O(n²), Space: O(1) to O(n)
+ * 
+ * 13. GRAPH (2 problems)
+ *     - Path traversal, DFS/BFS applications
+ *     - Time: O(V + E), Space: O(V)
  * 
  * Total: 150+ problems covering all major DSA patterns
  * Perfect for coding interview preparation!
