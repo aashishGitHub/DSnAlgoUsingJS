@@ -56,6 +56,139 @@ export function minDistanceLCS(word1: string, word2: string): number {
 }
 
 /**
+ * VISUAL EXAMPLE: Delete Operation for "sea" and "eat"
+ * 
+ * Recurrence Relation:
+ *   - If word1[i-1] === word2[j-1]: dp[i][j] = dp[i-1][j-1]  (no deletion, characters match)
+ *   - Else: dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1])  (delete from word1 or word2)
+ * 
+ * Step-by-step DP table construction:
+ * 
+ * Initial state (base cases):
+ *        ""  e   a   t
+ *     ""  0   1   2   3  ← Delete all characters from word2
+ *      s  1   ?   ?   ?
+ *      e  2   ?   ?   ?
+ *      a  3   ?   ?   ?
+ *      ↑
+ *   Delete all from word1
+ * 
+ * After processing i=1, j=1 (word1[0]='s', word2[0]='e'):
+ *   No match. dp[1][1] = 1 + min(dp[0][1], dp[1][0]) = 1 + min(1, 1) = 2
+ *        ""  e   a   t
+ *     ""  0   1   2   3
+ *      s  1   2   ?   ?  ← Delete 's' or 'e', need 2 deletions
+ *      e  2   ?   ?   ?
+ *      a  3   ?   ?   ?
+ * 
+ * After processing i=1, j=2 (word1[0]='s', word2[1]='a'):
+ *   No match. dp[1][2] = 1 + min(dp[0][2], dp[1][1]) = 1 + min(2, 2) = 3
+ *        ""  e   a   t
+ *     ""  0   1   2   3
+ *      s  1   2   3   ?  ← Need 3 deletions total
+ *      e  2   ?   ?   ?
+ *      a  3   ?   ?   ?
+ * 
+ * After processing i=1, j=3 (word1[0]='s', word2[2]='t'):
+ *   No match. dp[1][3] = 1 + min(dp[0][3], dp[1][2]) = 1 + min(3, 3) = 4
+ *        ""  e   a   t
+ *     ""  0   1   2   3
+ *      s  1   2   3   4  ← Need 4 deletions
+ *      e  2   ?   ?   ?
+ *      a  3   ?   ?   ?
+ * 
+ * After processing i=2, j=1 (word1[1]='e', word2[0]='e'):
+ *   Match found! dp[2][1] = dp[1][0] = 1
+ *        ""  e   a   t
+ *     ""  0   1   2   3
+ *      s  1   2   3   4
+ *      e  2   1   ?   ?  ← 'e' matches 'e', no deletion needed!
+ *      a  3   ?   ?   ?
+ * 
+ * After processing i=2, j=2 (word1[1]='e', word2[1]='a'):
+ *   No match. dp[2][2] = 1 + min(dp[1][2], dp[2][1]) = 1 + min(3, 1) = 2
+ *        ""  e   a   t
+ *     ""  0   1   2   3
+ *      s  1   2   3   4
+ *      e  2   1   2   ?  ← Delete 'a' from word2, total 2 deletions
+ *      a  3   ?   ?   ?
+ * 
+ * After processing i=2, j=3 (word1[1]='e', word2[2]='t'):
+ *   No match. dp[2][3] = 1 + min(dp[1][3], dp[2][2]) = 1 + min(4, 2) = 3
+ *        ""  e   a   t
+ *     ""  0   1   2   3
+ *      s  1   2   3   4
+ *      e  2   1   2   3  ← Need 3 deletions
+ *      a  3   ?   ?   ?
+ * 
+ * After processing i=3, j=1 (word1[2]='a', word2[0]='e'):
+ *   No match. dp[3][1] = 1 + min(dp[2][1], dp[3][0]) = 1 + min(1, 3) = 2
+ *        ""  e   a   t
+ *     ""  0   1   2   3
+ *      s  1   2   3   4
+ *      e  2   1   2   3
+ *      a  3   2   ?   ?  ← Need 2 deletions
+ * 
+ * After processing i=3, j=2 (word1[2]='a', word2[1]='a'):
+ *   Match found! dp[3][2] = dp[2][1] = 1
+ *        ""  e   a   t
+ *     ""  0   1   2   3
+ *      s  1   2   3   4
+ *      e  2   1   2   3
+ *      a  3   2   1   ?  ← 'a' matches 'a', no deletion needed!
+ * 
+ * After processing i=3, j=3 (word1[2]='a', word2[2]='t'):
+ *   No match. dp[3][3] = 1 + min(dp[2][3], dp[3][2]) = 1 + min(3, 1) = 2
+ *        ""  e   a   t
+ *     ""  0   1   2   3
+ *      s  1   2   3   4
+ *      e  2   1   2   3
+ *      a  3   2   1   2  ← Final answer: 2 deletions
+ * 
+ * Final Answer: dp[3][3] = 2
+ * Explanation: 
+ *   - Keep "ea" (common subsequence)
+ *   - Delete 's' from "sea" → "ea"
+ *   - Delete 't' from "eat" → "ea"
+ *   - Total: 2 deletions
+ * 
+ * 
+ * TRACING BACK TO FIND WHICH CHARACTERS TO DELETE:
+ * Start from dp[m][n] and work backwards:
+ * 
+ *   1. If word1[i-1] === word2[j-1]:
+ *        → Characters match, keep both
+ *        → Move to dp[i-1][j-1] (diagonal)
+ * 
+ *   2. Else if dp[i-1][j] < dp[i][j-1]:
+ *        → Delete from word1 (word1[i-1])
+ *        → Move to dp[i-1][j] (top)
+ * 
+ *   3. Else:
+ *        → Delete from word2 (word2[j-1])
+ *        → Move to dp[i][j-1] (left)
+ * 
+ * Example trace for "sea" and "eat":
+ *   Start at dp[3][3] = 2
+ *   word1[2]='a' !== word2[2]='t' → dp[3][2]=1 < dp[2][3]=3 → Delete 't' from word2, move to dp[3][2]
+ *   word1[2]='a' === word2[1]='a' → Keep 'a', move to dp[2][1]
+ *   word1[1]='e' === word2[0]='e' → Keep 'e', move to dp[1][0]
+ *   Reached base case → Deletions: 's' from word1, 't' from word2
+ * 
+ * 
+ * COMPLEXITY:
+ *   Time: O(m * n) where m = word1.length, n = word2.length
+ *   Space: O(m * n) for the DP table
+ *   Space Optimized: O(min(m, n)) by using only previous row
+ * 
+ * 
+ * COMPARISON WITH LCS APPROACH:
+ *   LCS("sea", "eat") = 2 (subsequence "ea")
+ *   Deletions = (3 - 2) + (3 - 2) = 1 + 1 = 2 ✓
+ *   Both approaches give the same answer!
+ */
+
+/**
  * APPROACH 2: Direct DP (Alternative)
  * 
  * State: dp[i][j] = minimum deletions to make word1[0...i-1] and word2[0...j-1] equal

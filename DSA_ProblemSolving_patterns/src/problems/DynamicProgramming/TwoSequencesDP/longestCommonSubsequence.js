@@ -234,6 +234,10 @@ Bottom Up
  *   lcs[2][1] = 1 + lcs[3][2]  ← looks forward to lcs[3][2]
  *   lcs[0][0] = final answer
  */
+
+
+
+// NOT MY MIND
 const longestCommonSubsequenceLength = (text1, text2) => {
   let m = text1.length;
   let n = text2.length;
