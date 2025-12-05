@@ -453,3 +453,274 @@ export function copyMatrix<T>(matrix: T[][]): T[][] {
 export function isValidPosition(row: number, col: number, rows: number, cols: number): boolean {
     return row >= 0 && row < rows && col >= 0 && col < cols;
 }
+
+// ============================================================================
+// VIRUS INFECTION SPREAD (Multi-Source BFS)
+// ============================================================================
+
+/**
+ * ============================================================================
+ * 🎯 PATTERN IDENTIFICATION: MULTI-SOURCE BFS
+ * ============================================================================
+ * 
+ * WHY THIS IS MULTI-SOURCE BFS:
+ * 
+ * 1. **Multiple Starting Points**: We have multiple infected cells (value 2)
+ *    that all start spreading simultaneously. This is the key characteristic
+ *    of multi-source BFS - we don't have a single starting point.
+ * 
+ * 2. **Level-by-Level Propagation**: The infection spreads in "waves" or "levels":
+ *    - Minute 0: All cells with value 2 are infected
+ *    - Minute 1: All cells adjacent to minute-0 cells become infected
+ *    - Minute 2: All cells adjacent to minute-1 cells become infected
+ *    - And so on...
+ *    This is exactly how BFS works - it processes nodes level by level!
+ * 
+ * 3. **Shortest Path Property**: BFS guarantees that we find the minimum time
+ *    to reach each cell because it explores level by level. The first time we
+ *    reach a cell is the shortest path to it.
+ * 
+ * 4. **Queue-Based Processing**: We use a queue to process all cells at the
+ *    current "level" (minute) before moving to the next level.
+ * 
+ * 5. **Similar Problems**:
+ *    - Rotting Oranges (LeetCode 994) - identical pattern!
+ *    - 01 Matrix (LeetCode 542) - find distance to nearest 0
+ *    - Walls and Gates (LeetCode 286) - find distance to nearest gate
+ * 
+ * ============================================================================
+ * 
+ * PROBLEM STATEMENT:
+ * 
+ * You are given an m x n grid where each cell can have one of three values:
+ * - 0: empty cell (cannot be infected)
+ * - 1: non-infected system
+ * - 2: virus infected system
+ * 
+ * Every minute, any non-infected system (1) that is 4-directionally adjacent
+ * to any virus infected system (2) becomes infected.
+ * 
+ * Return the minimum number of minutes that must elapse so that all systems
+ * become virus infected. If it's impossible, return -1.
+ * 
+ * Example:
+ * Input: grid = [[2,1,1],
+ *                [1,1,0],
+ *                [0,1,1]]
+ * 
+ * Visual representation:
+ * 
+ * Minute 0:        Minute 1:        Minute 2:        Minute 3:        Minute 4:
+ * [2,1,1]          [2,2,1]          [2,2,2]          [2,2,2]          [2,2,2]
+ * [1,1,0]    →     [2,1,0]    →     [2,2,0]    →     [2,2,0]    →     [2,2,0]
+ * [0,1,1]          [0,1,1]          [0,2,1]          [0,2,2]          [0,2,2]
+ * 
+ * Output: 4
+ * 
+ * ============================================================================
+ * 
+ * APPROACH:
+ * 
+ * 1. **Initialization**:
+ *    - Find all initially infected cells (value 2) and add them to queue
+ *    - Count total non-infected cells (value 1) that need to be infected
+ *    - Initialize minutes counter to 0
+ * 
+ * 2. **Multi-Source BFS**:
+ *    - Process all cells at current level (minute) together
+ *    - For each infected cell, check its 4 neighbors
+ *    - If neighbor is non-infected (1), infect it and add to queue
+ *    - Decrement count of non-infected cells
+ * 
+ * 3. **Level Processing**:
+ *    - Use queue size to track current level
+ *    - Process all cells at current level before incrementing minutes
+ *    - After processing a level, increment minutes counter
+ * 
+ * 4. **Termination**:
+ *    - If all non-infected cells are infected, return minutes
+ *    - If queue is empty but cells remain, return -1 (impossible)
+ * 
+ * ============================================================================
+ * 
+ * TIME COMPLEXITY: O(m * n)
+ * - We visit each cell at most once
+ * - Each cell is processed once when it becomes infected
+ * 
+ * SPACE COMPLEXITY: O(m * n)
+ * - Queue can contain at most all cells in worst case
+ * - In practice, it's O(k) where k is number of infected cells at each level
+ * 
+ * ============================================================================
+ * 
+ * @param grid - 2D array where 0=empty, 1=non-infected, 2=infected
+ * @returns Minimum minutes to infect all systems, or -1 if impossible
+ */
+export function minTimeToInfectAll(grid: number[][]): number {
+    if (!grid || grid.length === 0 || grid[0].length === 0) {
+        return 0;
+    }
+
+    const rows = grid.length;
+    const cols = grid[0].length;
+    
+    // Queue for BFS: stores [row, col] of infected cells
+    const queue: number[][] = [];
+    
+    // Count of non-infected cells that need to be infected
+    let nonInfectedCount = 0;
+    
+    // Step 1: Find all initially infected cells and count non-infected cells
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            if (grid[i][j] === 2) {
+                // Add infected cell to queue (these are our "sources")
+                queue.push([i, j]);
+            } else if (grid[i][j] === 1) {
+                // Count non-infected cells
+                nonInfectedCount++;
+            }
+        }
+    }
+    
+    // If no non-infected cells, we're done!
+    if (nonInfectedCount === 0) {
+        return 0;
+    }
+    
+    // If no infected cells but there are non-infected cells, it's impossible
+    if (queue.length === 0) {
+        return -1;
+    }
+    
+    // Directions: up, down, left, right (4-directional)
+    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    
+    let minutes = 0;
+    
+    // Step 2: Multi-source BFS
+    while (queue.length > 0) {
+        // Get the number of cells at current level (current minute)
+        const currentLevelSize = queue.length;
+        
+        // Process all cells at current level
+        for (let i = 0; i < currentLevelSize; i++) {
+            const [row, col] = queue.shift()!;
+            
+            // Check all 4 neighbors
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+                
+                // Check if neighbor is valid and non-infected
+                if (newRow >= 0 && newRow < rows && 
+                    newCol >= 0 && newCol < cols && 
+                    grid[newRow][newCol] === 1) {
+                    
+                    // Infect the neighbor!
+                    grid[newRow][newCol] = 2;
+                    nonInfectedCount--; // One less cell to infect
+                    
+                    // Add to queue for next level
+                    queue.push([newRow, newCol]);
+                }
+            }
+        }
+        
+        // After processing current level, increment minutes
+        // But only if we infected some cells in this minute
+        if (queue.length > 0) {
+            minutes++;
+        }
+    }
+    
+    // If all cells are infected, return minutes
+    // Otherwise, some cells couldn't be reached (surrounded by 0s)
+    return nonInfectedCount === 0 ? minutes : -1;
+}
+
+/**
+ * ============================================================================
+ * ALTERNATIVE IMPLEMENTATION: With Detailed Tracking
+ * ============================================================================
+ * 
+ * This version provides more detailed tracking and visualization
+ * 
+ * @param grid - 2D array where 0=empty, 1=non-infected, 2=infected
+ * @returns Object with minutes and detailed information
+ */
+export function minTimeToInfectAllDetailed(grid: number[][]): {
+    minutes: number;
+    isPossible: boolean;
+    infectedAtEachMinute: number[][][];
+} {
+    if (!grid || grid.length === 0 || grid[0].length === 0) {
+        return { minutes: 0, isPossible: true, infectedAtEachMinute: [] };
+    }
+
+    // Create a copy to avoid modifying original
+    const gridCopy = grid.map(row => [...row]);
+    const rows = gridCopy.length;
+    const cols = gridCopy[0].length;
+    
+    const queue: number[][] = [];
+    let nonInfectedCount = 0;
+    const infectedAtEachMinute: number[][][] = [];
+    
+    // Find all initially infected cells
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            if (gridCopy[i][j] === 2) {
+                queue.push([i, j]);
+            } else if (gridCopy[i][j] === 1) {
+                nonInfectedCount++;
+            }
+        }
+    }
+    
+    if (nonInfectedCount === 0) {
+        return { minutes: 0, isPossible: true, infectedAtEachMinute: [] };
+    }
+    
+    if (queue.length === 0) {
+        return { minutes: -1, isPossible: false, infectedAtEachMinute: [] };
+    }
+    
+    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    let minutes = 0;
+    
+    while (queue.length > 0) {
+        const currentLevelSize = queue.length;
+        const newlyInfected: number[][] = [];
+        
+        for (let i = 0; i < currentLevelSize; i++) {
+            const [row, col] = queue.shift()!;
+            
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+                
+                if (newRow >= 0 && newRow < rows && 
+                    newCol >= 0 && newCol < cols && 
+                    gridCopy[newRow][newCol] === 1) {
+                    
+                    gridCopy[newRow][newCol] = 2;
+                    nonInfectedCount--;
+                    newlyInfected.push([newRow, newCol]);
+                    queue.push([newRow, newCol]);
+                }
+            }
+        }
+        
+        if (newlyInfected.length > 0) {
+            minutes++;
+            infectedAtEachMinute.push([...newlyInfected]);
+        }
+    }
+    
+    return {
+        minutes: nonInfectedCount === 0 ? minutes : -1,
+        isPossible: nonInfectedCount === 0,
+        infectedAtEachMinute
+    };
+}

@@ -5,7 +5,9 @@ import {
     maxAreaOfIsland, 
     solve, 
     numIslandsBFS, 
-    pacificAtlantic 
+    pacificAtlantic,
+    minTimeToInfectAll,
+    minTimeToInfectAllDetailed
 } from './islandsMatrixPatterns';
 
 describe('Islands/Matrix Traversal Patterns', () => {
@@ -144,6 +146,47 @@ describe('Islands/Matrix Traversal Patterns', () => {
             ];
             const result = pacificAtlantic(heights);
             expect(result.length).toBeGreaterThan(0);
+        });
+    });
+    
+    describe('Virus Infection Spread (Multi-Source BFS)', () => {
+        test('should find minimum time to infect all systems', () => {
+            const grid = [
+                [2, 1, 1],
+                [1, 1, 0],
+                [0, 1, 1]
+            ];
+            // Create a copy since the function modifies the grid
+            const gridCopy = grid.map(row => [...row]);
+            expect(minTimeToInfectAll(gridCopy)).toBe(4);
+        });
+        
+        test('should return 0 if all systems are already infected', () => {
+            const grid = [
+                [2, 2, 2],
+                [2, 2, 2]
+            ];
+            const gridCopy = grid.map(row => [...row]);
+            expect(minTimeToInfectAll(gridCopy)).toBe(0);
+        });
+        
+        test('should return -1 if infection is impossible', () => {
+            const grid = [
+                [1, 1, 1],
+                [1, 1, 0],
+                [0, 1, 1]
+            ];
+            const gridCopy = grid.map(row => [...row]);
+            expect(minTimeToInfectAll(gridCopy)).toBe(-1);
+        });
+        
+        test('should handle single infected cell', () => {
+            const grid = [
+                [2, 1, 1],
+                [1, 1, 1]
+            ];
+            const gridCopy = grid.map(row => [...row]);
+            expect(minTimeToInfectAll(gridCopy)).toBe(3);
         });
     });
 });

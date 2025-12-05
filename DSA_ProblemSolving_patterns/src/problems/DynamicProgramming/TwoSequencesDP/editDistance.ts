@@ -18,6 +18,13 @@
  *     rorse -> rose (remove 'r')
  *     rose -> ros (remove 'e')
  * 
+ * IMP to note that we can operate Insert, delete and say replace also in the 1st word only
+ * so how can we represent these operations?
+ *       dp[i-1][j],      // Delete from word1
+ *       dp[i][j-1],      // Insert into word1
+ *       dp[i-1][j-1]     // Replace in word1
+ * 
+ * 
  * Pattern: Two Sequences DP
  * Time Complexity: O(m * n)
  * Space Complexity: O(m * n) [can optimize to O(min(m, n))]
