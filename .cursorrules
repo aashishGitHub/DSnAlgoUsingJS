@@ -1,0 +1,61 @@
+# Cursor Rules for DSA Problem Solving Patterns
+
+## Documentation & Real-World Examples
+
+### 1. Function Documentation
+- Always include `@example` blocks in JSDoc comments with real-world scenarios
+- Use practical, relatable examples (calendar meetings, time tracking, resource booking, etc.)
+- Explain the business logic and interpretation of results
+- Include time/space complexity in documentation
+
+### 2. Test Cases
+- Add descriptive test case names that explain the real-world scenario
+- Include comments explaining the business context
+- Use realistic data that relates to actual use cases
+- Group test cases by functionality, not just by technical edge cases
+
+### 3. Code Organization
+- Categorize problems by pattern (e.g., MergeIntervals, SlidingWindow, TwoPointers)
+- Place related problems in the same directory
+- Use clear, descriptive file names that indicate the problem type
+- Maintain consistent structure across similar problems
+
+### 4. Mental Model & Revision
+- Add comments that explain the "why" not just the "what"
+- Include visual examples or step-by-step explanations where helpful
+- Document the pattern recognition approach (when to use this algorithm)
+- Add practical use cases that help build mental models
+
+### 5. Real-World Examples to Include
+When documenting algorithms, consider these common real-world scenarios:
+- **Calendar/Scheduling**: Meeting consolidation, availability checking
+- **Time Tracking**: Work sessions, billing periods, service periods
+- **Resource Management**: Room bookings, equipment reservations
+- **Network/Systems**: Maintenance windows, downtime periods
+- **Business Logic**: Subscription periods, service windows
+- **Data Processing**: Collection periods, processing intervals
+
+### 6. Code Style
+- Use descriptive variable names that reflect the domain (e.g., `meetings`, `workSessions`, `bookings`)
+- Add inline comments for complex logic
+- Keep examples simple but realistic
+- Format test cases with clear structure and comments
+
+### 7. File Structure
+- Implementation files: Include comprehensive JSDoc with examples
+- Test files: Include real-world scenario tests with descriptive names
+- README files: Document the pattern, use cases, and examples
+- Keep related utilities and helpers in the same directory
+
+## Example Pattern
+
+When adding a new algorithm:
+
+1. **Documentation**: Add JSDoc with `@example` blocks showing real-world usage
+2. **Tests**: Create test cases with names like "Real-world: [Scenario] - [Action]"
+3. **Comments**: Explain the business logic and interpretation
+4. **Organization**: Place in appropriate pattern directory
+5. **Examples**: Use relatable scenarios (scheduling, tracking, booking, etc.)
+
+This approach makes code easier to understand, remember, and apply to real problems.
+
