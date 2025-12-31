@@ -39,30 +39,77 @@ export interface Interval {
  * 
  * Time: O(n log n) - sorting dominates
  * Space: O(1) - excluding output array
+ * 
+ * @example
+ * // Real-world: Calendar meeting consolidation
+ * // User has overlapping meetings that need to be merged
+ * merge([[9, 10], [9.5, 11], [11.5, 12.5], [12, 13]])
+ * // Returns: [[9, 11], [11.5, 13]]
+ * // Shows actual busy time blocks: 9-11 AM and 11:30 AM-1 PM
+ * 
+ * @example
+ * // Real-world: Time tracking for billing
+ * // Developer logs work sessions (in hours, some overlap)
+ * merge([[8, 10], [9.5, 12], [13, 15], [14.5, 16]])
+ * // Returns: [[8, 12], [13, 16]]
+ * // Total billable hours: 7 hours (not 8.5)
+ * 
+ * @example
+ * // Real-world: Network maintenance windows
+ * // Different teams schedule overlapping maintenance periods
+ * merge([[1000, 2000], [1500, 2500], [3000, 4000]])
+ * // Returns: [[1000, 2500], [3000, 4000]]
+ * // System knows actual downtime periods
+ * 
+ * @example
+ * // Real-world: Resource booking (conference room)
+ * // Bookings with overlaps due to delays
+ * merge([[9, 10], [9.45, 11], [11.5, 12.5], [12, 13]])
+ * // Returns: [[9, 11], [11.5, 13]]
+ * // Room occupied: 9 AM-11 AM, then 11:30 AM-1 PM
  */
 export function merge(intervals: number[][]): number[][] {
-    if (intervals.length <= 1) return intervals;
-    
-    // Sort intervals by start time
-    intervals.sort((a, b) => a[0] - b[0]);
-    
-    const result: number[][] = [intervals[0]];
-    
-    for (let i = 1; i < intervals.length; i++) {
-        const current = intervals[i];
-        const last = result[result.length - 1];
-        
-        // If current interval overlaps with last interval
-        if (current[0] <= last[1]) {
-            // Merge intervals by extending the end time
-            last[1] = Math.max(last[1], current[1]);
-        } else {
-            // No overlap, add current interval
-            result.push(current);
-        }
+  // Edge case: No merging needed if 0 or 1 interval
+  // Example: Single meeting [9, 10] or empty calendar []
+  if (intervals.length <= 1) return intervals;
+
+  // Step 1: Sort by start time (like organizing meetings chronologically)
+  // Example: [[9.5, 11], [9, 10], [12, 13]] → [[9, 10], [9.5, 11], [12, 13]]
+  // Why? We need to process meetings in order to detect overlaps
+  intervals.sort((a, b) => a[0] - b[0]);
+
+  // Step 2: Start with the first meeting as our first merged busy period
+  // Example: First meeting [9, 10] becomes our first busy block
+  const mergedBusyPeriods: number[][] = [intervals[0]];
+
+  // Step 3: Check each subsequent meeting against the last merged period
+  // Example: Compare [9.5, 11] with [9, 10] to see if they overlap
+  for (let i = 1; i < intervals.length; i++) {
+    const currentMeeting = intervals[i]; // e.g., [9.5, 11]
+    const lastBusyPeriod = mergedBusyPeriods[mergedBusyPeriods.length - 1]; // e.g., [9, 10]
+
+    const currentStart = currentMeeting[0]; // e.g., 9.5 (9:30 AM)
+    const lastEnd = lastBusyPeriod[1]; // e.g., 10 (10:00 AM)
+
+    // Check if current meeting overlaps with the last busy period
+    // Overlap happens when: current meeting starts before/at the last period ends
+    // Example: [9.5, 11] overlaps [9, 10] because 9.5 <= 10
+    if (currentStart <= lastEnd) {
+      // MERGE: Extend the busy period to include both meetings
+      // Take the later end time to cover both meetings
+      // Example: [9, 10] + [9.5, 11] → [9, 11] (busy from 9 AM to 11 AM)
+      const currentEnd = currentMeeting[1]; // e.g., 11
+      lastBusyPeriod[1] = Math.max(lastEnd, currentEnd);
+    } else {
+      // NO OVERLAP: Start a new busy period
+      // Example: [9, 11] and [12, 13] don't overlap → two separate busy blocks
+      mergedBusyPeriods.push(currentMeeting);
     }
-    
-    return result;
+  }
+
+  // Return the consolidated busy periods
+  // Example: [[9, 10], [9.5, 11], [12, 13]] → [[9, 11], [12, 13]]
+  return mergedBusyPeriods;
 }
 
 // ============================================================================
@@ -183,11 +230,13 @@ export function canAttendMeetings(intervals: number[][]): boolean {
 }
 
 // ============================================================================
-// 5. MINIMUM MEETING ROOMS
+// 5. MINIMUM MEETING ROOMS / MINIMUM PLATFORMS FOR TRAINS
 // ============================================================================
 
 /**
  * Find the minimum number of meeting rooms required
+ * 
+ * APPROACH 1: Using Min Heap (Priority Queue)
  * 
  * @param intervals - Array of meeting intervals
  * @returns Minimum number of rooms needed
@@ -219,6 +268,135 @@ export function minMeetingRooms(intervals: number[][]): number {
     }
     
     return endTimes.length;
+}
+
+/**
+ * Find the minimum number of platforms needed for trains
+ * 
+ * APPROACH 2: Greedy Two-Pointer (More Efficient)
+ * 
+ * This is the classic "Minimum Platforms" problem:
+ * Given arrival and departure times of trains, find the minimum number
+ * of platforms needed so that no train waits.
+ * 
+ * KEY INSIGHT: We need to find the maximum number of trains present
+ * at the station at any given time. This is equivalent to finding the
+ * maximum overlap of intervals.
+ * 
+ * GREEDY APPROACH:
+ * 1. Sort both arrival and departure arrays separately
+ * 2. Use two pointers to traverse both arrays
+ * 3. When a train arrives (arrival[i] < departure[j]), increment platform count
+ * 4. When a train departs (arrival[i] >= departure[j]), decrement platform count
+ * 5. Track the maximum platforms needed at any point
+ * 
+ * @param arrival - Array of arrival times
+ * @param departure - Array of departure times
+ * @returns Minimum number of platforms needed
+ * 
+ * Time: O(n log n) - sorting dominates
+ * Space: O(1) - only using a few variables
+ * 
+ * Example:
+ * arrival = [1:00, 1:40, 1:50, 2:00, 2:15, 4:00]
+ * departure = [1:10, 3:00, 2:20, 2:30, 3:15, 6:00]
+ * 
+ * Converted to minutes for easier comparison:
+ * arrival = [60, 100, 110, 120, 135, 240]
+ * departure = [70, 180, 140, 150, 195, 360]
+ * 
+ * Sorted:
+ * arrival = [60, 100, 110, 120, 135, 240]
+ * departure = [70, 140, 150, 180, 195, 360]
+ * 
+ * Timeline:
+ * 60: Train 1 arrives → platforms = 1, max = 1
+ * 70: Train 1 departs → platforms = 0, max = 1
+ * 100: Train 2 arrives → platforms = 1, max = 1
+ * 110: Train 3 arrives → platforms = 2, max = 2
+ * 120: Train 4 arrives → platforms = 3, max = 3
+ * 135: Train 5 arrives → platforms = 4, max = 4
+ * 140: Train 3 departs → platforms = 3, max = 4
+ * 150: Train 4 departs → platforms = 2, max = 4
+ * 180: Train 2 departs → platforms = 1, max = 4
+ * 195: Train 5 departs → platforms = 0, max = 4
+ * 240: Train 6 arrives → platforms = 1, max = 4
+ * 360: Train 6 departs → platforms = 0, max = 4
+ * 
+ * Answer: 4 platforms
+ */
+export function minPlatformsForTrains(
+    arrival: number[], 
+    departure: number[]
+): number {
+    if (arrival.length === 0) return 0;
+    if (arrival.length !== departure.length) {
+        throw new Error('Arrival and departure arrays must have the same length');
+    }
+    
+    const n = arrival.length;
+    
+    // Sort both arrays separately
+    // This is the key: we need to process events in chronological order
+    const sortedArrival = [...arrival].sort((a, b) => a - b);
+    const sortedDeparture = [...departure].sort((a, b) => a - b);
+    
+    // Two pointers: i for arrival, j for departure
+    let i = 0; // pointer for arrival array
+    let j = 0; // pointer for departure array
+    
+    let platformsNeeded = 0; // current number of platforms in use
+    let maxPlatforms = 0;    // maximum platforms needed at any time
+    
+    // Process all events (arrivals and departures)
+    while (i < n && j < n) {
+        // If arrival happens before departure, a train arrives
+        if (sortedArrival[i] < sortedDeparture[j]) {
+            platformsNeeded++; // need one more platform
+            i++; // move to next arrival
+            
+            // Update maximum if needed
+            if (platformsNeeded > maxPlatforms) {
+                maxPlatforms = platformsNeeded;
+            }
+        } else {
+            // Departure happens (arrival >= departure)
+            // A train leaves, so we free up a platform
+            platformsNeeded--; // free one platform
+            j++; // move to next departure
+        }
+    }
+    
+    // Note: After the loop, if i < n, there are more arrivals
+    // but we've already found the maximum, so we don't need to process them
+    
+    return maxPlatforms;
+}
+
+/**
+ * Alternative: Minimum Platforms using intervals (same as minMeetingRooms)
+ * 
+ * This converts the arrival/departure arrays into intervals and uses
+ * the same logic as minMeetingRooms.
+ * 
+ * @param arrival - Array of arrival times
+ * @param departure - Array of departure times
+ * @returns Minimum number of platforms needed
+ */
+export function minPlatformsUsingIntervals(
+    arrival: number[], 
+    departure: number[]
+): number {
+    if (arrival.length === 0) return 0;
+    
+    // Convert to intervals
+    const intervals: number[][] = [];
+    for (let i = 0; i < arrival.length; i++) {
+        intervals.push([arrival[i], departure[i]]);
+    }
+    
+    // Use the same logic as minMeetingRooms
+    return minMeetingRooms(intervals);
 }
 
 // ============================================================================
