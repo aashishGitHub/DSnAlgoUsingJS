@@ -1,5 +1,7 @@
 /**
  *
+ * Note Sub array means it has to be continuous and it has to be a subarray of the given array.
+ * 
  * Find the sum of any continuous sub-arrays from the given array so that this sum is maximum possible
  * Approach is called Kadance's algorithm.
  * [1,2,-1,3,4,5,6,7,8,9,10,11]
