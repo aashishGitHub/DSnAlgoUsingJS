@@ -129,6 +129,17 @@ export function sortColors(nums: number[]): void {
  *              i  i+1
  *         nums[1]=3 < nums[2]=5, so i=1
  * 
+ *  Why rightmost:
+    We want the smallest increase to get the next lexicographic permutation.
+    After the pivot i, the suffix is in descending order.
+    The rightmost element greater than nums[i] is the smallest such element, ensuring the minimal increase.
+    In the example [1, 3, 5, 4, 2]:
+    i = 1 (value 3)
+    Elements to the right: 5, 4, 2
+    Elements > 3: 5 (index 2) and 4 (index 3)
+    Rightmost: 4 at index 3 — this is correct
+
+ * 
  * Step 2: Find rightmost element greater than nums[i]
  *         [1, 3, 5, 4, 2]
  *              ↑     ↑
