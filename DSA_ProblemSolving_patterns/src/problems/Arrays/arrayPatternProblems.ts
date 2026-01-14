@@ -261,45 +261,45 @@ export function nextGreaterNumber(digits: number[]): number[] {
  * @returns Array of elements in spiral order
  */
 export function spiralOrder(matrix: number[][]): number[] {
-    if (matrix.length === 0) return [];
-    
-    const result: number[] = [];
-    let top = 0;
-    let bottom = matrix.length - 1;
-    let left = 0;
-    let right = matrix[0].length - 1;
-    
-    while (top <= bottom && left <= right) {
-        // Traverse top row: left to right
-        for (let i = left; i <= right; i++) {
-            result.push(matrix[top][i]);
-        }
-        top++;
-        
-        // Traverse right column: top to bottom
-        for (let i = top; i <= bottom; i++) {
-            result.push(matrix[i][right]);
-        }
-        right--;
-        
-        // Traverse bottom row: right to left (if still valid)
-        if (top <= bottom) {
-            for (let i = right; i >= left; i--) {
-                result.push(matrix[bottom][i]);
-            }
-            bottom--;
-        }
-        
-        // Traverse left column: bottom to top (if still valid)
-        if (left <= right) {
-            for (let i = bottom; i >= top; i--) {
-                result.push(matrix[i][left]);
-            }
-            left++;
-        }
+  if (matrix.length === 0) return [];
+
+  const result: number[] = [];
+  let top = 0;
+  let right = matrix[0].length - 1;
+  let bottom = matrix.length - 1;
+  let left = 0;
+
+  while (top <= bottom && left <= right) {
+    // Traverse top row: left to right
+    for (let i = left; i <= right; i++) {
+      result.push(matrix[top][i]);
     }
-    
-    return result;
+    top++;
+
+    // Traverse right column: top to bottom
+    for (let i = top; i <= bottom; i++) {
+      result.push(matrix[i][right]);
+    }
+    right--;
+
+    // Traverse bottom row: right to left (if still valid)
+    if (top <= bottom) {
+      for (let i = right; i >= left; i--) {
+        result.push(matrix[bottom][i]);
+      }
+      bottom--;
+    }
+
+    // Traverse left column: bottom to top (if still valid)
+    if (left <= right) {
+      for (let i = bottom; i >= top; i--) {
+        result.push(matrix[i][left]);
+      }
+      left++;
+    }
+  }
+
+  return result;
 }
 
 // ============================================================================
@@ -322,13 +322,56 @@ export function spiralOrder(matrix: number[][]): number[] {
  * 
  * VISUALIZATION:
  * 
- * Original:    Transpose:    Reverse rows:
+ Original:    Transpose:    Reverse rows:
  * [1, 2, 3]    [1, 4, 7]     [7, 4, 1]
  * [4, 5, 6] →  [2, 5, 8]  →  [8, 5, 2]
- * [7, 8, 9]    [3, 6, 9]     [9, 6, 3]
+ * [7, 8, 9]    [3, 6, 9]     [9, 6, 3] 
  * 
- * Alternative: Layer-by-layer rotation
- * Rotate elements in concentric layers
+ * Step By Step:
+* Example: 3×3 matrix
+ * Original:
+ * [1, 2, 3]
+ * [4, 5, 6]
+ * [7, 8, 9]
+ * 
+ * STEP 1: Transpose (swap matrix[i][j] with matrix[j][i])
+ * 
+ * Iteration i=0, j=1: Swap matrix[0][1] with matrix[1][0]
+ * [1, 4, 3]    (swapped 2 ↔ 4)
+ * [2, 5, 6]
+ * [7, 8, 9]
+ * 
+ * Iteration i=0, j=2: Swap matrix[0][2] with matrix[2][0]
+ * [1, 4, 7]    (swapped 3 ↔ 7)
+ * [2, 5, 6]
+ * [3, 8, 9]
+ * 
+ * Iteration i=1, j=2: Swap matrix[1][2] with matrix[2][1]
+ * [1, 4, 7]    (swapped 6 ↔ 8)
+ * [2, 5, 8]
+ * [3, 6, 9]
+ * 
+ * After Transpose:
+ * [1, 4, 7]
+ * [2, 5, 8]
+ * [3, 6, 9]
+ * 
+ * STEP 2: Reverse each row
+ * 
+ * Row 0: Reverse [1, 4, 7] → [7, 4, 1]
+ * Row 1: Reverse [2, 5, 8] → [8, 5, 2]
+ * Row 2: Reverse [3, 6, 9] → [9, 6, 3]
+ * 
+ * Final Result (90° clockwise rotation):
+ * [7, 4, 1]
+ * [8, 5, 2]
+ * [9, 6, 3]
+ * 
+ * Verification:
+ * Original top row [1,2,3] → Final right column [1,2,3] ✓
+ * Original right column [3,6,9] → Final bottom row [9,6,3] ✓
+ * Original bottom row [7,8,9] → Final left column [7,8,9] ✓
+ * Original left column [1,4,7] → Final top row [7,4,1] ✓
  * 
  * @param matrix - n×n matrix to rotate
  */
