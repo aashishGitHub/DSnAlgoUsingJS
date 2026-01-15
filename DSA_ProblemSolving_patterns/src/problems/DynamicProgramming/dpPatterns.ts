@@ -297,40 +297,302 @@ export function numDecodings(s: string): number {
 }
 
 /**
+ * ============================================================================
  * 13. Maximum Product Subarray (LeetCode 152)
- * Given an integer array nums, find a contiguous non-empty subarray within the array that has the largest product, and return the product.
+ * ============================================================================
+ *
+ * Given an integer array nums, find a contiguous non-empty subarray within
+ * the array that has the largest product, and return the product.
+ *
+ * ============================================================================
+ * VISUALIZATION - Step by Step
+ * ============================================================================
+ *
+ * Example: nums = [2, 3, -2, 4]
+ *
+ * ┌─────┬────────┬──────────────────────────────────────────────────────────────┐
+ * │  i  │ nums[i]│  Calculation                                                 │
+ * ├─────┼────────┼──────────────────────────────────────────────────────────────┤
+ * │ 0   │   2    │  Initialize: maxSoFar=2, minSoFar=2, result=2                │
+ * ├─────┼────────┼──────────────────────────────────────────────────────────────┤
+ * │ 1   │   3    │  temp = 2 (save old max)                                     │
+ * │     │        │  Candidates for max: 3, 2×3=6, 2×3=6 → max = 6               │
+ * │     │        │  Candidates for min: 3, 2×3=6, 2×3=6 → min = 3               │
+ * │     │        │  maxSoFar=6, minSoFar=3, result=6 ✨                          │
+ * ├─────┼────────┼──────────────────────────────────────────────────────────────┤
+ * │ 2   │  -2    │  temp = 6 (save old max)                                     │
+ * │     │        │  Candidates for max: -2, 6×(-2)=-12, 3×(-2)=-6 → max = -2    │
+ * │     │        │  Candidates for min: -2, 6×(-2)=-12, 3×(-2)=-6 → min = -12   │
+ * │     │        │  maxSoFar=-2, minSoFar=-12, result=6 (unchanged)             │
+ * ├─────┼────────┼──────────────────────────────────────────────────────────────┤
+ * │ 3   │   4    │  temp = -2 (save old max)                                    │
+ * │     │        │  Candidates for max: 4, (-2)×4=-8, (-12)×4=-48 → max = 4     │
+ * │     │        │  Candidates for min: 4, (-2)×4=-8, (-12)×4=-48 → min = -48   │
+ * │     │        │  maxSoFar=4, minSoFar=-48, result=6 (unchanged)              │
+ * └─────┴────────┴──────────────────────────────────────────────────────────────┘
+ *
+ * Final Answer: 6 (subarray [2, 3])
+ *
+ * ============================================================================
+ * Example with Sign Flip: nums = [-2, 3, -4]
+ * ============================================================================
+ *
+ * ┌─────┬────────┬──────────────────────────────────────────────────────────────┐
+ * │  i  │ nums[i]│  Calculation                                                 │
+ * ├─────┼────────┼──────────────────────────────────────────────────────────────┤
+ * │ 0   │  -2    │  Initialize: maxSoFar=-2, minSoFar=-2, result=-2             │
+ * ├─────┼────────┼──────────────────────────────────────────────────────────────┤
+ * │ 1   │   3    │  temp = -2                                                   │
+ * │     │        │  Candidates for max: 3, (-2)×3=-6, (-2)×3=-6 → max = 3       │
+ * │     │        │  Candidates for min: 3, (-2)×3=-6, (-2)×3=-6 → min = -6      │
+ * │     │        │  maxSoFar=3, minSoFar=-6, result=3                           │
+ * ├─────┼────────┼──────────────────────────────────────────────────────────────┤
+ * │ 2   │  -4    │  temp = 3                                                    │
+ * │     │        │  Candidates for max: -4, 3×(-4)=-12, (-6)×(-4)=24 → max = 24 │
+ * │     │        │  Candidates for min: -4, 3×(-4)=-12, (-6)×(-4)=24 → min = -12│
+ * │     │        │  maxSoFar=24, minSoFar=-12, result=24 ✨ SIGN FLIP!          │
+ * └─────┴────────┴──────────────────────────────────────────────────────────────┘
+ *
+ * 🔑 KEY INSIGHT: minSoFar (-6) × nums[i] (-4) = 24 became the new max!
+ *    The "villain" (most negative) became the "hero" (most positive)!
+ *
+ * ============================================================================
+ * WHY USE temp? - CRITICAL UNDERSTANDING
+ * ============================================================================
+ *
+ * Problem: We need OLD maxSoFar to calculate minSoFar, but we update maxSoFar first!
+ *
+ * WITHOUT temp (WRONG):
+ *   maxSoFar = Math.max(...);  // maxSoFar is now UPDATED
+ *   minSoFar = Math.min(..., maxSoFar * nums[i], ...);  // Uses NEW maxSoFar! ❌
+ *
+ * WITH temp (CORRECT):
+ *   temp = maxSoFar;           // Save OLD value
+ *   maxSoFar = Math.max(...);  // Update maxSoFar
+ *   minSoFar = Math.min(..., temp * nums[i], ...);  // Uses OLD maxSoFar ✓
+ *
+ * Example: nums = [2, -1], at i=1:
+ *   - maxSoFar=2, minSoFar=2, nums[1]=-1
+ *   - We need: minSoFar = min(-1, 2×(-1), 2×(-1)) = -2
+ *   - But if we update maxSoFar first to -1, we'd wrongly calculate:
+ *     minSoFar = min(-1, (-1)×(-1)=1, 2×(-1)) = -2 (happens to be same here)
+ *   - In other cases this causes incorrect results!
+ *
+ * ============================================================================
+ * EDGE CASES
+ * ============================================================================
+ *
+ * 1. EMPTY ARRAY: []
+ *    → Return 0 (or throw error depending on requirements)
+ *
+ * 2. SINGLE ELEMENT: [5] or [-3]
+ *    → Return that element (it's the only subarray)
+ *
+ * 3. ALL POSITIVE: [1, 2, 3, 4]
+ *    → Product of entire array = 24
+ *    → maxSoFar keeps growing, minSoFar equals maxSoFar
+ *
+ * 4. ALL NEGATIVE: [-1, -2, -3, -4]
+ *    → Either single element (-1) or product of even count
+ *    → [-1,-2] = 2, [-1,-2,-3,-4] = 24, but [-1,-2,-3] = -6
+ *    → Answer depends on count; here it's 24
+ *
+ * 5. CONTAINS ZERO: [2, 3, 0, 4, 5]
+ *    → Zero RESETS the product chain!
+ *    → Subarrays: [2,3]=6 or [4,5]=20 → answer = 20
+ *    → Zero acts as a "wall" separating subarrays
+ *
+ * 6. ZERO AT ENDS: [0, 2, 3] or [2, 3, 0]
+ *    → Zero doesn't contribute, answer is 6
+ *
+ * 7. LARGE NEGATIVES: [-2, -3, 7]
+ *    → [-2,-3] = 6, [7] = 7, [-2,-3,7] = 42 → answer = 42
+ *
+ * 8. ALTERNATING SIGNS: [2, -5, 3, -2]
+ *    → Need to track min to catch sign flips
+ *    → [2,-5,3,-2] = 60 → answer = 60
+ *
+ * ============================================================================
+ * COMPLEXITY
+ * ============================================================================
+ * Time:  O(n) - single pass
+ * Space: O(1) - only 4 variables (maxSoFar, minSoFar, result, temp)
  */
 export function maxProduct(nums: number[]): number {
-    if (nums.length === 0) return 0;
-    
-    let maxSoFar = nums[0];
-    let minSoFar = nums[0];
-    let result = nums[0];
-    
-    for (let i = 1; i < nums.length; i++) {
-        const temp = maxSoFar;
-        maxSoFar = Math.max(nums[i], Math.max(maxSoFar * nums[i], minSoFar * nums[i]));
-        minSoFar = Math.min(nums[i], Math.min(temp * nums[i], minSoFar * nums[i]));
-        result = Math.max(result, maxSoFar);
-    }
-    
-    return result;
+  // Edge case: empty array
+  if (nums.length === 0) return 0;
+
+  // Initialize with first element
+  // Both max and min start the same (single element subarray)
+  let maxSoFar = nums[0]; // Maximum product ending at current position
+  let minSoFar = nums[0]; // Minimum product ending at current position
+  let result = nums[0]; // Global maximum we've found
+
+  for (let i = 1; i < nums.length; i++) {
+    // 🔑 CRITICAL: Save maxSoFar BEFORE updating!
+    // We need the OLD maxSoFar value to calculate minSoFar correctly
+    const temp = maxSoFar;
+
+    // For maxSoFar, consider 3 candidates:
+    // 1. nums[i] alone (start fresh)
+    // 2. maxSoFar * nums[i] (extend positive streak)
+    // 3. minSoFar * nums[i] (negative × negative = positive!)
+    maxSoFar = Math.max(
+      nums[i],
+      Math.max(maxSoFar * nums[i], minSoFar * nums[i])
+    );
+
+    // For minSoFar, consider 3 candidates:
+    // 1. nums[i] alone (start fresh)
+    // 2. temp * nums[i] (old max × current, use temp not maxSoFar!)
+    // 3. minSoFar * nums[i] (extend negative streak)
+    minSoFar = Math.min(nums[i], Math.min(temp * nums[i], minSoFar * nums[i]));
+
+    // Update global maximum
+    result = Math.max(result, maxSoFar);
+  }
+
+  return result;
 }
 
 /**
- * 14. Maximum Subarray (Kadane's Algorithm) (LeetCode 53)
- * Given an integer array nums, find the contiguous subarray (containing at least one number) which has the largest sum and return its sum.
+ * ============================================================================
+ * 14. Maximum Subarray - Kadane's Algorithm (LeetCode 53)
+ * ============================================================================
+ *
+ * Given an integer array nums, find the contiguous subarray (containing at
+ * least one number) which has the largest SUM and return its sum.
+ *
+ * ============================================================================
+ * VISUALIZATION - Step by Step
+ * ============================================================================
+ *
+ * Example: nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+ *
+ * ┌─────┬────────┬─────────────────────────────────────────────────────────────┐
+ * │  i  │ nums[i]│  Calculation                                                │
+ * ├─────┼────────┼─────────────────────────────────────────────────────────────┤
+ * │ 0   │  -2    │  Initialize: maxEndingHere=-2, maxSoFar=-2                  │
+ * ├─────┼────────┼─────────────────────────────────────────────────────────────┤
+ * │ 1   │   1    │  max(1, -2+1=-1) = 1 → START FRESH!                         │
+ * │     │        │  maxEndingHere=1, maxSoFar=1 ✨                              │
+ * ├─────┼────────┼─────────────────────────────────────────────────────────────┤
+ * │ 2   │  -3    │  max(-3, 1+(-3)=-2) = -2 → CONTINUE (carry the sum)         │
+ * │     │        │  maxEndingHere=-2, maxSoFar=1                               │
+ * ├─────┼────────┼─────────────────────────────────────────────────────────────┤
+ * │ 3   │   4    │  max(4, -2+4=2) = 4 → START FRESH!                          │
+ * │     │        │  maxEndingHere=4, maxSoFar=4 ✨                              │
+ * ├─────┼────────┼─────────────────────────────────────────────────────────────┤
+ * │ 4   │  -1    │  max(-1, 4+(-1)=3) = 3 → CONTINUE                           │
+ * │     │        │  maxEndingHere=3, maxSoFar=4                                │
+ * ├─────┼────────┼─────────────────────────────────────────────────────────────┤
+ * │ 5   │   2    │  max(2, 3+2=5) = 5 → CONTINUE                               │
+ * │     │        │  maxEndingHere=5, maxSoFar=5 ✨                              │
+ * ├─────┼────────┼─────────────────────────────────────────────────────────────┤
+ * │ 6   │   1    │  max(1, 5+1=6) = 6 → CONTINUE                               │
+ * │     │        │  maxEndingHere=6, maxSoFar=6 ✨ FINAL ANSWER!               │
+ * ├─────┼────────┼─────────────────────────────────────────────────────────────┤
+ * │ 7   │  -5    │  max(-5, 6+(-5)=1) = 1 → CONTINUE                           │
+ * │     │        │  maxEndingHere=1, maxSoFar=6                                │
+ * ├─────┼────────┼─────────────────────────────────────────────────────────────┤
+ * │ 8   │   4    │  max(4, 1+4=5) = 5 → CONTINUE                               │
+ * │     │        │  maxEndingHere=5, maxSoFar=6                                │
+ * └─────┴────────┴─────────────────────────────────────────────────────────────┘
+ *
+ * Answer: 6 (subarray [4, -1, 2, 1])
+ *
+ * Visual of the winning subarray:
+ *   [-2,  1, -3,  4, -1,  2,  1, -5,  4]
+ *                 └──────────────┘
+ *                  4 + -1 + 2 + 1 = 6
+ *
+ * ============================================================================
+ * 🔥 CONTRAST: MAX SUM vs MAX PRODUCT
+ * ============================================================================
+ *
+ * ┌─────────────────┬─────────────────────────┬─────────────────────────────┐
+ * │ Aspect          │ MAX SUM (Kadane)        │ MAX PRODUCT                 │
+ * ├─────────────────┼─────────────────────────┼─────────────────────────────┤
+ * │ Operation       │ Addition (+)            │ Multiplication (×)          │
+ * ├─────────────────┼─────────────────────────┼─────────────────────────────┤
+ * │ Track           │ Only maxEndingHere      │ BOTH max AND min            │
+ * ├─────────────────┼─────────────────────────┼─────────────────────────────┤
+ * │ Why?            │ Negatives always hurt   │ Neg × Neg = Pos! 🔑         │
+ * │                 │ the sum                 │ Min can become max          │
+ * ├─────────────────┼─────────────────────────┼─────────────────────────────┤
+ * │ Variables       │ 2 (maxEndingHere,       │ 4 (maxSoFar, minSoFar,      │
+ * │                 │    maxSoFar)            │    result, temp)            │
+ * ├─────────────────┼─────────────────────────┼─────────────────────────────┤
+ * │ Need temp?      │ NO ✓                    │ YES - to save old max       │
+ * ├─────────────────┼─────────────────────────┼─────────────────────────────┤
+ * │ Reset when      │ currentSum becomes      │ Element is 0 (0 × x = 0)    │
+ * │                 │ worse than starting     │                             │
+ * │                 │ fresh                   │                             │
+ * ├─────────────────┼─────────────────────────┼─────────────────────────────┤
+ * │ Formula         │ max(a, prev + a)        │ max(a, max×a, min×a)        │
+ * ├─────────────────┼─────────────────────────┼─────────────────────────────┤
+ * │ Zero handling   │ Zero is just 0, can     │ Zero KILLS the chain!       │
+ * │                 │ continue or restart     │ Must restart after 0        │
+ * └─────────────────┴─────────────────────────┴─────────────────────────────┘
+ *
+ * ============================================================================
+ * WHY KADANE ONLY NEEDS maxEndingHere (not min)
+ * ============================================================================
+ *
+ * In ADDITION: negative numbers ALWAYS hurt the sum.
+ *   - Adding a negative makes sum smaller
+ *   - There's no way a negative "flips" to help later
+ *   - So we only care about the maximum sum ending here
+ *
+ * In MULTIPLICATION: negative numbers can HELP!
+ *   - Neg × Neg = Pos (two wrongs make a right!)
+ *   - A very negative min can become very positive max
+ *   - So we MUST track both min and max
+ *
+ * EXAMPLE showing the difference:
+ *
+ *   Array: [-2, -3]
+ *
+ *   MAX SUM:     -2 + (-3) = -5  → Best is just -2 (single element)
+ *   MAX PRODUCT: -2 × (-3) = 6   → Product of both is positive! ✨
+ *
+ * ============================================================================
+ * MENTAL MODEL: "Should I continue or start fresh?"
+ * ============================================================================
+ *
+ * At each element, ask: "Is my running sum helping or hurting?"
+ *
+ *   - If currentSum > 0: It's helping! Keep it and add current element.
+ *   - If currentSum ≤ 0: It's hurting! Drop it and start fresh.
+ *
+ * This is equivalent to: max(nums[i], currentSum + nums[i])
+ *
+ * ============================================================================
+ * COMPLEXITY
+ * ============================================================================
+ * Time:  O(n) - single pass
+ * Space: O(1) - only 2 variables
  */
 export function maxSubArray(nums: number[]): number {
-    let maxSoFar = nums[0];
-    let maxEndingHere = nums[0];
-    
-    for (let i = 1; i < nums.length; i++) {
-        maxEndingHere = Math.max(nums[i], maxEndingHere + nums[i]);
-        maxSoFar = Math.max(maxSoFar, maxEndingHere);
-    }
-    
-    return maxSoFar;
+  // Global maximum - best sum we've ever seen
+  let maxSoFar = nums[0];
+
+  // Local maximum - best sum ending at current position
+  // This is our "running sum" that we either continue or reset
+  let maxEndingHere = nums[0];
+
+  for (let i = 1; i < nums.length; i++) {
+    // THE KEY DECISION:
+    // Option 1: Start fresh with nums[i] (drop previous sum)
+    // Option 2: Extend previous sum with nums[i]
+    // We pick whichever is larger
+    maxEndingHere = Math.max(nums[i], maxEndingHere + nums[i]);
+
+    // Update global maximum if we found a better subarray
+    maxSoFar = Math.max(maxSoFar, maxEndingHere);
+  }
+
+  return maxSoFar;
 }
 
 /**
