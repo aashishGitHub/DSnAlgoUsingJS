@@ -1,5 +1,12 @@
 # Cursor Rules for DSA Problem Solving Patterns
 
+for myself : 
+How to approach a problem?
+first, write Test cases, 
+think how can this be solved, and write conditions
+Dry run these test cases on paper, with variables, and conditions columns for each iteration
+now, you have confidence that this logic will work, so write code
+
 ## Documentation & Real-World Examples
 
 ### 1. Function Documentation
