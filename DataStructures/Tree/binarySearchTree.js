@@ -1,5 +1,5 @@
 
-// TODO: Implement DFS inorder/ postOrder using interative approcach
+// TODO: Implement DFS inorder/ postOrder using iterative approcach
 
 class Node {
     constructor(value) {
@@ -53,11 +53,12 @@ class BinarySearchTree {
 
             } else if (current.value > value) {
                 // move left
-                return current = current.left;
+                current = current.left;
             } else {
                 return current;
             }
         }
+        return undefined;
     }
 
 

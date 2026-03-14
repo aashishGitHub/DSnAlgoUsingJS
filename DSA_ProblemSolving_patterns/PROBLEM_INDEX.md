@@ -184,7 +184,14 @@
 **Time Complexity**: O(m*n) | **Space Complexity**: O(m*n) or O(min(m,n))
 
 ### Problems in `src/problems/IslandsMatrix/`:
-- ✅ **Islands Matrix Patterns** - `islandsMatrixPatterns.ts` - Number of islands, flood fill
+- ✅ **Islands Matrix Patterns** - `islandsMatrixPatterns.ts`
+  - `numIslands` / `numIslandsBFS` – Number of Islands (DFS & BFS)
+  - `islandSizes` – Variant that returns the area of each island
+  - `maxAreaOfIsland` – Maximum area of any island
+  - `floodFill` – Classic flood fill
+  - `solve` – Surrounded Regions
+  - `pacificAtlantic` – Pacific Atlantic Water Flow
+  - `minTimeToInfectAll` (+ detailed variant) – Virus Infection Spread (Multi‑Source BFS)
 
 ### Problems in `DataStructures/2DArray/`:
 - ✅ **Search in Matrix** - `searchInMatrix.js`
@@ -297,6 +304,13 @@
 | Serialize/Deserialize BST | Tree | `serializeDeserializeBST.js` | Hard |
 | Trapping Rain Water | Two Pointers | `trappingRainWater.js` | Hard |
 | Valid Palindrome | Two Pointers | `2Pointers/palindrome.js` | Easy |
+| Number of Islands | Islands / DFS-BFS | `IslandsMatrix/islandsMatrixPatterns.ts` (`numIslands`, `numIslandsBFS`) | Medium |
+| Island Sizes | Islands / DFS | `IslandsMatrix/islandsMatrixPatterns.ts` (`islandSizes`) | Medium |
+| Max Area of Island | Islands / DFS | `IslandsMatrix/islandsMatrixPatterns.ts` (`maxAreaOfIsland`) | Medium |
+| Flood Fill | Islands / DFS | `IslandsMatrix/islandsMatrixPatterns.ts` (`floodFill`) | Medium |
+| Surrounded Regions | Islands / DFS | `IslandsMatrix/islandsMatrixPatterns.ts` (`solve`) | Medium |
+| Pacific Atlantic Water Flow | Islands / DFS-BFS | `IslandsMatrix/islandsMatrixPatterns.ts` (`pacificAtlantic`) | Medium |
+| Virus Infection Spread | Islands / Multi-Source BFS | `IslandsMatrix/islandsMatrixPatterns.ts` (`minTimeToInfectAll`) | Medium |
 
 ---
 

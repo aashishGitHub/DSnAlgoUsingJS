@@ -72,6 +72,14 @@
  * 
  * Result: [0, 0, 1, 1, 2, 2] ✅
  * 
+ * What Step 1 guarantees
+ * When you find the rightmost index i such that nums[i] < nums[i+1], everything to the right of i (the suffix nums[i+1...n-1]) is in non-increasing (descending) order.
+ * If it weren’t descending, you would have found a larger i further to the right.
+ * After the swap, what do we want?
+ * After Step 3 (swapping nums[i] with the rightmost nums[j] > nums[i]), the prefix up to i is now the smallest possible prefix that is strictly larger than before.
+ * Now to get the next permutation (lexicographically smallest among those bigger than original), we must make the suffix nums[i+1...] as small as possible.
+
+ * 
  * @param nums - Array of 0s, 1s, and 2s
  */
 export function sortColors(nums: number[]): void {
