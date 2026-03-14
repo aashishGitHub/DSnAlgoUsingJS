@@ -118,6 +118,11 @@ This guide categorizes all 22 problems from the video list by their algorithmic 
 - "Search"
 - "Find position"
 
+**Locations:**
+- Classic implementation: `Searching/binarySearch.js`
+- All patterns (rotated, sqrt, median, etc.): `BinarySearch/binarySearchPatterns.ts`
+- Index & revision: `Searching/README.md`
+
 ---
 
 #### 5. **Sliding Window Pattern**
