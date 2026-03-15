@@ -19,16 +19,44 @@
 // ============================================================================
 
 /**
- * Find the number of islands in a 2D grid
+ * https://www.youtube.com/watch?v=tgJKcKH_Ap8&list=PL5q3E8eRUieUJPksWdes_M4eX2bDFyjOZ
  * 
- * An island is formed by connecting adjacent lands horizontally or vertically.
- * You may assume all four edges of the grid are all surrounded by water.
- * 
+ * ============================================================================
+ * NUMBER OF ISLANDS (LeetCode 200) — DFS / BFS (Connected Components)
+ * ============================================================================
+ *
+ * PROBLEM STATEMENT:
+ * Given a 2D grid of '1's (land) and '0's (water), return the number of islands.
+ * An island is a group of horizontally or vertically adjacent land cells.
+ *
+ * PATTERN:
+ * - Islands/Matrix Traversal (Connected Components)
+ * - DFS (recursive) or BFS (queue) to “sink” each discovered island
+ *
+ * REAL-WORLD ANALOGIES:
+ * - **Facility planning**: Count how many separate campus zones exist on a map.
+ * - **Image processing**: Count connected “blobs” of pixels in a binary image.
+ * - **Network segmentation**: Count isolated clusters of reachable nodes in a grid-like topology.
+ *
+ * IMPORTANT NOTE:
+ * - This implementation **mutates** the input grid by turning visited land ('1')
+ *   into water ('0'). If you need to preserve input, pass a deep copy.
+ *
+ * @example
+ * // Real-world: connected “service regions” on a map
+ * const map = [
+ *   ['1','1','0','0'],
+ *   ['1','0','0','1'],
+ *   ['0','0','1','1'],
+ * ];
+ * numIslands(map); // 2
+ * // Interpretation: there are 2 separate connected land clusters.
+ *
  * @param grid - 2D array where '1' represents land and '0' represents water
  * @returns Number of islands
- * 
- * Time: O(m * n) - visit each cell once
- * Space: O(m * n) - recursion stack in worst case
+ *
+ * Time Complexity: O(rows * cols) — each cell visited at most once
+ * Space Complexity: O(rows * cols) worst-case recursion stack (DFS)
  */
 export function numIslands(grid: string[][]): number {
     if (!grid || grid.length === 0) return 0;
@@ -66,6 +94,72 @@ export function numIslands(grid: string[][]): number {
     }
     
     return islandCount;
+}
+
+// ============================================================================
+// 1.a VARIANT: ISLAND SIZES (Areas of each island)
+// ============================================================================
+
+/**
+ * Variant: return the size (area) of each island instead of just the count.
+ *
+ * This is the “sizes” version often asked as a follow-up:
+ * - “Count islands” → `numIslands`
+ * - “Find sizes/areas” → `islandSizes`
+ * - “Find max size” → `maxAreaOfIsland` (already in this file, numeric grid variant)
+ *
+ * IMPORTANT NOTE:
+ * - This implementation **mutates** the grid, same as `numIslands`.
+ *
+ * @example
+ * // Real-world: count how many contiguous reserved seats are in each block
+ * const seats = [
+ *   ['1','1','0'],
+ *   ['0','1','0'],
+ *   ['1','0','1'],
+ * ];
+ * islandSizes(seats); // [3, 1, 1]
+ * // Interpretation: one block of 3 seats, and two single-seat blocks.
+ *
+ * @param grid - 2D array where '1' is land and '0' is water
+ * @returns Array of island areas (each area is number of land cells)
+ *
+ * Time Complexity: O(rows * cols)
+ * Space Complexity: O(rows * cols) worst-case recursion stack (DFS)
+ */
+export function islandSizes(grid: string[][]): number[] {
+    if (!grid || grid.length === 0 || grid[0].length === 0) return [];
+
+    const rows = grid.length;
+    const cols = grid[0].length;
+    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    const sizes: number[] = [];
+
+    function dfsArea(row: number, col: number): number {
+        if (row < 0 || row >= rows || col < 0 || col >= cols || grid[row][col] === '0') {
+            return 0;
+        }
+
+        // mark visited
+        grid[row][col] = '0';
+        let area = 1;
+
+        for (const [dr, dc] of directions) {
+            area += dfsArea(row + dr, col + dc);
+        }
+
+        return area;
+    }
+
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            if (grid[r][c] === '1') {
+                sizes.push(dfsArea(r, c));
+            }
+        }
+    }
+
+    return sizes;
 }
 
 // ============================================================================
