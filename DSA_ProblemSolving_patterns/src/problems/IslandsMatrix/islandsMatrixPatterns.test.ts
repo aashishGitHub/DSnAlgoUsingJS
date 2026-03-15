@@ -1,5 +1,6 @@
 import { 
     numIslands, 
+    islandSizes,
     floodFill, 
     hasCycle, 
     maxAreaOfIsland, 
@@ -29,6 +30,22 @@ describe('Islands/Matrix Traversal Patterns', () => {
                 ['0', '0', '0', '1', '1']
             ];
             expect(numIslands(grid2)).toBe(3);
+        });
+
+        test('variant: should return area of each island (sizes)', () => {
+            // Real-world: connected land blocks; we want each block's size.
+            const grid = [
+                ['1', '1', '0'],
+                ['0', '1', '0'],
+                ['1', '0', '1']
+            ];
+
+            // islandSizes mutates the grid, so pass a copy
+            const gridCopy = grid.map(row => [...row]);
+            const sizes = islandSizes(gridCopy);
+
+            // Order depends on traversal; sort to assert reliably.
+            expect(sizes.sort((a, b) => a - b)).toEqual([1, 1, 3]);
         });
         
         test('should handle empty grid', () => {
