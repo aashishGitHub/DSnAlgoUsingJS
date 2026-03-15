@@ -381,3 +381,44 @@ export function isPerfectSquare(num: number): boolean {
     
     return false;
 }
+
+// ============================================================================
+// Bonus: Recursive Binary Search Variants (for learning)
+// ============================================================================
+
+/**
+ * Alternative recursive style similar to the student's version:
+ * - Uses left/right bounds
+ * - Returns the VALUE when found, and -1 when not found
+ *
+ * Note: Returning the index is usually more flexible, but this variant
+ * is useful to see how the same left/right logic can return the value.
+ *
+ * @example
+ * binarySearchRecursiveValue([1, 2, 3, 4, 5], 4); // 4
+ * binarySearchRecursiveValue([1, 2, 3, 4, 5], 6); // -1
+ */
+export function binarySearchRecursiveValue(nums: number[], target: number): number {
+    return binarySearchRecursiveValueHelper(nums, target, 0, nums.length - 1);
+}
+
+function binarySearchRecursiveValueHelper(
+    nums: number[],
+    target: number,
+    left: number,
+    right: number
+): number {
+    if (left > right) return -1;
+    
+    const mid = Math.floor((left + right) / 2);
+    
+    if (nums[mid] === target) {
+        return nums[mid];
+    }
+    
+    if (target < nums[mid]) {
+        return binarySearchRecursiveValueHelper(nums, target, left, mid - 1);
+    }
+    
+    return binarySearchRecursiveValueHelper(nums, target, mid + 1, right);
+}
