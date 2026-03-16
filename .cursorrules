@@ -2,10 +2,23 @@
 
 for myself : 
 How to approach a problem?
-first, write Test cases, 
-think how can this be solved, and write conditions
-Dry run these test cases on paper, with variables, and conditions columns for each iteration
-now, you have confidence that this logic will work, so write code
+
+1. **Start from brute force**
+   - First, write test cases.
+   - Think of the most direct / naive way to solve it (even if it is O(n²) or worse).
+   - Make this brute-force solution very explicit: what loops, what checks, what data you track.
+   - Dry run this brute force on paper with variables and condition columns for each iteration.
+
+2. **Then recognize the pattern & optimize**
+   - Ask: "What is slow in this brute force? What is repeated work?"
+   - Map it to a known pattern (SlidingWindow, TwoPointers, BinarySearch, Heap, Graph, DP, etc.).
+   - Write down how the pattern removes the brute-force bottleneck (e.g., reuse window state, shrink search space, maintain a heap instead of scanning).
+   - Only after this pattern reasoning, write the optimized code.
+
+3. **Lock in the mental model**
+   - Compare the brute-force and pattern solutions side-by-side (time/space).
+   - Note *why* the pattern is optimal in this context (pruning, caching, better data structure, etc.).
+   - Now you have confidence that this logic will work, so write and refine the final code.
 
 ## Documentation & Real-World Examples
 
@@ -65,4 +78,12 @@ When adding a new algorithm:
 5. **Examples**: Use relatable scenarios (scheduling, tracking, booking, etc.)
 
 This approach makes code easier to understand, remember, and apply to real problems.
+
+## Prompt references (for Cursor / AI)
+
+When asking for documentation or comments:
+
+- **General rules:** “Follow the documentation and real-world example rules in `.cursorrules`.”
+- **Concrete structure (problems/algorithms):** “Use the same file and comment structure as in `DSA_ProblemSolving_patterns/src/problems/Arrays/kthLargest.js`.”
+- **Concrete structure (data structures):** “Use the same file and comment structure as in `DataStructures/Heap/Max_binary_heap.js`.”
 

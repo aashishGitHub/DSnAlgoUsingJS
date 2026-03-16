@@ -11,7 +11,8 @@
  *
  *
  */
-
+// Best way to learn this is by watching 3 videos on LCS from Abdul Bari on Udemy 
+// Here is the link to the videos:
 // https://www.youtube.com/watch?v=Ua0GhsJSlWM
 /*
 We see that if an item is found, we can count 1+ to the longestCommonSubsequenceLength and look at the remaining subsequence
