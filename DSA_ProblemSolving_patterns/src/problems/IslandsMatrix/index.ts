@@ -10,6 +10,7 @@ export * from './islandsMatrixPatterns';
 // Re-export specific functions for convenience
 export {
     numIslands,
+    islandSizes,
     floodFill,
     hasCycle,
     maxAreaOfIsland,
