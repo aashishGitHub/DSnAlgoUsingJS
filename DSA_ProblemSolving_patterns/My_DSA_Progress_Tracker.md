@@ -2,7 +2,27 @@
 
 *Started: January 2024*
 
-## 📊 **Current Status**
+## ✅ VERIFIED REPO STATUS — 2026-07-07 (supersedes the estimates below)
+
+After the repo-wide pattern rework (brute-force→optimized writeups, tests,
+recategorization), the MEASURED state is:
+
+- **Test suite: 600+ tests, all passing** (`npm test`) — includes cross-checks
+  where multiple approaches to the same problem must agree.
+- **`tsc --noEmit`: clean** (was ~800 errors before the rework).
+- **Fully reworked to the gold standard**: Two Pointers (12 problem files),
+  Sliding Window (3 collections + Kadane flagship), HashMap (7 files, legacy
+  .js consolidated). Pattern-level headers + verified tests everywhere else
+  (BinarySearch, CyclicSort, FastSlowPointers, MergeIntervals, IslandsMatrix,
+  TreeTraversal, DP).
+- **Bugs found & fixed during the sweep**: 5 wrong test expectations, 1 real
+  algorithm bug (circularArrayLoop), palindrome case-sensitivity mismatch,
+  sumZero duplicate-pair bug, moveNegativesToEnd data loss, LCS exports that
+  never existed, plus assorted broken legacy .js files (consolidated/fixed).
+- The percentage/status tables BELOW are the original manual estimates, kept
+  for history — trust the test suite over them.
+
+## 📊 **Current Status (historical estimates)**
 
 ### **Overall Progress**: 15% Complete
 - **Patterns Mastered**: 1/10 core patterns
