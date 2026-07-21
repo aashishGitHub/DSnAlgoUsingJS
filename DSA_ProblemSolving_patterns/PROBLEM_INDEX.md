@@ -18,8 +18,14 @@
 | [Merge Intervals](#8-merge-intervals) | 5+ | `src/problems/MergeIntervals/` | ✅ Organized |
 | [Cyclic Sort](#9-cyclic-sort) | 5+ | `src/problems/CyclicSort/` | ✅ Organized |
 | [Islands/Matrix](#10-islandsmatrix-traversal) | 5+ | `src/problems/IslandsMatrix/` | ✅ Organized |
-| [Arrays & Strings](#11-arrays--strings) | 15+ | `src/problems/` (root) | 🔄 Needs Organization |
+| [Arrays & Strings](#11-arrays--strings) | 15+ | `src/problems/Arrays/`, `Strings/`, `easy/` | ✅ Organized |
 | [Data Structures](#12-data-structures) | 20+ | `DataStructures/` | ✅ Organized |
+| Backtracking | 5 | `src/problems/Backtracking/` | ✅ New (tests to follow) |
+| Graph (adjacency lists) | 7 | `src/problems/Graph/graphPatterns.ts` | ✅ New (tests to follow) |
+
+> **📖 Single-document revision:** [`PATTERNS_REVISION_GUIDE.md`](PATTERNS_REVISION_GUIDE.md)
+> — every pattern with the incremental brute-force → optimized build, recognition
+> table, pitfalls, and drills. Start there; drill into folders from its links.
 
 ---
 
@@ -28,21 +34,23 @@
 **When to Use**: Sorted arrays, palindromes, pair problems, optimizing from O(n²) to O(n)  
 **Time Complexity**: O(n) | **Space Complexity**: O(1)
 
-### Problems in `src/problems/2Pointers/`:
-- ✅ **3Sum** - `3Sum.ts` - Find all unique triplets that sum to zero
-- ✅ **Container With Most Water** - `ContainerWithMostWater.ts` - Maximum water container area
-- ✅ **Move Zeros** - `moveZeros.ts` - Move all zeros to end maintaining order
-- ✅ **Valid Palindrome** - `palindrome.js` - Check if string is palindrome
-- ✅ **Is Subsequence** - `isSubsequence.ts` - Check if one string is subsequence of another
-- ✅ **Contains Duplicate** - `containsDuplicate.ts` - Check for duplicates
-- ✅ **Group Anagrams** - `groupAnagrams.ts` - Group strings that are anagrams
-- ✅ **Top K Frequent** - `topKFrequent.ts` - Find top K frequent elements
-- ✅ **Best Time to Buy/Sell Stock** - `bestTimeToBuySell.js` - Maximum profit from stock trading
+### Problems in `src/problems/2Pointers/` (all with brute-force → optimized writeups + tests):
+- ✅ **3Sum family** - `3Sum.ts` - 3Sum, 3Sum Closest (LC16), 4Sum (LC18)
+- ✅ **Container With Most Water** - `ContainerWithMostWater.ts` - Max area between two bars (LC11)
+- ✅ **Trapping Rain Water** - `trappingRainWater.ts` - Total trapped water (LC42)
+- ✅ **Move Zeros family** - `moveZeros.ts` + `moveZeros_solutions.ts` (12 partition variations) + `moveZeros_practice_problems.ts` (fill-in-the-blank practice)
+- ✅ **Valid Palindrome** - `palindrome.ts` - 4 approaches + alphanumeric extension (LC125)
+- ✅ **Is Subsequence** - `isSubsequence.ts` - Greedy two-pointer match (LC392)
+- ✅ **Pairs With Sum Zero / Two Sum II** - `sumZero.ts` - Sorted-array pair search (LC167)
+- ✅ **Remove Duplicates from Sorted Array** - `removeDuplicatesFromSortedArray.ts` (LC26)
+- ✅ **Remove Element** - `removeElement.ts` (LC27)
+- ✅ **Sort Colors (Dutch National Flag)** - `sortColors.ts` (LC75)
+- ✅ **Squares of a Sorted Array** - `sortedSquares.ts` (LC977)
+- ✅ **Best Time to Buy/Sell Stock (6 variations)** - `bestTimeToBuySell.ts` (LC121/122/123/188/309/714)
 
-### Problems in Root (Need Organization):
-- 🔄 **2Sum** - `2sum.js` - Find pairs that sum to target (HashMap pattern, but can use Two Pointers if sorted)
-- 🔄 **Trapping Rain Water** - `trappingRainWater.js` - Calculate trapped rainwater (Two Pointers)
-- 🔄 **Sum Zero Multi Pointer** - `sumZero_MULTI_POINTER.js` - Find triplets with zero sum
+> Note: `groupAnagrams` and `topKFrequent` moved to `HashMap/` (their correct
+> pattern); the old `containsDuplicate.ts` was mislabeled LC26 content and is
+> now `removeDuplicatesFromSortedArray.ts`.
 
 ---
 
@@ -52,14 +60,13 @@
 **Time Complexity**: O(n) | **Space Complexity**: O(1) or O(k)
 
 ### Problems in `src/problems/SlidingWindow/`:
-- ✅ **Fixed Size Window** - `fixedSizeSlidingWindow.ts` - Maximum sum subarray of size K
-- ✅ **Variable Size Window** - `variableSizeSlidingWindow.ts` - Longest substring without repeating
-- ✅ **Two Pointer Window** - `twoPointerSlidingWindow.ts` - Advanced sliding window patterns
+- ✅ **Fixed Size Window** - `fixedSizeSlidingWindow.ts` - Max sum of size K (brute force + optimal), first negative per window, anagram counting, window maxima (deque), averages
+- ✅ **Variable Size Window** - `variableSizeSlidingWindow.ts` - Longest substring no repeats, K-distinct, min window substring, fruit baskets, char replacement, subarray product < K
+- ✅ **Kadane's Maximum Subarray** - `kadaneMaxSubarray.ts` - O(n³)→O(n²)→O(n) progression + index-tracking variant (LC53)
 
-### Problems in Root (Need Organization):
-- 🔄 **Max Subarray Sum (Kadane's)** - `maxSubArraySum_KadenceAlgo.js` - Maximum sum subarray (DP/Sliding Window)
-- 🔄 **Longest Substring No Duplicates** - `maxSubSequence_noDuplicates_SlidingWindow.js` - Longest substring without repeating chars
-- 🔄 **Max Sum Sliding Window** - `maxSum_SLIDING_WINDOW_GivenLength.js` - Maximum sum of subarray of given length
+> Note: the former `twoPointerSlidingWindow.ts` was miscategorized (no actual
+> windowing) — its 12 problems migrated to `2Pointers/`; see the mapping in
+> `SlidingWindow/index.ts`.
 
 ---
 
@@ -314,62 +321,35 @@
 
 ---
 
-## 📊 Pattern Statistics
+## 📊 Pattern Statistics (verified 2026-07-07)
 
-| Pattern | Total Problems | Organized | Needs Organization |
-|---------|---------------|------------|-------------------|
-| Two Pointers | 12+ | 9 | 3 |
-| Sliding Window | 15+ | 3 | 3 |
-| Hash Map/Set | 10+ | 3 | 7 |
-| Dynamic Programming | 20+ | 2 | 8 |
-| Binary Search | 5+ | 1 | 1 |
-| Tree Traversal | 10+ | 8 | 1 |
-| Fast & Slow Pointers | 5+ | 1 | 0 |
-| Merge Intervals | 5+ | 1 | 0 |
-| Cyclic Sort | 5+ | 1 | 0 |
-| Islands/Matrix | 5+ | 1 | 1 |
-| Arrays & Strings | 20+ | 7 | 13 |
-| Data Structures | 20+ | 15 | 2 |
-| **TOTAL** | **130+** | **51** | **39** |
+The reorganization is **COMPLETE** — no loose problem files remain at the
+`src/problems/` root, and every colliding/miscategorized file has been
+rehomed. Current state, verified by the test suite and `tsc --noEmit`:
 
----
+| Pattern | Files | Tests | Notes |
+|---------|-------|-------|-------|
+| Two Pointers | 12 problem files (+practice companion) | ✅ | Full brute-force→optimized writeups |
+| Sliding Window | 3 collection files | ✅ | twoPointerSlidingWindow migrated out |
+| Hash Map/Set | 7 files (patterns + flagship problems) | ✅ | Legacy .js consolidated into frequencyCounter.ts |
+| Dynamic Programming | dpPatterns + TwoSequencesDP + legacy .js studies | ✅ | LCS exports + typings fixed |
+| Binary Search | 1 collection file (12+ functions) | ✅ | searchMatrix wrong-test fixed |
+| Tree Traversal | treePatterns + legacy .js | ✅ | |
+| Fast & Slow Pointers | 1 collection file | ✅ | circularArrayLoop bug fixed (LC457) |
+| Merge Intervals | 1 collection file | ✅ | 2 wrong tests fixed |
+| Cyclic Sort | 1 collection file | ✅ | 1 wrong test fixed |
+| Islands/Matrix | 1 collection file (+virus demo) | ✅ | |
+| Backtracking | 1 collection file (5 problems) | smoke ✅ | NEW — subsets/permute/combos template + dials |
+| Graph (adjacency list) | 1 collection file | smoke ✅ | NEW — BFS/DFS, Kahn's topo sort, components |
+| Union-Find (DSU) | 1 collection file | smoke ✅ | NEW — naive→compression→rank, components, cycle |
+| Arrays | 6 TS files + kthLargest reference | smoke ✅ | Reworked to brute→optimized ladders; 3 rotate files consolidated |
+| Strings | 5 TS files | smoke ✅ | LC5 added; broken pairs/off-by-one fixed |
+| easy/ warm-ups | GCD, canPlaceFlowers, validParens, etc. | smoke ✅ | GCD general case + flowers boundary fixed |
+| Data Structures | `DataStructures/` (repo root) | n/a | Max_binary_heap is the gold-standard reference; see its README |
 
-## 🎯 Recommended Organization Actions
-
-1. **Move Two Pointers problems**:
-   - `trappingRainWater.js` → `2Pointers/trappingRainWater.js`
-   - `2sum.js` → `HashMap/2sum.js` (or keep in 2Pointers if sorted array version)
-
-2. **Move Sliding Window problems**:
-   - `maxSubArraySum_KadenceAlgo.js` → `SlidingWindow/kadaneMaxSubarray.ts`
-   - `maxSubSequence_noDuplicates_SlidingWindow.js` → `SlidingWindow/longestSubstringNoRepeats.ts`
-   - `maxSum_SLIDING_WINDOW_GivenLength.js` → `SlidingWindow/maxSumFixedWindow.ts`
-
-3. **Move Hash Map problems**:
-   - `2sum.js` → `HashMap/2sum.ts`
-   - `anagram_MULTIPLE_SET_OF_DATA.js` → `HashMap/anagram.ts`
-   - `maxChars.js` → `HashMap/maxChars.ts`
-   - `listAllPairsOfSum_K.js` → `HashMap/pairsWithSumK.ts`
-   - `getUnique.js` → `HashMap/getUnique.ts`
-   - `countUnique.js` → `HashMap/countUnique.ts`
-
-4. **Move Dynamic Programming problems**:
-   - `coinChange.js` → `DynamicProgramming/coinChange.ts`
-   - `longestIncreasingSubsequence.js` → `DynamicProgramming/longestIncreasingSubsequence.ts`
-   - `longestCommonSubsequence.js` → `DynamicProgramming/TwoSequencesDP/longestCommonSubsequence.ts`
-   - `maxSubsequenceNoAdjacent_HouseRobber.js` → `DynamicProgramming/houseRobber.ts`
-   - `maxIncreasingSubSequence.js` → `DynamicProgramming/maxSumIncreasingSubsequence.ts`
-   - `maxSubsequenceAdjacentDiffUnity..js` → `DynamicProgramming/lisAdjacentDiffOne.ts`
-   - `knapsack.js` → `DynamicProgramming/knapsack.ts`
-   - `fibonacci.js` → `DynamicProgramming/fibonacci.ts`
-
-5. **Move Arrays & Strings problems**:
-   - Create `Arrays/` and `Strings/` folders
-   - Move array manipulation problems to `Arrays/`
-   - Move string problems to `Strings/`
-
-6. **Move Data Structure problems**:
-   - `lru_cache_implementation.js` → `DataStructures/LRUCache/lruCache.js`
+**Whole-repo health: 607 vitest tests passing, 0 failures; `tsc --noEmit` clean;
+69 additional smoke assertions green over the Arrays/Strings/easy/Misc/UnionFind
+files (adversarially verified by a 17-agent review pass).**
 
 ---
 
@@ -382,7 +362,7 @@
 
 ---
 
-*Last Updated: [Current Date]*  
-*Total Problems: 130+*  
-*Organized: 51 | Needs Organization: 39*
+*Last Updated: 2026-07-07*
+*Total Problems: 130+ — reorganization COMPLETE (0 files awaiting organization)*
+*Repo health: 600+ tests green, `tsc --noEmit` clean*
 

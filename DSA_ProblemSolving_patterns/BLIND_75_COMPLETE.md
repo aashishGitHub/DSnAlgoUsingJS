@@ -2,6 +2,14 @@
 
 *Comprehensive implementation of all Blind 75 problems organized by patterns*
 
+> **⚠️ Accuracy note (2026-07-07):** the counts in the status table below are
+> aspirational/approximate, not a verified tally — treat them as a rough
+> coverage sketch, not ground truth. For the VERIFIED state (files present,
+> tests passing, tsc clean) see [`PROBLEM_INDEX.md`](PROBLEM_INDEX.md), and for
+> the pattern-by-pattern study material see
+> [`PATTERNS_REVISION_GUIDE.md`](PATTERNS_REVISION_GUIDE.md). This file is a
+> planning/checklist document; the two linked docs are the source of truth.
+
 ## 📊 **Implementation Status**
 
 ### ✅ **COMPLETED PATTERNS** (100+ Problems)
