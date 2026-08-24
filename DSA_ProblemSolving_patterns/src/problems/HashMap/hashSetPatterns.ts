@@ -125,35 +125,8 @@ export function isAnagram(s: string, t: string): boolean {
 // ============================================================================
 // 4. GROUP ANAGRAMS - "Group strings by their sorted character signature"
 // ============================================================================
-/**
- * @problem Given array of strings, group anagrams together
- * @pattern Map<sortedKey, originalStrings[]> for grouping
- * @realWorld Categorizing products, grouping similar search queries
- *
- * @example
- * groupAnagrams(["eat","tea","tan","ate","nat","bat"])
- * → [["eat","tea","ate"], ["tan","nat"], ["bat"]]
- *
- * KEY INSIGHT: All anagrams have the same sorted character sequence
- * "eat" → "aet", "tea" → "aet", "ate" → "aet" → all same key!
- *
- * Time: O(n * k log k) where k = max string length | Space: O(n)
- */
-export function groupAnagrams(strs: string[]): string[][] {
-  const anagramMap = new Map<string, string[]>();
-
-  for (const str of strs) {
-    // Sort characters to create a canonical key
-    const sorted = str.split("").sort().join("");
-
-    if (!anagramMap.has(sorted)) {
-      anagramMap.set(sorted, []);
-    }
-    anagramMap.get(sorted)!.push(str);
-  }
-
-  return Array.from(anagramMap.values());
-}
+// Moved to its own dedicated file: `groupAnagrams.ts` — includes a brute
+// force baseline, sorted-key AND char-count-key approaches, and full tests.
 
 // ============================================================================
 // 5. INTERSECTION OF TWO ARRAYS - "What elements exist in both?"

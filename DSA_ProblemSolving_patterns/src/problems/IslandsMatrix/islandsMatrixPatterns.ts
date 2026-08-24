@@ -1,17 +1,42 @@
 /**
- * Islands/Matrix Traversal Pattern
- * 
- * This pattern is used for efficient traversal of 2D arrays or matrices.
- * Traversal often involves DFS, BFS, or variations for problems involving
- * connected components, path finding, or matrix manipulation.
- * 
- * Key Points:
- * - Used for efficient traversal of 2D arrays or matrices
- * - Traversal often involves DFS, BFS, or variations
- * - Common for connected components and path finding
- * 
- * Time Complexity: O(m * n) where m and n are matrix dimensions
- * Space Complexity: O(m * n) for recursion stack or O(min(m, n)) for BFS queue
+ * ============================================================================
+ * ISLANDS / MATRIX TRAVERSAL PATTERN (DFS & BFS on grids)
+ * ============================================================================
+ *
+ * PATTERN:
+ * - **A grid IS a graph**: each cell is a node, its 4 (or 8) neighbors are
+ *   edges. Every problem here is DFS/BFS over that implicit graph, with the
+ *   grid itself usually doubling as the visited-set (sink cells in place, or
+ *   use a separate visited matrix when input must not be mutated).
+ *
+ * THE CORE CHOICE — DFS vs BFS (know WHY, not just which):
+ *   DFS  → "explore/consume a whole component": numIslands, islandSizes,
+ *          floodFill, maxAreaOfIsland. Simple recursion; watch stack depth.
+ *   BFS  → "distance / time / spreading in waves": minTimeToInfectAll
+ *          (multi-source BFS — seed ALL sources at level 0, expand in rounds;
+ *          the round count IS the answer). Also numIslandsBFS for iterative.
+ *   Border-first thinking → `solve` (surrounded regions) and pacificAtlantic:
+ *          instead of asking "can this cell escape?", start from the
+ *          border/oceans and mark what's REACHABLE — inverting the direction
+ *          turns an O((mn)²) question into O(mn).
+ *
+ * THE BRUTE-FORCE → OPTIMIZED STORY:
+ * - Brute force re-explores from every cell without marking → exponential
+ *   blowup on overlapping paths. Marking visited (sinking) guarantees each
+ *   cell is processed exactly once → O(mn).
+ *
+ * RECOGNITION CUES:
+ * - "islands / regions / connected / flood fill / spread / infection /
+ *   shortest steps in a grid" → grid DFS/BFS. "Simultaneous spread or
+ *   minimum time" specifically → MULTI-SOURCE BFS.
+ *
+ * REAL-WORLD ANALOGIES:
+ * - Image-editor flood fill, network blast-radius analysis, virus spread
+ *   simulation (see VIRUS_INFECTION_EXPLANATION.md), map region detection.
+ *
+ * Time: O(m·n) — each cell visited once.
+ * Space: O(m·n) worst-case recursion/queue (O(min(m,n)) typical BFS frontier).
+ * ============================================================================
  */
 
 // ============================================================================

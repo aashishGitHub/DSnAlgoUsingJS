@@ -1,17 +1,41 @@
 /**
- * Fast & Slow Pointers (Hare-Tortoise) Pattern
- * 
- * This pattern uses two pointers that traverse at different speeds to solve
- * problems involving cycle detection, finding middle elements, and detecting
- * patterns in sequences.
- * 
- * Key Points:
- * - Two pointers traverse at different speeds
- * - Useful for cycle detection and middle finding
- * - Common in linked list and array problems
- * 
- * Time Complexity: O(n) - linear traversal
- * Space Complexity: O(1) - constant extra space
+ * ============================================================================
+ * FAST & SLOW POINTERS (HARE–TORTOISE / FLOYD'S) PATTERN
+ * ============================================================================
+ *
+ * PATTERN:
+ * - **Two pointers moving at different speeds through a linked sequence.**
+ *   If there's a cycle, the fast one must lap the slow one (they meet); if
+ *   there isn't, fast reaches the end having "measured" the list — leaving
+ *   slow at a useful position (the middle, the n-th from end, ...).
+ *
+ * THE BRUTE-FORCE → OPTIMIZED STORY:
+ * - Brute-force cycle detection stores every visited node in a Set → O(n)
+ *   space (see `isHappySet`/`findDuplicateSet` in HashMap/ for that variant).
+ * - Floyd's insight removes the memory entirely: you don't need to REMEMBER
+ *   where you've been if a second pointer can CATCH UP to prove revisiting —
+ *   O(1) space, same O(n) time.
+ * - Middle-finding brute force: count length (pass 1), walk n/2 (pass 2).
+ *   Fast/slow does it in ONE pass: when fast finishes, slow is at the middle.
+ *
+ * KEY MATH (interviewers probe this): after slow and fast meet inside a
+ * cycle, resetting one pointer to head and advancing BOTH one step at a time
+ * makes them meet exactly at the cycle's START (detectCycle / LC142) —
+ * distance-from-head ≡ distance-from-meeting-point (mod cycle length).
+ *
+ * RECOGNITION CUES:
+ * - Linked list + "cycle / middle / nth from end / palindrome" → fast & slow.
+ * - "Sequence defined by following values as pointers" (isHappy's digit-square
+ *   chain, findDuplicate's nums[i]-as-next, circularArrayLoop) → the array IS
+ *   an implicit linked list; Floyd's applies even with no ListNode in sight.
+ *
+ * REAL-WORLD ANALOGIES:
+ * - Detecting infinite loops in state machines / workflow engines without
+ *   storing full history.
+ * - Two runners on a track: the faster laps the slower iff the track loops.
+ *
+ * Time: O(n). Space: O(1) — that's the whole point.
+ * ============================================================================
  */
 
 // ============================================================================
@@ -46,8 +70,8 @@ export class ListNode {
 export function middleNode(head: ListNode | null): ListNode | null {
     if (!head || !head.next) return head;
     
-    let slow = head;
-    let fast = head;
+    let slow: ListNode | null = head;
+    let fast: ListNode | null = head;
     
     // Move fast pointer 2 steps and slow pointer 1 step
     while (fast && fast.next) {
@@ -74,8 +98,8 @@ export function middleNode(head: ListNode | null): ListNode | null {
 export function hasCycle(head: ListNode | null): boolean {
     if (!head || !head.next) return false;
     
-    let slow = head;
-    let fast = head;
+    let slow: ListNode | null = head;
+    let fast: ListNode | null = head;
     
     // Move fast pointer 2 steps and slow pointer 1 step
     while (fast && fast.next) {
@@ -107,8 +131,8 @@ export function hasCycle(head: ListNode | null): boolean {
 export function detectCycle(head: ListNode | null): ListNode | null {
     if (!head || !head.next) return null;
     
-    let slow = head;
-    let fast = head;
+    let slow: ListNode | null = head;
+    let fast: ListNode | null = head;
     
     // Phase 1: Detect if cycle exists
     while (fast && fast.next) {
@@ -180,58 +204,69 @@ export function isHappy(n: number): boolean {
 // ============================================================================
 
 /**
- * Detect if there's a cycle in a circular array
- * 
- * A cycle exists if we can start from any index and return to the same index
- * by following the array values as directions.
- * 
- * @param nums - Array of integers representing directions
- * @returns True if cycle exists, false otherwise
- * 
- * Time: O(n) - visit each element at most twice
- * Space: O(1) - constant extra space
+ * Circular Array Loop (LeetCode 457)
+ *
+ * Detect whether the array contains a valid cycle, where following the value
+ * at each index as a signed step wraps around the array. A cycle is VALID only
+ * if (a) it has length > 1 and (b) every step is in the SAME direction (all
+ * moves positive/forward, or all negative/backward). A mixed-direction loop or
+ * a single-element self-loop does NOT count.
+ *
+ * PATTERN: Fast & Slow pointers with a same-direction guard. For each start
+ * index, run Floyd's cycle detection; abort the moment the sign flips (that
+ * path can't form a valid cycle) and zero out the visited chain so we never
+ * re-explore it — giving amortized O(n).
+ *
+ * @example
+ * circularArrayLoop([2, -1, 1, 2, 2]); // true  (0→2→3→0, all forward, length>1)
+ * circularArrayLoop([-1, 2]);          // false (any loop flips direction)
+ * circularArrayLoop([-2, 1, -1, -2, -2]); // false (no same-direction loop of length>1)
+ *
+ * NOTE: this replaces an earlier buggy version whose premature
+ * `if (fast !== getNextIndex(fast)) break` caused it to report phantom cycles
+ * (e.g. it returned true for [-2,1,-1,-2,-2], which has no valid loop).
+ *
+ * @param nums - signed steps
+ * @returns true iff a valid same-direction cycle of length > 1 exists
+ *
+ * Time: O(n) amortized (each index is zeroed at most once). Space: O(1).
  */
 export function circularArrayLoop(nums: number[]): boolean {
     const n = nums.length;
-    if (n <= 1) return false;
-    
-    function getNextIndex(i: number): number {
-        return ((i + nums[i]) % n + n) % n;
-    }
-    
+    if (n < 2) return false;
+
+    const nextIndex = (i: number): number => (((i + nums[i]) % n) + n) % n;
+
     for (let i = 0; i < n; i++) {
-        if (nums[i] === 0) continue; // Already visited
-        
+        if (nums[i] === 0) continue; // already visited / dead cell
+
         let slow = i;
-        let fast = i;
-        const direction = nums[i] > 0;
-        
-        // Check if cycle exists
-        do {
-            slow = getNextIndex(slow);
-            fast = getNextIndex(fast);
-            if (fast !== getNextIndex(fast)) break; // Single element cycle
-            fast = getNextIndex(fast);
-        } while (slow !== fast && 
-                 nums[slow] !== 0 && 
-                 nums[fast] !== 0 &&
-                 (nums[slow] > 0) === direction &&
-                 (nums[fast] > 0) === direction);
-        
-        // If we found a valid cycle
-        if (slow === fast && slow !== getNextIndex(slow)) {
-            return true;
+        let fast = nextIndex(i);
+
+        // Keep advancing while every step stays in i's direction
+        // (same sign ⇒ product > 0). The moment a sign flips, this start
+        // index cannot be part of a valid cycle.
+        while (nums[i] * nums[fast] > 0 && nums[i] * nums[nextIndex(fast)] > 0) {
+            if (slow === fast) {
+                // Found a loop — but reject a single-element self-loop.
+                if (slow === nextIndex(slow)) break;
+                return true;
+            }
+            slow = nextIndex(slow);
+            fast = nextIndex(nextIndex(fast));
         }
-        
-        // Mark all visited elements
-        slow = i;
-        while (nums[slow] !== 0 && (nums[slow] > 0) === direction) {
-            const next = getNextIndex(slow);
-            nums[slow] = 0;
-            slow = next;
+
+        // Mark the whole same-direction chain starting at i as visited (0),
+        // so future iterations skip it. This is what keeps the sweep O(n).
+        let j = i;
+        const dir = nums[i];
+        while (nums[j] * dir > 0) {
+            const next = nextIndex(j);
+            nums[j] = 0;
+            j = next;
         }
     }
-    
+
     return false;
 }
 
@@ -251,10 +286,10 @@ export function reorderList(head: ListNode | null): void {
     if (!head || !head.next) return;
     
     // Step 1: Find the middle of the list
-    let slow = head;
-    let fast = head;
+    let slow: ListNode | null = head;
+    let fast: ListNode | null = head;
     
-    while (fast.next && fast.next.next) {
+    while (fast && fast.next && fast.next.next) {
         slow = slow!.next;
         fast = fast.next.next;
     }
@@ -264,12 +299,12 @@ export function reorderList(head: ListNode | null): void {
     slow!.next = null;
     
     // Step 3: Merge the two halves
-    let first = head;
+    let first: ListNode | null = head;
     let second = secondHalf;
     
     while (second) {
-        const temp1 = first!.next;
-        const temp2 = second.next;
+        const temp1: ListNode | null = first!.next;
+        const temp2: ListNode | null = second.next;
         
         first!.next = second;
         second.next = temp1;
@@ -296,10 +331,10 @@ export function isPalindrome(head: ListNode | null): boolean {
     if (!head || !head.next) return true;
     
     // Step 1: Find the middle
-    let slow = head;
-    let fast = head;
+    let slow: ListNode | null = head;
+    let fast: ListNode | null = head;
     
-    while (fast.next && fast.next.next) {
+    while (fast && fast.next && fast.next.next) {
         slow = slow!.next;
         fast = fast.next.next;
     }
@@ -309,7 +344,7 @@ export function isPalindrome(head: ListNode | null): boolean {
     slow!.next = null;
     
     // Step 3: Compare both halves
-    let first = head;
+    let first: ListNode | null = head;
     let second = secondHalf;
     
     while (second) {
@@ -344,8 +379,8 @@ export function removeNthFromEnd(head: ListNode | null, n: number): ListNode | n
     const dummy = new ListNode(0);
     dummy.next = head;
     
-    let slow = dummy;
-    let fast = dummy;
+    let slow: ListNode | null = dummy;
+    let fast: ListNode | null = dummy;
     
     // Move fast pointer n+1 steps ahead
     for (let i = 0; i <= n; i++) {

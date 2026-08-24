@@ -10,15 +10,16 @@
 
 ## Problems in this folder:
 
-### Basic Array Operations
-1. **flattenArray.js** - Flatten nested array
-2. **productExceptSelf.js** - Product of array except self (prefix/suffix)
-3. **mergeTwoSortedArrays.js** - Merge two sorted arrays
-4. **rotateArray.js** - Rotate array by k positions
-5. **rotateArrayOptimized.js** - Optimized array rotation
-6. **maxMin.js** - Find max and min in array
-7. **increasingSequencesOfSizeK.js** - Generate increasing sequences
-8. **kthLargest.js** - Find Kth largest element (Heap/QuickSelect)
+### Basic Array Operations (reworked to TypeScript with brute-force → optimized ladders + tested)
+1. **flattenArray.ts** - Flatten a nested array (recursion → iterative stack → built-in)
+2. **productExceptSelf.ts** - Product except self (LC238): brute → prefix/suffix → O(1) space
+3. **mergeTwoSortedArrays.ts** - Merge step of merge sort (LC88): two pointers + merge-from-back
+4. **rotateArray.ts** - Rotate by k (LC189): consolidates the old rotateArray.js +
+   rotateArrayOptimized.js + easy/rotateArrayByN.ts (one-step → extra array → three reversals → cyclic)
+5. **maxMin.ts** - Min & max in one pass (fixes the old crash) + recursive teaching versions
+6. **increasingStreaks.ts** - Count strictly-increasing windows of size k (was an empty stub)
+7. **kthLargest.js** - Find Kth largest (Heap/QuickSelect) — the GOLD-STANDARD reference
+   file (+ kthLargest.d.ts typings); kept as .js on purpose (see .cursorrules)
 
 ### Pattern-Based Problems (New!)
 9. **arrayPatternProblems.ts** - Comprehensive array pattern problems:

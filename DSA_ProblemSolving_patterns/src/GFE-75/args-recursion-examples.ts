@@ -193,18 +193,18 @@ function createMiddlewareChain(...middlewares: Middleware[]) {
 }
 
 // Business Middlewares
-const authMiddleware: Middleware = (req, res, next) => {
+const authMiddleware: Middleware = (req, _res, next) => {
   console.log("🔐 Auth middleware: Checking authentication");
   req.user = { id: 1, name: "John Doe" };
   next();
 };
 
-const loggingMiddleware: Middleware = (req, res, next) => {
+const loggingMiddleware: Middleware = (req, _res, next) => {
   console.log("📝 Logging middleware:", req.url);
   next();
 };
 
-const validationMiddleware: Middleware = (req, res, next) => {
+const validationMiddleware: Middleware = (_req, _res, next) => {
   console.log("✅ Validation middleware: Validating request");
   next();
 };

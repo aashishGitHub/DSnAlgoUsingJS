@@ -1,9 +1,36 @@
 /**
- * Tree Traversal Pattern Problems
- * 
- * Pattern: Use DFS/BFS to traverse trees and solve tree-related problems
- * Time Complexity: O(n) typically
- * Space Complexity: O(h) where h is height of tree
+ * ============================================================================
+ * TREE TRAVERSAL PATTERNS (DFS & BFS on binary trees)
+ * ============================================================================
+ *
+ * PATTERN:
+ * - Almost every tree problem is one of two traversal skeletons:
+ *   DFS (recursive)  → "answer for a node = combine answers of its subtrees".
+ *                      Pre/in/post-order are just WHERE you do the work
+ *                      relative to the two recursive calls. In-order on a BST
+ *                      visits values in sorted order — the single most-used
+ *                      BST fact in interviews.
+ *   BFS (queue)      → "process level by level": level order, zigzag,
+ *                      right-side view, minimum depth (stop at first leaf).
+ *
+ * THE BRUTE-FORCE → OPTIMIZED STORY:
+ * - The naive mistake isn't usually complexity — one traversal is already
+ *   O(n) — it's RE-TRAVERSING: e.g. computing height inside every node's
+ *   balance check gives O(n²); returning height AND balance together from one
+ *   post-order pass restores O(n). "Can one pass carry more information up?"
+ *   is the optimization question for trees.
+ *
+ * RECOGNITION CUES:
+ * - "level / depth / nearest / by rows" → BFS with a queue.
+ * - "path / sum from root / validate / lowest common ancestor" → DFS,
+ *   passing state DOWN via args and combining results UP via return values.
+ * - BST mentioned? → exploit ordering: in-order = sorted, prune half like
+ *   binary search.
+ *
+ * Time: O(n) typically — each node visited once.
+ * Space: O(h) recursion for DFS (h = height; O(n) worst for a skewed tree),
+ *        O(w) queue for BFS (w = max level width).
+ * ============================================================================
  */
 
 // Definition for a binary tree node
@@ -398,13 +425,13 @@ export function countNodes(root: TreeNode | null): number {
     let leftHeight = 0;
     let rightHeight = 0;
     
-    let left = root;
+    let left: TreeNode | null = root;
     while (left) {
         leftHeight++;
         left = left.left;
     }
-    
-    let right = root;
+
+    let right: TreeNode | null = root;
     while (right) {
         rightHeight++;
         right = right.right;

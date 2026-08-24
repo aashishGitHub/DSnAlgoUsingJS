@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { maxArea } from "./ContainerWithMostWater";
+import { maxArea, maxAreaBruteForce } from "./ContainerWithMostWater";
 
 describe("Container With Most Water - Two Pointers Pattern", () => {
   describe("Basic functionality", () => {
@@ -136,6 +136,32 @@ describe("Container With Most Water - Two Pointers Pattern", () => {
         const result = maxArea(height);
         expect(result).toBe(expected);
       });
+    });
+  });
+
+  describe("maxAreaBruteForce - Approach 1 baseline", () => {
+    it("should return correct area for the example case", () => {
+      expect(maxAreaBruteForce([1, 8, 6, 2, 5, 4, 8, 3, 7])).toBe(49);
+    });
+
+    it("should return 0 for empty or single-element input", () => {
+      expect(maxAreaBruteForce([])).toBe(0);
+      expect(maxAreaBruteForce([5])).toBe(0);
+    });
+
+    it("should agree with the optimized two-pointer solution on random-ish inputs", () => {
+      const cases = [
+        [1, 8, 6, 2, 5, 4, 8, 3, 7],
+        [1, 1],
+        [4, 3, 2, 1, 4],
+        [1, 2, 1],
+        [2, 3, 4, 5, 18, 17, 6],
+        [0, 2, 0, 4, 0],
+      ];
+
+      for (const height of cases) {
+        expect(maxAreaBruteForce(height)).toBe(maxArea(height));
+      }
     });
   });
 });

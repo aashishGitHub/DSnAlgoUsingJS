@@ -1,18 +1,36 @@
 /**
- * Cyclic Sort Pattern
- * 
- * This pattern solves problems with array values in a fixed range by swapping
- * elements into their correct positions in-place. It's particularly useful for
- * problems involving missing numbers, duplicate numbers, and array elements
- * in a specific range.
- * 
- * Key Points:
- * - Solves problems with array values in a fixed range
- * - Swap elements into their correct positions in-place
- * - Common for missing/duplicate number problems
- * 
- * Time Complexity: O(n) - each element is visited at most twice
- * Space Complexity: O(1) - constant extra space
+ * ============================================================================
+ * CYCLIC SORT PATTERN
+ * ============================================================================
+ *
+ * PATTERN:
+ * - **Values in a fixed range [1..n] (or [0..n]) double as their own array
+ *   indices.** So instead of sorting by comparison, put each value directly at
+ *   its home slot (`value v → index v-1`) by swapping — then a second pass
+ *   reads off whatever is missing/duplicated from the slots that don't match.
+ *
+ * THE BRUTE-FORCE → OPTIMIZED STORY:
+ * - Brute force for missing/duplicate questions: sort first (O(n log n)) or
+ *   use a hash set (O(n) extra space) — see the `...Set` variants in HashMap/.
+ * - Cyclic sort exploits the range constraint to get BOTH O(n) time AND O(1)
+ *   space: each swap places at least one element home permanently, so the
+ *   while-loop does ≤ n swaps total despite being nested in a for-loop —
+ *   that amortized argument is the interview talking point.
+ *
+ * RECOGNITION CUES:
+ * - "array contains numbers from 1 to n" / "in the range [0, n]" + asks about
+ *   missing, duplicated, or first-missing-positive → cyclic sort. The range
+ *   constraint is the giveaway; without it this pattern doesn't apply.
+ *
+ * REAL-WORLD ANALOGIES:
+ * - Seat assignment audit: tickets numbered 1..n — walk once, swap everyone
+ *   to their own seat, then empty/double-booked seats identify themselves.
+ * - Inventory slotting: SKU number = bin number; misplaced stock surfaces
+ *   the missing/duplicate SKUs.
+ *
+ * Time: O(n) — each element is swapped into place at most once.
+ * Space: O(1) — in-place.
+ * ============================================================================
  */
 
 // ============================================================================

@@ -1,6 +1,6 @@
+import { describe, test, expect } from "vitest";
 import {
     twoSum,
-    topKFrequent,
     firstUniqChar,
     wordPattern,
     isIsomorphic,
@@ -12,6 +12,9 @@ import {
     Logger,
     UndergroundSystem
 } from './hashMapPatterns';
+// topKFrequent moved to its own dedicated file (sort + heap + bucket-sort
+// approaches, plus a much more thorough test suite in topKFrequent.test.ts)
+import { topKFrequent } from './topKFrequent';
 
 describe('Hash Map Pattern Problems', () => {
     describe('twoSum', () => {

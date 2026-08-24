@@ -1,9 +1,40 @@
 /**
- * Binary Search Pattern Problems
- * 
- * Pattern: Use binary search for O(log n) search in sorted arrays
- * Time Complexity: O(log n)
- * Space Complexity: O(1)
+ * ============================================================================
+ * BINARY SEARCH PATTERNS
+ * ============================================================================
+ *
+ * PATTERN:
+ * - **Halve a MONOTONIC search space each step.** Anything that lets you ask
+ *   "is the answer left or right of mid?" with one O(1)/O(k) check drops a
+ *   linear O(n) scan to O(log n).
+ *
+ * THE BRUTE-FORCE → OPTIMIZED STORY:
+ * - Brute force is always the linear scan: check every candidate → O(n).
+ * - Sortedness (or any monotonic predicate) means one comparison at `mid`
+ *   eliminates HALF the remaining candidates — that pruning is the pattern.
+ *
+ * THE THREE SUB-FAMILIES (know which one you're in!):
+ *   1. Exact match         binarySearch, searchMatrix (matrix as flat array)
+ *   2. Boundary (lower/upper bound)  searchInsert, searchRange
+ *      → loop keeps `left` as "first index that could still work"; beware
+ *        off-by-ones — `left < right` vs `left <= right`, `mid` vs `mid + 1`.
+ *   3. Search-on-ANSWER    minEatingSpeed, mySqrt, findDuplicateBinarySearch
+ *      → the array isn't sorted; the FEASIBILITY of candidate answers is
+ *        monotonic ("if speed k works, k+1 works"), so binary search the
+ *        answer range and test feasibility at each mid. Also: rotated-array
+ *        `search` — find the sorted half, decide which side, recurse.
+ *
+ * RECOGNITION CUES:
+ * - "sorted array" → sub-family 1/2. "minimum/maximum X such that CONDITION"
+ *   → sub-family 3, even with no sorted array in sight.
+ *
+ * REAL-WORLD ANALOGIES:
+ * - Version bisection (git bisect): first bad commit = lower bound.
+ * - Capacity planning: minimum instance size that satisfies the load test.
+ *
+ * Time: O(log n) per search (× O(k) per feasibility check in family 3).
+ * Space: O(1) iterative.
+ * ============================================================================
  */
 
 /**

@@ -82,28 +82,10 @@
  * 
  * @param nums - Array of 0s, 1s, and 2s
  */
-export function sortColors(nums: number[]): void {
-    let low = 0;        // All elements before low are 0s
-    let mid = 0;        // Current element being examined
-    let high = nums.length - 1;  // All elements after high are 2s
-    
-    while (mid <= high) {
-        if (nums[mid] === 0) {
-            // Move 0 to the left section
-            [nums[low], nums[mid]] = [nums[mid], nums[low]];
-            low++;
-            mid++;
-        } else if (nums[mid] === 1) {
-            // 1 stays in the middle section
-            mid++;
-        } else {
-            // nums[mid] === 2, move to the right section
-            [nums[mid], nums[high]] = [nums[high], nums[mid]];
-            high--;
-            // Don't increment mid because we need to check the swapped element
-        }
-    }
-}
+// sortColors (Dutch National Flag) — moved to its canonical pattern home:
+// `2Pointers/sortColors.ts` (with a counting-sort baseline, a full dry-run
+// trace, tests, and interview notes). Re-exported here for convenience:
+export { sortColors, sortColorsCountingSort } from '../2Pointers/sortColors';
 
 // ============================================================================
 // 2. NEXT PERMUTATION

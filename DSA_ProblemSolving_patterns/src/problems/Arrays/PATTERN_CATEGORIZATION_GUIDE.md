@@ -10,7 +10,7 @@ This guide categorizes all 22 problems from the video list by their algorithmic 
 |---|--------------|------------------|-------------|--------|----------|
 | 1 | Time Complexity and Space Complexity Introduction | **Theory** | Complexity Analysis | ✅ | N/A (Theory) |
 | 2 | Design O(1) Insert, Search, Delete, Random | **HashMap** | Data Structure Design | 🔄 | Needs implementation |
-| 3 | Sort array of 0's, 1's, 2's (Dutch Flag) | **Two Pointers** | Partitioning | ✅ | `SlidingWindow/twoPointerSlidingWindow.ts` |
+| 3 | Sort array of 0's, 1's, 2's (Dutch Flag) | **Two Pointers** | Partitioning | ✅ | `2Pointers/sortColors.ts` |
 | 4 | Merge Sort Introduction | **Sorting** | Divide & Conquer | 🔄 | Needs implementation |
 | 5 | Merge Sort Code Implementation | **Sorting** | Divide & Conquer | 🔄 | Needs implementation |
 | 6 | Jump Game (Linear Time) | **Greedy** | Array Traversal | ✅ | `DynamicProgramming/dpPatterns.ts` |

@@ -1,9 +1,40 @@
 /**
- * Variable Size Sliding Window Problems
- * 
- * Pattern: Maintain a window that can grow or shrink based on certain conditions
- * Time Complexity: O(n)
- * Space Complexity: O(1) or O(k) depending on the problem
+ * ============================================================================
+ * VARIABLE-SIZE SLIDING WINDOW
+ * ============================================================================
+ *
+ * PATTERN:
+ * - Two pointers `windowStart` / `windowEnd` bound a window that GROWS by
+ *   advancing `windowEnd` and SHRINKS by advancing `windowStart` — driven by a
+ *   condition (at most k distinct chars, sum ≤ k, no repeats, ...). Each
+ *   pointer only ever moves forward, so the whole scan is O(n) even though the
+ *   window resizes constantly.
+ *
+ * THE BRUTE-FORCE → OPTIMIZED STORY:
+ * - Brute force: enumerate all O(n²) substrings/subarrays and test each →
+ *   O(n²) or O(n³) with the per-window check.
+ * - Sliding window: expand `windowEnd` greedily; the moment the window becomes
+ *   invalid, shrink from `windowStart` just enough to restore validity. Every
+ *   index is added once and removed at most once → O(n) total. The
+ *   amortized-O(n) "each pointer moves forward only" argument is the core
+ *   insight interviewers probe.
+ *
+ * WHEN TO USE:
+ * - "Longest/shortest/count of contiguous subarray|substring satisfying a
+ *   monotonic-ish condition" (adding elements makes it 'more violated',
+ *   removing from the left makes it 'less violated').
+ *
+ * REAL-WORLD ANALOGIES:
+ * - Rate limiting: longest burst of requests staying under a quota.
+ * - Text/UX: longest stretch of distinct characters typed (no repeats).
+ * - Logistics: fruit-baskets / longest run with ≤ k distinct categories.
+ *
+ * NOTE ON `longestSubarrayWithSumK`: it uses a PREFIX-SUM + hash map, NOT a
+ * sliding window — because with negative numbers the window is no longer
+ * monotonic (adding an element can DECREASE the sum), so shrink-from-left
+ * logic breaks. It lives here for topical grouping, but recognize it as the
+ * prefix-sum pattern (same family as HashMap/subarraySum).
+ * ============================================================================
  */
 
 /**

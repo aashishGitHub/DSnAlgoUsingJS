@@ -5,7 +5,9 @@
 
 ## Problems in this folder:
 
-1. **superPrime.js** - Prime number problems
+1. **superPrime.ts** - Super primes (primes at prime positions). Implemented
+   from scratch (the old superPrime.js was empty): trial-division `isPrime`,
+   brute-force generator, and the Sieve-of-Eratosthenes optimized version.
 
 ## Notes:
 

@@ -8,45 +8,79 @@
  */
 
 // Hash Set Patterns
+// NOTE on aliases: several problems here are ALSO solved in other pattern
+// folders with a different technique — that duplication is intentional
+// (compare Set-based vs Floyd's-cycle vs cyclic-sort solutions of the same
+// problem). To keep the master barrel unambiguous, the OTHER folder owns the
+// canonical LeetCode name and the Set-based versions get a `...Set` suffix:
+//   isHappy / findDuplicate            → canonical in FastSlowPointers (Floyd's)
+//   missingNumber / findDisappearedNumbers → canonical in CyclicSort
 export {
     containsDuplicate,
     twoSum as twoSumSet,
     isAnagram,
-    groupAnagrams,
     intersection,
-    isHappy,
+    isHappy as isHappySet,
     singleNumber,
-    findDuplicate,
-    missingNumber,
-    findDisappearedNumbers,
+    findDuplicate as findDuplicateSet,
+    missingNumber as missingNumberSet,
+    findDisappearedNumbers as findDisappearedNumbersSet,
     numJewelsInStones,
     numUniqueEmails
 } from './hashSetPatterns';
 
+// Group Anagrams (own dedicated file: brute force + sorted-key + char-count approaches)
+export {
+    groupAnagramsBruteForce,
+    groupAnagramsBySortedKey,
+    groupAnagramsByCharCount,
+    groupAnagramsFunctional,
+    groupAnagrams
+} from './groupAnagrams';
+
 // Hash Map Patterns
+// lengthOfLongestSubstring / minWindow are canonically SlidingWindow problems
+// (that folder owns the plain names); the copies here demonstrate the
+// map-inside-a-window technique and carry a `...Map` suffix in this barrel.
 export {
     twoSum,
-    topKFrequent,
     firstUniqChar,
     wordPattern,
     isIsomorphic,
     subarraySum,
     findMaxLength,
-    lengthOfLongestSubstring,
-    minWindow,
+    lengthOfLongestSubstring as lengthOfLongestSubstringMap,
+    minWindow as minWindowMap,
     LRUCache,
     Logger,
     UndergroundSystem
 } from './hashMapPatterns';
+
+// Top K Frequent Elements (own dedicated file: sort + heap + bucket-sort approaches)
+export {
+    topKFrequentSort,
+    topKFrequentHeap,
+    topKFrequentBucketSort,
+    topKFrequent
+} from './topKFrequent';
+
+// Frequency Counter Patterns (consolidated + fixed from legacy .js files:
+// 2sum/anagram/countUnique/getUnique/maxChars/pairsWithSumK/same)
+export {
+    same,
+    maxChar,
+    pairsWithTargetSum,
+    countUniqueValuesSorted,
+    uniqueValuesBruteForce,
+    uniqueValues
+} from './frequencyCounter';
 
 // Longest Consecutive Sequence (Hash Set/Map Pattern)
 export {
     longestConsecutive1,
     longestConsecutive2,
     longestConsecutive3,
-    longestConsecutive4,
-    runTests,
-    performanceTest
+    longestConsecutive4
 } from './longestConsecutive';
 
 /**

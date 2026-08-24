@@ -1,9 +1,36 @@
 /**
- * Hash Map Pattern Problems
- * 
- * Pattern: Use Map for O(1) lookups with key-value relationships
- * Time Complexity: O(n) typically
- * Space Complexity: O(n) for the map
+ * ============================================================================
+ * HASH MAP PATTERNS (key → value state per element)
+ * ============================================================================
+ *
+ * PATTERN:
+ * - A Map gives O(1) average lookup of PER-KEY STATE: an index, a count, a
+ *   last-seen position, a running prefix sum. Where a Hash SET answers "have I
+ *   seen X?", a Hash MAP answers "what do I know ABOUT X?" — and that extra
+ *   value is what unlocks each problem below.
+ *
+ * THE BRUTE-FORCE → OPTIMIZED STORY (shared by nearly every function here):
+ * - Brute force pairs/searches rescan the array per element → O(n²).
+ * - The map remembers what a second scan would rediscover, collapsing the
+ *   inner loop to an O(1) lookup → O(n). Classic instance: twoSum stores
+ *   value→index so "have I seen my complement?" is a lookup, not a scan.
+ *
+ * SUB-FAMILIES IN THIS FILE:
+ *   Complement lookup    twoSum
+ *   Frequency / position  firstUniqChar
+ *   Bijective mapping     wordPattern, isIsomorphic (need maps BOTH ways!)
+ *   Prefix-sum + map      subarraySum, findMaxLength (count/earliest-index of
+ *                         a running sum → subarray facts in one pass)
+ *   Windows with maps     lengthOfLongestSubstring, minWindow (canonical home:
+ *                         SlidingWindow/ — kept here to show the map's role)
+ *   Map-backed designs    LRUCache (insertion order!), Logger, UndergroundSystem
+ *
+ * WHEN TO USE:
+ * - Any time the inner loop of an O(n²) idea is "find/count something I've
+ *   already passed" — store it in a map on the way through instead.
+ *
+ * Time: O(n) typically | Space: O(n) for the map
+ * ============================================================================
  */
 
 /**
@@ -36,34 +63,9 @@ export function twoSum(nums: number[], target: number): number[] {
     return [];
 }
 
-/**
- * 2. Top K Frequent Elements
- * Given an integer array nums and an integer k, return the k most frequent elements.
- * 
- * Key Insight: Count frequencies with map, then sort by frequency
- * Time: O(n log n), Space: O(n)
- * 
- * Example:
- * Input: nums = [1,1,1,2,2,3], k = 2
- * Output: [1,2] (1 appears 3 times, 2 appears 2 times)
- * 
- * Input: nums = [1], k = 1
- * Output: [1]
- */
-export function topKFrequent(nums: number[], k: number): number[] {
-    const frequencyMap = new Map<number, number>();
-    
-    // Count frequencies
-    for (const num of nums) {
-        frequencyMap.set(num, (frequencyMap.get(num) || 0) + 1);
-    }
-    
-    // Sort by frequency and return top k
-    return Array.from(frequencyMap.entries())
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, k)
-        .map(([num]) => num);
-}
+// 2. Top K Frequent Elements — moved to its own dedicated file:
+//    `topKFrequent.ts` — includes sort, min-heap, AND optimal bucket-sort
+//    approaches, plus full tests.
 
 /**
  * 3. First Unique Character in a String

@@ -25,22 +25,21 @@ This pattern is used when you need to:
 
 1. **Longest Common Subsequence (LCS)** - LeetCode 1143
    - Find longest subsequence common to both strings
-   - File: `longestCommonSubsequence.ts`
+   - File: `longestCommonSubsequence.js` (+ `.d.ts` typings)
 
 2. **Edit Distance (Levenshtein Distance)** - LeetCode 72
    - Minimum operations to convert word1 to word2 (insert/delete/replace)
    - File: `editDistance.ts`
 
-### **📝 To Implement**
-
 3. **Interleaving String** - LeetCode 97
    - Check if s3 is formed by interleaving s1 and s2
-   - Difficulty: Medium ⭐⭐⭐
+   - File: `interleavingString.ts`
 
 4. **Delete Operation for Two Strings** - LeetCode 583
-   - Minimum deletions to make both strings equal
-   - Difficulty: Medium ⭐⭐⭐
-   - *Hint: Uses LCS pattern!*
+   - Minimum deletions to make both strings equal (uses the LCS pattern!)
+   - File: `deleteOperation.ts`
+
+### **📝 To Implement**
 
 5. **Minimum ASCII Delete Sum for Two Strings** - LeetCode 712
    - Minimum ASCII sum of deleted characters to make strings equal

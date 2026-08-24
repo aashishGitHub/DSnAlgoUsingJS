@@ -338,30 +338,21 @@ const reconstructLCS = (text1, text2, dp) => {
   return result.join("");
 };
 
-// Example usage and testing
-let text1 = "abc";
-let text2 = "ac";
+/**
+ * Example usage (moved out of module scope so importing this file has no
+ * console side effects — previously these ran on every import):
+ *
+ *   longestCommonSubsequenceLength("abc", "ac");            // 2
+ *   const dp = longestCommonSubsequence("abc", "ac");       // full DP table
+ *   reconstructLCS("abc", "ac", dp);                        // "ac"
+ *
+ *   longestCommonSubsequenceLength("bdacb", "abcdab");      // 3
+ *   const dp2 = longestCommonSubsequence("bdacb", "abcdab");
+ *   reconstructLCS("bdacb", "abcdab", dp2);                 // e.g. "bab" (one valid LCS)
+ */
 
-console.log("Example 1: LCS('abc', 'ac')");
-console.log("Expected length: 2, Expected string: 'ac'");
-const length1 = longestCommonSubsequenceLength(text1, text2);
-const dp1 = longestCommonSubsequence(text1, text2);
-const lcsString1 = reconstructLCS(text1, text2, dp1);
-console.log(`Length: ${length1}`);
-console.log(`LCS String: ${lcsString1}`);
-console.log("DP Table:");
-console.log(dp1);
-console.log("\n");
-
-// More complex example
-text1 = "bdacb";
-text2 = "abcdab";
-
-console.log("Example 2: LCS('bdacb', 'abcdab')");
-const length2 = longestCommonSubsequenceLength(text1, text2);
-const dp2 = longestCommonSubsequence(text1, text2);
-const lcsString2 = reconstructLCS(text1, text2, dp2);
-console.log(`Length: ${length2}`);
-console.log(`LCS String: ${lcsString2}`);
-console.log("DP Table:");
-console.log(dp2);
+// NOTE: these exports were missing entirely — TwoSequencesDP/index.ts had been
+// importing three names from this file that were never exported (masked by
+// the missing type declarations). Fixed along with adding
+// longestCommonSubsequence.d.ts for TypeScript consumers.
+export { longestCommonSubsequenceLength, longestCommonSubsequence, reconstructLCS };

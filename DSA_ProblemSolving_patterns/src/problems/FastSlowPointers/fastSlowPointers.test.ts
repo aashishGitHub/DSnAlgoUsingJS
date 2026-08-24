@@ -1,5 +1,5 @@
-import { 
-    ListNode,
+import { describe, test, expect } from "vitest";
+import {
     middleNode,
     hasCycle,
     detectCycle,

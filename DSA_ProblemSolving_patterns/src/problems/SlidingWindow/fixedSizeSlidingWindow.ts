@@ -1,33 +1,102 @@
 /**
- * Fixed Size Sliding Window Problems
- * 
- * Pattern: Maintain a window of fixed size k and slide it across the array
- * Time Complexity: O(n)
- * Space Complexity: O(1) or O(k) depending on the problem
+ * ============================================================================
+ * FIXED-SIZE SLIDING WINDOW
+ * ============================================================================
+ *
+ * PATTERN:
+ * - A window of a FIXED width `k` slides across the array/string one step at a
+ *   time. The key move: instead of recomputing the whole window at each step,
+ *   UPDATE it incrementally — subtract the element leaving on the left, add the
+ *   element entering on the right. That single trick turns an O(n·k) rescan
+ *   into an O(n) sweep.
+ *
+ * THE BRUTE-FORCE → OPTIMIZED STORY (this is the whole point of the pattern):
+ * - Brute force: for each of the ~n starting positions, recompute the window's
+ *   aggregate from scratch by looping over all k elements → O(n·k).
+ * - Sliding window: compute the FIRST window once (O(k)), then each slide is
+ *   O(1) (one subtract + one add) → O(n) total. `maxSumSubarrayOfSizeKBruteForce`
+ *   vs `maxSumSubarrayOfSizeK` below is the canonical side-by-side of this.
+ *
+ * WHEN TO USE:
+ * - "Every contiguous subarray/substring of size EXACTLY k" + an aggregate you
+ *   can update incrementally (sum, average, char-frequency, min/max via deque).
+ *
+ * REAL-WORLD ANALOGIES:
+ * - Moving averages: rolling 7-day average of a metric.
+ * - Monitoring: peak load in any fixed 5-minute window of samples.
+ * - Streaming text: scanning for anagram/keyword matches of a fixed length.
+ *
+ * FUNCTIONS IN THIS FILE (all O(n) time after the brute-force baseline):
+ *   maxSumSubarrayOfSizeK      max window sum          O(n)  / O(1)
+ *   firstNegativeInWindow      first negative per win  O(n)  / O(k)
+ *   countAnagrams              count pattern anagrams  O(n)  / O(alphabet)
+ *   maxOfAllSubarrays          window maxima (deque)   O(n)  / O(k)
+ *   averageOfAllSubarrays      window averages         O(n)  / O(1)
+ *   findAnagrams               anagram start indices   O(n)  / O(alphabet)
+ * ============================================================================
  */
 
 /**
+ * ----------------------------------------------------------------------------
  * 1. Maximum Sum of Subarray of Size K
- * Given an array of integers and a number k, find the maximum sum of any contiguous subarray of size k.
+ * ----------------------------------------------------------------------------
+ * Given an array of integers and a number k, find the maximum sum of any
+ * contiguous subarray of size k.
+ */
+
+/**
+ * BRUTE FORCE baseline: recompute each window's sum from scratch.
+ *
+ * Why it's slow: adjacent windows share k-1 elements, but this re-adds all k
+ * of them every time instead of reusing the previous sum. That redundant
+ * re-summing is exactly what the sliding-window version below removes.
+ *
+ * @example
+ * maxSumSubarrayOfSizeKBruteForce([2,6,9,2,1,8,5,6,3], 3); // 19 (window [8,5,6])
+ *
+ * Time: O(n·k) — n window positions × k elements summed each. Space: O(1).
+ */
+export function maxSumSubarrayOfSizeKBruteForce(arr: number[], k: number): number {
+    if (arr.length < k) return -1;
+
+    let max = -Infinity;
+    for (let i = 0; i <= arr.length - k; i++) {
+        let windowSum = 0;
+        for (let j = 0; j < k; j++) {
+            windowSum += arr[i + j];
+        }
+        max = Math.max(max, windowSum);
+    }
+    return max;
+}
+
+/**
+ * SLIDING WINDOW ★ optimal: compute the first window once, then each slide is
+ * one subtract (element leaving) + one add (element entering).
+ *
+ * @example
+ * maxSumSubarrayOfSizeK([2,6,9,2,1,8,5,6,3], 3); // 19  (window [8,5,6] = 19)
+ *
+ * Time: O(n) — first window O(k), then O(1) per slide. Space: O(1).
  */
 export function maxSumSubarrayOfSizeK(arr: number[], k: number): number {
     if (arr.length < k) return -1;
-    
+
     let windowSum = 0;
     let maxSum = 0;
-    
+
     // Calculate sum of first window
     for (let i = 0; i < k; i++) {
         windowSum += arr[i];
     }
     maxSum = windowSum;
-    
+
     // Slide the window
     for (let i = k; i < arr.length; i++) {
         windowSum = windowSum - arr[i - k] + arr[i];
         maxSum = Math.max(maxSum, windowSum);
     }
-    
+
     return maxSum;
 }
 

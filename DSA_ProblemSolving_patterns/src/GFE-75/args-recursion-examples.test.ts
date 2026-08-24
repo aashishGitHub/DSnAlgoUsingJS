@@ -263,12 +263,12 @@ describe('Level 4: Business Use Cases', () => {
       return true;
     };
 
-    const analyticsHandler: EventHandler = (event) => {
+    const analyticsHandler: EventHandler = (_event) => {
       results.push("analytics");
       return true;
     };
 
-    const businessLogicHandler: EventHandler = (event) => {
+    const businessLogicHandler: EventHandler = (_event) => {
       results.push("business");
       return true;
     };

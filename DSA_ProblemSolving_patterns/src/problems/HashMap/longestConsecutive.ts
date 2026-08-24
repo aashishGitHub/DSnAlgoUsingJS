@@ -150,50 +150,9 @@ function longestConsecutive4(nums: number[]): number {
     return Math.max(maxLength, currentLength);
 }
 
-// Test cases
-function runTests(): void {
-    const testCases = [
-        [100, 4, 200, 1, 3, 2],           // Expected: 4 ([1,2,3,4])
-        [0, 3, 7, 2, 5, 8, 4, 6, 0, 1],   // Expected: 9 ([0,1,2,3,4,5,6,7,8])
-        [],                                // Expected: 0
-        [1],                               // Expected: 1
-        [1, 2, 0, 1],                      // Expected: 3 ([0,1,2])
-        [9, 1, 4, 7, 3, -1, 0, 5, 8, -1, 6] // Expected: 7 ([-1,0,1,3,4,5,6,7,8,9])
-    ];
-    
-    console.log('Testing Longest Consecutive Sequence:\n');
-    
-    testCases.forEach((nums, index) => {
-        console.log(`Test case ${index + 1}: [${nums}]`);
-        console.log('Hash Set approach:', longestConsecutive1(nums));
-        console.log('Hash Map Union-Find:', longestConsecutive2(nums));
-        console.log('Hash Map Boundaries:', longestConsecutive3(nums));
-        console.log('Sort approach:', longestConsecutive4(nums));
-        console.log('---');
-    });
-}
-
-// Performance comparison
-function performanceTest(): void {
-    // Generate large test case
-    const nums = Array.from({length: 10000}, () => Math.floor(Math.random() * 20000));
-    
-    console.log('Performance test with 10,000 numbers:');
-    
-    console.time('Hash Set approach');
-    const result1 = longestConsecutive1(nums);
-    console.timeEnd('Hash Set approach');
-    
-    console.time('Hash Map approach');
-    const result2 = longestConsecutive2(nums);
-    console.timeEnd('Hash Map approach');
-    
-    console.time('Sort approach');
-    const result3 = longestConsecutive4(nums);
-    console.timeEnd('Sort approach');
-    
-    console.log('Results match:', result1 === result2 && result2 === result3);
-}
+// (Console-based runTests/performanceTest runners removed — real vitest
+// coverage lives in longestConsecutive.test.ts, including a cross-check that
+// all four approaches agree.)
 
 // HASH SET/MAP PATTERN INSIGHTS:
 // 1. Hash Set allows O(1) lookups, enabling O(n) solution
@@ -208,11 +167,9 @@ function performanceTest(): void {
 // - Hash sets/maps are perfect for "membership testing" operations
 // - Use Hash Set for simple lookups, Hash Map for complex state tracking
 
-export { 
-    longestConsecutive1, 
-    longestConsecutive2, 
-    longestConsecutive3, 
-    longestConsecutive4, 
-    runTests, 
-    performanceTest 
+export {
+    longestConsecutive1,
+    longestConsecutive2,
+    longestConsecutive3,
+    longestConsecutive4
 };

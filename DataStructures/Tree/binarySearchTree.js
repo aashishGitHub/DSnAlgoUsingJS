@@ -40,26 +40,26 @@ class BinarySearchTree {
         }
     }
 
-    find(value) {
-        if (!this.root) {
-            return;
-        }
+    // find(value) {
+    //     if (!this.root) {
+    //         return;
+    //     }
 
-        let current = this.root;
-        while (current) {
-            if (current.value < value) {
-                // move right
-                current = current.right;
+    //     let current = this.root;
+    //     while (current) {
+    //         if (current.value < value) {
+    //             // move right
+    //             current = current.right;
 
-            } else if (current.value > value) {
-                // move left
-                current = current.left;
-            } else {
-                return current;
-            }
-        }
-        return undefined;
-    }
+    //         } else if (current.value > value) {
+    //             // move left
+    //             current = current.left;
+    //         } else {
+    //             return current;
+    //         }
+    //     }
+    //     return undefined;
+    // }
 
 
     find2(value) {

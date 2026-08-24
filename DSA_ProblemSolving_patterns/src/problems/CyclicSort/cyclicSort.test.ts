@@ -1,4 +1,5 @@
-import { 
+import { describe, test, expect } from "vitest";
+import {
     cyclicSort,
     findDisappearedNumbers,
     findDuplicates,
@@ -151,7 +152,10 @@ describe('Cyclic Sort Pattern', () => {
         test('should find missing numbers in specific range', () => {
             const nums = [4, 3, 2, 7, 8, 2, 3, 1];
             expect(findMissingInRange(nums, 1, 8)).toEqual([5, 6]);
-            expect(findMissingInRange(nums, 1, 4)).toEqual([5]);
+            // 1..4 are ALL present in nums, so nothing is missing in [1,4].
+            // (The previous expectation of [5] was wrong — 5 isn't even in
+            // the range [1,4].)
+            expect(findMissingInRange(nums, 1, 4)).toEqual([]);
             expect(findMissingInRange(nums, 5, 8)).toEqual([5, 6]);
         });
     });

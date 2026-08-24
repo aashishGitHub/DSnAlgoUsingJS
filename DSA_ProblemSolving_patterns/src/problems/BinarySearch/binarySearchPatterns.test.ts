@@ -1,3 +1,4 @@
+import { describe, test, expect } from "vitest";
 import {
     binarySearch,
     searchInsert,
@@ -63,15 +64,19 @@ describe('Binary Search Pattern Problems', () => {
 
     describe('searchMatrix', () => {
         test('should search in 2D matrix', () => {
+            // LeetCode 74 requires ROW-MAJOR sorted: first int of each row >
+            // last int of the previous row (so the matrix flattens to one
+            // sorted array). The previous test matrix was column-sorted
+            // (LeetCode 240) data, which violates this precondition — that was
+            // a wrong test, not a bug in the (correct) binary-search impl.
             const matrix = [
-                [1, 4, 7, 11],
-                [2, 5, 8, 12],
-                [3, 6, 9, 16],
-                [10, 13, 14, 17]
+                [1, 3, 5, 7],
+                [10, 11, 16, 20],
+                [23, 30, 34, 60]
             ];
             expect(searchMatrix(matrix, 5)).toBe(true);
             expect(searchMatrix(matrix, 3)).toBe(true);
-            expect(searchMatrix(matrix, 20)).toBe(false);
+            expect(searchMatrix(matrix, 13)).toBe(false);
         });
     });
 

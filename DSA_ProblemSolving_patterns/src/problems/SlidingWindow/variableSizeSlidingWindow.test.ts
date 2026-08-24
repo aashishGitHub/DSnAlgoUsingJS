@@ -1,3 +1,4 @@
+import { describe, test, expect } from "vitest";
 import {
     lengthOfLongestSubstring,
     longestSubstringWithKDistinct,
@@ -58,7 +59,10 @@ describe('Variable Size Sliding Window Problems', () => {
         test('should return length of longest subarray with sum k', () => {
             expect(longestSubarrayWithSumK([1, -1, 5, -2, 3], 3)).toBe(4);
             expect(longestSubarrayWithSumK([2, 0, 0, 3], 3)).toBe(3);
-            expect(longestSubarrayWithSumK([1, 2, 3, 4, 5], 9)).toBe(2);
+            // [2,3,4] (indices 1-3) sums to 9 with length 3; only [4,5] gives
+            // length 2. The prefix-sum algorithm correctly returns 3 — the
+            // original expectation of 2 was simply wrong.
+            expect(longestSubarrayWithSumK([1, 2, 3, 4, 5], 9)).toBe(3);
         });
     });
 

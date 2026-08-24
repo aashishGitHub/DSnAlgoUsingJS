@@ -1,3 +1,4 @@
+import { describe, test, expect } from "vitest";
 import {
   merge,
   insert,
@@ -259,6 +260,23 @@ describe("Merge Intervals Pattern", () => {
     });
 
     test("should handle no intersections", () => {
+      // Genuinely disjoint lists — no interval in one touches any in the other.
+      const firstList = [
+        [1, 3],
+        [5, 8],
+      ];
+      const secondList = [
+        [9, 10],
+        [12, 15],
+      ];
+      expect(intervalIntersection(firstList, secondList)).toEqual([]);
+    });
+
+    test("counts a touching endpoint as an intersection (closed intervals)", () => {
+      // [5,9] and [4,5] share exactly the point 5. In LeetCode 986 intervals
+      // are CLOSED, so [5,5] is a valid intersection — NOT an empty result.
+      // (The previous version of the test above wrongly expected [] for this
+      // input; that was a wrong expectation, not a bug in intervalIntersection.)
       const firstList = [
         [1, 3],
         [5, 9],
@@ -267,7 +285,7 @@ describe("Merge Intervals Pattern", () => {
         [4, 5],
         [10, 12],
       ];
-      expect(intervalIntersection(firstList, secondList)).toEqual([]);
+      expect(intervalIntersection(firstList, secondList)).toEqual([[5, 5]]);
     });
   });
 
@@ -346,8 +364,12 @@ describe("Merge Intervals Pattern", () => {
     test("should calculate minimum platforms correctly - partial overlaps", () => {
       const arrival = [900, 940, 950, 1100, 1500, 1800];
       const departure = [910, 1200, 1120, 1130, 1900, 2000];
-      // At 1100, we have trains from 900, 940, 950, 1100 = 4 platforms
-      expect(minPlatformsForTrains(arrival, departure)).toBe(4);
+      // Trains: 900-910, 940-1200, 950-1120, 1100-1130, 1500-1900, 1800-2000.
+      // The 900-910 train has already LEFT by 1100 (it departs at 910), so at
+      // 1100 only three trains overlap: 940-1200, 950-1120, 1100-1130 → 3.
+      // (The previous expectation of 4 came from a comment that wrongly counted
+      // the already-departed 900 train; the impl correctly returns 3.)
+      expect(minPlatformsForTrains(arrival, departure)).toBe(3);
     });
 
     test("should handle same arrival/departure times", () => {

@@ -1,8 +1,17 @@
 /**
  * MOVE ZEROS PATTERN - PRACTICE PROBLEMS
- * 
+ *
  * Core Pattern: Two-pointer technique for in-place array partitioning
  * Key Concepts: Maintain relative order, swap elements, track positions
+ *
+ * HOW TO USE THIS FILE: every function body below is an unfinished `TODO`.
+ * Implement it yourself first — see `moveZeros.ts` for the base pattern
+ * fully worked (brute force → optimized) — then compare against the
+ * reference answers in `moveZeros_solutions.ts`.
+ *
+ * (Parameters are prefixed with `_` only because strict TypeScript flags
+ * unused parameters on empty stubs — drop the underscore as you fill in
+ * each implementation.)
  */
 
 // ========== BASIC VARIATIONS ==========
@@ -14,7 +23,7 @@
  * 
  * Example: [1, -2, 3, -4, 5] → [1, 3, 5, -2, -4]
  */
-function moveNegativesToEnd(nums: number[]): void {
+function moveNegativesToEnd(_nums: number[]): void {
     // TODO: Implement using two-pointer technique
 }
 
@@ -25,7 +34,7 @@ function moveNegativesToEnd(nums: number[]): void {
  * 
  * Example: [1, 2, 3, 4, 5, 6] → [2, 4, 6, 1, 3, 5]
  */
-function moveEvensToFront(nums: number[]): void {
+function moveEvensToFront(_nums: number[]): void {
     // TODO: Implement
 }
 
@@ -35,7 +44,7 @@ function moveEvensToFront(nums: number[]): void {
  * 
  * Example: nums = [3, 2, 2, 3, 1], val = 3 → [2, 2, 1, 3, 3]
  */
-function moveValueToEnd(nums: number[], val: number): void {
+function moveValueToEnd(_nums: number[], _val: number): void {
     // TODO: Implement
 }
 
@@ -51,7 +60,7 @@ function moveValueToEnd(nums: number[], val: number): void {
  * - [0] → [0]
  * - [] → []
  */
-function moveZerosWithDuplicates(nums: number[]): void {
+function moveZerosWithDuplicates(_nums: number[]): void {
     // TODO: Handle edge cases properly
 }
 
@@ -62,7 +71,7 @@ function moveZerosWithDuplicates(nums: number[]): void {
  * 
  * Example: [0, 0, 1, 2, 3, 0, 4] → [1, 2, 3, 4, 0, 0, 0]
  */
-function moveZerosInSorted(nums: number[]): void {
+function moveZerosInSorted(_nums: number[]): void {
     // TODO: Leverage the sorted property
 }
 
@@ -75,7 +84,7 @@ function moveZerosInSorted(nums: number[]): void {
  * 
  * Challenge: Can you do it with fewer swaps than the basic approach?
  */
-function moveZerosMinSwaps(nums: number[]): number {
+function moveZerosMinSwaps(_nums: number[]): number {
     let swaps = 0;
     // TODO: Implement with swap counting
     return swaps;
@@ -86,7 +95,7 @@ function moveZerosMinSwaps(nums: number[]): number {
  * Move zeros to end without using swaps (only assignments).
  * This tests understanding of the overwrite approach.
  */
-function moveZerosNoSwaps(nums: number[]): void {
+function moveZerosNoSwaps(_nums: number[]): void {
     // TODO: Use the overwrite method (like moveZeroes1 in original)
 }
 
@@ -99,7 +108,7 @@ function moveZerosNoSwaps(nums: number[]): void {
  * Example: nums = [1, 2, 3, 2, 4, 2, 5], toMove = [2, 4] 
  *          → [1, 3, 5, 2, 4, 2, 2] (or similar valid arrangement)
  */
-function moveMultipleValues(nums: number[], toMove: number[]): void {
+function moveMultipleValues(_nums: number[], _toMove: number[]): void {
     // TODO: Handle multiple target values
 }
 
@@ -110,7 +119,7 @@ function moveMultipleValues(nums: number[], toMove: number[]): void {
  * Example: Move all numbers > 5 to front
  * [1, 8, 3, 9, 2, 7] → [8, 9, 7, 1, 3, 2]
  */
-function partitionByCondition(nums: number[], condition: (n: number) => boolean): void {
+function partitionByCondition(_nums: number[], _condition: (n: number) => boolean): void {
     // TODO: Generalize the pattern
 }
 
@@ -119,7 +128,7 @@ function partitionByCondition(nums: number[], condition: (n: number) => boolean)
  * Same as move zeros but return a new array instead of modifying in-place.
  * This tests understanding of space complexity trade-offs.
  */
-function moveZerosNewArray(nums: number[]): number[] {
+function moveZerosNewArray(_nums: number[]): number[] {
     // TODO: Implement without modifying input
     return [];
 }
@@ -132,7 +141,7 @@ function moveZerosNewArray(nums: number[]): number[] {
  * 
  * Example: ['a', ' ', 'b', ' ', 'c'] → ['a', 'b', 'c', ' ', ' ']
  */
-function moveSpacesToEnd(chars: string[]): void {
+function moveSpacesToEnd(_chars: string[]): void {
     // TODO: Apply pattern to strings
 }
 
@@ -142,7 +151,7 @@ function moveSpacesToEnd(chars: string[]): void {
  * 
  * Example: ['h', 'e', 'l', 'l', 'o'] → ['e', 'o', 'h', 'l', 'l']
  */
-function moveVowelsToFront(chars: string[]): void {
+function moveVowelsToFront(_chars: string[]): void {
     // TODO: Implement with character conditions
 }
 
@@ -156,10 +165,9 @@ function moveVowelsToFront(chars: string[]): void {
  * - Arrays with different zero densities (10%, 50%, 90% zeros)
  */
 function testPerformance(): void {
-    const sizes = [1000, 100000, 1000000];
-    const zeroDensities = [0.1, 0.5, 0.9];
-    
-    // TODO: Generate test arrays and measure performance
+    // TODO: Generate test arrays and measure performance.
+    // Suggested sizes: [1000, 100000, 1000000]
+    // Suggested zero densities: [0.1, 0.5, 0.9]
 }
 
 // ========== EDGE CASES TO CONSIDER ==========
@@ -178,19 +186,9 @@ function testPerformance(): void {
  * 8. Large numbers: [0, 999999, 0, -999999]
  */
 function testEdgeCases(): void {
-    const testCases = [
-        [],
-        [0],
-        [1],
-        [0, 0, 0],
-        [1, 2, 3],
-        [0, 1, 0, 1, 0],
-        [0, 0, 1, 2],
-        [1, 2, 0, 0],
-        [0, 999999, 0, -999999]
-    ];
-    
-    // TODO: Run all your implementations on these test cases
+    // TODO: Run all your implementations on test cases such as:
+    // [], [0], [1], [0,0,0], [1,2,3], [0,1,0,1,0], [0,0,1,2], [1,2,0,0],
+    // [0,999999,0,-999999]
 }
 
 // ========== INTERVIEW FOLLOW-UPS ==========

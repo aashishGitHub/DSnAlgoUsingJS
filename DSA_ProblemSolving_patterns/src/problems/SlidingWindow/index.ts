@@ -9,6 +9,7 @@
 
 // Fixed Size Sliding Window
 export {
+    maxSumSubarrayOfSizeKBruteForce,
     maxSumSubarrayOfSizeK,
     firstNegativeInWindow,
     countAnagrams,
@@ -16,6 +17,14 @@ export {
     averageOfAllSubarrays,
     findAnagrams
 } from './fixedSizeSlidingWindow';
+
+// Maximum Subarray — Kadane's Algorithm (running-sum DP; O(n³)→O(n²)→O(n))
+export {
+    maxSubarrayBruteForceCubic,
+    maxSubarrayBruteForceQuadratic,
+    kadaneMaxSubarray,
+    kadaneMaxSubarrayWithIndices
+} from './kadaneMaxSubarray';
 
 // Variable Size Sliding Window
 export {
@@ -31,21 +40,21 @@ export {
     maxScore
 } from './variableSizeSlidingWindow';
 
-// Two Pointer Sliding Window
-export {
-    maxArea,
-    trap,
-    threeSum,
-    threeSumClosest,
-    fourSum,
-    removeDuplicates,
-    removeElement,
-    moveZeroes,
-    sortColors,
-    isPalindrome,
-    twoSum,
-    sortedSquares
-} from './twoPointerSlidingWindow';
+// NOTE: the former `twoPointerSlidingWindow.ts` was entirely miscategorized
+// (all Two Pointers, no actual windowing) and has been MIGRATED into
+// `2Pointers/`:
+//   maxArea            → 2Pointers/ContainerWithMostWater.ts
+//   trap               → 2Pointers/trappingRainWater.ts
+//   threeSum           → 2Pointers/3Sum.ts
+//   threeSumClosest    → 2Pointers/3Sum.ts
+//   fourSum            → 2Pointers/3Sum.ts
+//   removeDuplicates   → 2Pointers/removeDuplicatesFromSortedArray.ts
+//   removeElement      → 2Pointers/removeElement.ts
+//   sortColors         → 2Pointers/sortColors.ts
+//   isPalindrome       → 2Pointers/palindrome.ts (isValidPalindromeAlphanumeric)
+//   moveZeroes         → 2Pointers/moveZeros.ts
+//   twoSum (sorted)    → 2Pointers/sumZero.ts (twoSumSorted)
+//   sortedSquares      → 2Pointers/sortedSquares.ts
 
 /**
  * Sliding Window Pattern Guide

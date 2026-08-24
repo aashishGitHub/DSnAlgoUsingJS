@@ -1,10 +1,9 @@
+import { describe, test, expect } from "vitest";
 import {
     longestConsecutive1,
     longestConsecutive2,
     longestConsecutive3,
-    longestConsecutive4,
-    runTests,
-    performanceTest
+    longestConsecutive4
 } from './longestConsecutive';
 
 describe('Longest Consecutive Sequence', () => {

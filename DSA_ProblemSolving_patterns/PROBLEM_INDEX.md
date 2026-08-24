@@ -2,6 +2,11 @@
 
 *Master reference for all DSA problems in this repository, organized by pattern for easy navigation*
 
+> **Two language tracks.** This index covers the **TypeScript** implementations
+> under `src/problems/`. The **Go** track lives in [`Go/`](Go/) — 22 pattern
+> packages, 171 solution functions, 169 tests, all passing — with its own single
+> revision document, [`Go/GO_INTERVIEW_QA.md`](Go/GO_INTERVIEW_QA.md).
+
 ---
 
 ## 🎯 Quick Navigation by Pattern

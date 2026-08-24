@@ -7,13 +7,27 @@
 
 // Two Pointers Pattern
 export * from './2Pointers/3Sum';
+export * from './2Pointers/bestTimeToBuySell';
 export * from './2Pointers/ContainerWithMostWater';
-export * from './2Pointers/containsDuplicate';
-export * from './2Pointers/groupAnagrams';
 export * from './2Pointers/isSubsequence';
 export * from './2Pointers/moveZeros';
+export * from './2Pointers/moveZeros_solutions';
 export * from './2Pointers/palindrome';
-export * from './2Pointers/topKFrequent';
+export * from './2Pointers/removeDuplicatesFromSortedArray';
+export * from './2Pointers/removeElement';
+export * from './2Pointers/sortColors';
+export * from './2Pointers/sortedSquares';
+export * from './2Pointers/sumZero';
+export * from './2Pointers/trappingRainWater';
+// Note: moveZeros_practice_problems.ts is intentionally NOT re-exported here —
+// it's a fill-in-the-blank practice companion to moveZeros_solutions.ts, not
+// a set of implementations meant to be consumed elsewhere.
+// Note: groupAnagrams and topKFrequent moved to HashMap/ (their correct
+// pattern home) — see the HashMap Pattern export block below.
+// Note: containsDuplicate.ts was renamed to removeDuplicatesFromSortedArray.ts
+// — its content never actually implemented "contains duplicate" (LeetCode 217,
+// already covered by HashMap/hashSetPatterns.ts); it was mislabeled content
+// for LeetCode 26 all along.
 
 // Sliding Window Pattern
 export * from './SlidingWindow';
@@ -42,28 +56,42 @@ export * from './MergeIntervals';
 // Cyclic Sort Pattern
 export * from './CyclicSort';
 
-// Arrays Pattern
-// Note: Array problems are in ./Arrays/ folder
-// - flattenArray.js
-// - productExceptSelf.js
-// - mergeTwoSortedArrays.js
-// - rotateArray.js
-// - rotateArrayOptimized.js
-// - maxMin.js
-// - increasingSequencesOfSizeK.js
-// - kthLargest.js
+// Backtracking Pattern (choose → explore → un-choose)
+export * from './Backtracking/backtrackingPatterns';
+
+// Graph Pattern (adjacency lists: BFS/DFS, topological sort, components)
+export * from './Graph/graphPatterns';
+
+// Union-Find / DSU Pattern (connectivity, components, undirected cycle detection)
+export * from './UnionFind/unionFind';
+
+// Arrays Pattern (each file: brute-force → optimized ladder)
+export * from './Arrays/productExceptSelf';
+export * from './Arrays/rotateArray';
+export * from './Arrays/mergeTwoSortedArrays';
+export * from './Arrays/flattenArray';
+export * from './Arrays/maxMin';
+export * from './Arrays/increasingStreaks';
+// Note: kthLargest.js is the gold-standard reference (imported directly by its
+// test); arrayPatternProblems.ts is NOT re-exported here — it re-exports
+// sortColors from 2Pointers, which would double-export.
 
 // Strings Pattern
-// Note: String problems are in ./Strings/ folder
-// - reverseString.js
-// - findSubstring.js
-// - longestPalindrome.js
-// - binaryAdd.js
+export * from './Strings/longestPalindromicSubstring';
+export * from './Strings/longestPalindromeFromPairs';
+export * from './Strings/binaryAdd';
+export * from './Strings/findSubstring';
+export * from './Strings/reverseString';
 
-// Graph Pattern
-// Note: Graph problems are in ./Graph/ folder
-// - traversePath.js
-// - findPath.js
+// Easy / warm-ups
+export * from './easy/GCD_of_strings';
+export * from './easy/canPlaceFlowers';
+export * from './easy/removeCharAtGivenIndex';
+export * from './easy/validParenthesis_STACK';
+export * from './easy/merge2StringsAlternatively';
+
+// Misc
+export * from './Misc/superPrime';
 
 /**
  * Pattern Categories Overview

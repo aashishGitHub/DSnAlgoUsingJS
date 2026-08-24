@@ -1,17 +1,47 @@
 /**
- * Merge Intervals Pattern
- * 
- * This pattern deals with overlapping intervals and involves sorting intervals
- * and merging overlaps. It's commonly used for scheduling problems, conflict
- * resolution, and time-based operations.
- * 
- * Key Points:
- * - Deals with overlapping intervals
- * - Involves sorting intervals and merging overlaps
- * - Common for scheduling and conflict resolution
- * 
- * Time Complexity: O(n log n) - sorting dominates
- * Space Complexity: O(1) or O(n) - depending on implementation
+ * ============================================================================
+ * MERGE INTERVALS PATTERN
+ * ============================================================================
+ *
+ * PATTERN:
+ * - **Sort by start, then sweep once.** After sorting, any interval can only
+ *   overlap its immediate predecessor's running merge — so one linear pass
+ *   with a "current merged interval" (or a running end/counter) settles
+ *   overlap questions that look pairwise-quadratic.
+ *
+ * THE BRUTE-FORCE → OPTIMIZED STORY:
+ * - Brute force compares every pair of intervals for overlap → O(n²).
+ * - Sorting imposes an order in which overlaps are ADJACENT: if sorted
+ *   interval i doesn't overlap the merged block before it, nothing later will
+ *   either (starts only increase). That adjacency is what kills the n².
+ *
+ * THE TWO CORE CHECKS (memorize these exact comparisons):
+ *   overlap:  a.start <= b.end && b.start <= a.end   (closed intervals!)
+ *   merge:    [min(starts), max(ends)]
+ * Whether touching endpoints ([1,5],[5,8]) count as overlapping is the #1
+ * clarifying question to ask — LeetCode's merge (56) says yes, some
+ * scheduling variants say no.
+ *
+ * SUB-FAMILIES IN THIS FILE:
+ *   Merge/insert           merge, insert
+ *   Intersection sweep     intervalIntersection (two sorted lists, two pointers)
+ *   Counting concurrency   canAttendMeetings, minMeetingRooms,
+ *                          minPlatformsForTrains (sort starts & ends separately,
+ *                          sweep with a counter — the "chronological ordering" trick)
+ *   Coverage/removal       removeCoveredIntervals, eraseOverlapIntervals-style
+ *   Free-time/gaps         employeeFreeTime
+ *
+ * RECOGNITION CUES:
+ * - "meetings / bookings / ranges / schedules" + "merge, conflicts, rooms
+ *   needed, free time" → sort by start (or starts & ends separately) + sweep.
+ *
+ * REAL-WORLD ANALOGIES:
+ * - Calendar consolidation, meeting-room capacity, railway platform planning,
+ *   CIDR/IP-range merging, downtime-window consolidation.
+ *
+ * Time: O(n log n) — sorting dominates the O(n) sweep.
+ * Space: O(1) extra beyond output (or O(n) where a result list is built).
+ * ============================================================================
  */
 
 // ============================================================================
@@ -469,8 +499,8 @@ export function removeCoveredIntervals(intervals: number[][]): number {
     let prevEnd = intervals[0][1];
     
     for (let i = 1; i < intervals.length; i++) {
-        const [start, end] = intervals[i];
-        
+        const [, end] = intervals[i]; // start not needed — the sort already ordered by it
+
         // If current interval is not covered
         if (end > prevEnd) {
             count++;

@@ -2,6 +2,10 @@
 📚 Data Structures and Algorithms in JavaScript
 A comprehensive collection of Data Structures and Algorithms implementations and problem-solving solutions written in JavaScript. This repository serves as a complete learning resource for coding interviews, competitive programming, and mastering fundamental computer science concepts.
 
+> **Start here:** [`DSA_MASTER_INDEX.md`](DSA_MASTER_INDEX.md) — every pattern
+> across both language tracks (Go and TypeScript), what is implemented, what is
+> genuinely missing, and the order to work through it.
+
 🎯 What's Inside
 📊 Data Structures Implementations:
 

@@ -1,8 +1,8 @@
+import { describe, test, expect } from "vitest";
 import {
     containsDuplicate,
     twoSum as twoSumSet,
     isAnagram,
-    groupAnagrams,
     intersection,
     isHappy,
     singleNumber,
@@ -12,6 +12,9 @@ import {
     numJewelsInStones,
     numUniqueEmails
 } from './hashSetPatterns';
+// groupAnagrams moved to its own dedicated file (brute force + sorted-key +
+// char-count approaches, plus a much more thorough test suite in groupAnagrams.test.ts)
+import { groupAnagrams } from './groupAnagrams';
 
 describe('Hash Set Pattern Problems', () => {
     describe('containsDuplicate', () => {

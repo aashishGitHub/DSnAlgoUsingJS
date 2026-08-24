@@ -1,7 +1,42 @@
 import { describe, it, expect } from "vitest";
-import { findSumOfThree1, threeSum, threeSum2 } from "./3Sum";
+import {
+  findSumOfThree1,
+  threeSum,
+  threeSum2,
+  threeSumBruteForce,
+  threeSumClosest,
+  fourSum,
+} from "./3Sum";
 
 describe("3Sum Problems", () => {
+  describe("threeSumBruteForce - Brute force baseline (all unique triplets sum to zero)", () => {
+    it("should return all unique triplets that sum to zero - Example 1", () => {
+      const nums = [-1, 0, 1, 2, -1, -4];
+      const result = threeSumBruteForce(nums);
+
+      expect(result).toHaveLength(2);
+      expect(result).toContainEqual([-1, -1, 2]);
+      expect(result).toContainEqual([-1, 0, 1]);
+    });
+
+    it("should return empty array when no triplets sum to zero - Example 2", () => {
+      expect(threeSumBruteForce([0, 1, 1])).toEqual([]);
+    });
+
+    it("should return single triplet for all zeros - Example 3", () => {
+      expect(threeSumBruteForce([0, 0, 0])).toEqual([[0, 0, 0]]);
+    });
+
+    it("should agree with the optimized threeSum on the same input", () => {
+      const nums = [6, 3, 9, 1, 4, -1, -5, -2, -7, -3];
+      const normalize = (triplets: number[][]) =>
+        triplets.map((t) => t.join(",")).sort();
+
+      expect(normalize(threeSumBruteForce(nums))).toEqual(
+        normalize(threeSum([...nums]))
+      );
+    });
+  });
   describe("findSumOfThree1 - Find first triplet with given target sum", () => {
     it("should return a triplet that sums to the target", () => {
       const nums = [3, 7, 1, 2, 8, 4, 5];
@@ -128,8 +163,7 @@ describe("3Sum Problems", () => {
     });
   });
 
-  describe("threeSum2 - Alternative implementation (exported function)", () => {
-    //
+  describe("threeSum2 - Alternative implementation (3Sum reduced to repeated 2Sum)", () => {
     it("should handle 2 possible triplets", () => {
       const nums = [-1, 0, 1, 2, -1, -4];
       const result = threeSum2(nums);
@@ -140,13 +174,12 @@ describe("3Sum Problems", () => {
       ]);
     });
 
-    it("should handle basic cases", () => {
+    it("should return triplets shaped as number[][], each entry a 3-tuple", () => {
       const nums = [-1, 0, 1, 2, -1, -4];
       const result = threeSum2(nums);
 
-      // Note: This function has a bug - it returns number[] instead of number[][]
-      // and has logic issues. We'll test what it currently does.
       expect(Array.isArray(result)).toBe(true);
+      result.forEach((triplet) => expect(triplet).toHaveLength(3));
     });
 
     it("should return empty array for null or undefined input", () => {
@@ -209,5 +242,46 @@ describe("Performance Tests", () => {
 
     expect(end - start).toBeLessThan(1000); // Should complete within 1 second
     expect(Array.isArray(result)).toBe(true);
+  });
+
+  describe("threeSumClosest (LeetCode 16) - migrated from SlidingWindow", () => {
+    it("returns the triplet sum closest to the target", () => {
+      expect(threeSumClosest([-1, 2, 1, -4], 1)).toBe(2); // [-1,2,1] = 2
+    });
+
+    it("returns an exact match when one exists", () => {
+      expect(threeSumClosest([0, 0, 0], 1)).toBe(0);
+      expect(threeSumClosest([1, 1, 1, 0], -100)).toBe(2);
+    });
+
+    it("handles all-negative arrays (closest achievable, not necessarily exact)", () => {
+      // Triplet sums available: -12,-11,-10,-9; closest to -6 is -9 (distance 3).
+      expect(threeSumClosest([-3, -2, -5, -4], -6)).toBe(-9);
+    });
+  });
+
+  describe("fourSum (LeetCode 18) - migrated from SlidingWindow", () => {
+    const normalize = (quads: number[][]) =>
+      quads.map((q) => [...q].sort((a, b) => a - b).join(",")).sort();
+
+    it("returns all unique quadruplets summing to target", () => {
+      const result = fourSum([1, 0, -1, 0, -2, 2], 0);
+      expect(normalize(result)).toEqual(
+        normalize([
+          [-2, -1, 1, 2],
+          [-2, 0, 0, 2],
+          [-1, 0, 0, 1],
+        ])
+      );
+    });
+
+    it("returns an empty array when no quadruplet matches", () => {
+      expect(fourSum([1, 2, 3, 4], 100)).toEqual([]);
+    });
+
+    it("handles all-zero input with a nonzero target", () => {
+      expect(fourSum([0, 0, 0, 0], 1)).toEqual([]);
+      expect(fourSum([0, 0, 0, 0], 0)).toEqual([[0, 0, 0, 0]]);
+    });
   });
 });

@@ -190,9 +190,14 @@ function twoPointerWindow(arr: number[]): number {
 
 ## Files in this Directory
 
-- `fixedSizeSlidingWindow.ts` - Fixed size window problems
+- `fixedSizeSlidingWindow.ts` - Fixed size window problems (incl. brute-force baseline)
 - `variableSizeSlidingWindow.ts` - Variable size window problems
-- `twoPointerSlidingWindow.ts` - Two pointer problems
+- `kadaneMaxSubarray.ts` - Maximum Subarray via Kadane's algorithm (O(n³)→O(n²)→O(n) progression)
 - `index.ts` - Main export file
 - `*.test.ts` - Test files for each category
 - `README.md` - This documentation
+
+> Note: the former `twoPointerSlidingWindow.ts` was miscategorized (its
+> problems never expand/contract a window) and has been migrated into
+> `../2Pointers/` — see the mapping comment in `index.ts` for where each
+> function now lives.
