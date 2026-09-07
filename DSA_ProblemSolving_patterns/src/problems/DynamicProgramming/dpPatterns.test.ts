@@ -17,7 +17,17 @@ import {
     minDistance,
     maxProductPath,
     maxProductPathOptimized,
-    maxProductPathMod
+    maxProductPathMod,
+    minPathSum,
+    minPathSumBruteForce,
+    minPathSumMemo,
+    numSquares,
+    maximalSquare,
+    longestPalindromeSubseq,
+    numTrees,
+    maxCoins,
+    lengthOfLISPatience,
+    maxProfitCooldown
 } from './dpPatterns';
 
 describe('Dynamic Programming Pattern Problems', () => {
@@ -318,6 +328,150 @@ describe('Dynamic Programming Pattern Problems', () => {
         test('should return minimum edit operations', () => {
             expect(minDistance('horse', 'ros')).toBe(3);
             expect(minDistance('intention', 'execution')).toBe(5);
+        });
+    });
+
+    // =========================================================================
+    // 26-33. Problems added for JS <-> Go parity + the missing DP categories
+    // =========================================================================
+
+    describe('minPathSum - Grid DP (LC64), all three rungs agree', () => {
+        const grids: number[][][] = [
+            [[1, 3, 1], [1, 5, 1], [4, 2, 1]],
+            [[1, 2, 3], [4, 5, 6]],
+            [[5]],
+            [[1, 2], [1, 1]],
+        ];
+        const expected = [7, 12, 5, 3];
+
+        test('optimal rolled version matches expected', () => {
+            grids.forEach((g, i) => expect(minPathSum(g)).toBe(expected[i]));
+        });
+
+        test('brute force and memo agree with the optimal version', () => {
+            grids.forEach((g) => {
+                expect(minPathSumBruteForce(g)).toBe(minPathSum(g));
+                expect(minPathSumMemo(g)).toBe(minPathSum(g));
+            });
+        });
+
+        test('handles empty input', () => {
+            expect(minPathSum([])).toBe(0);
+            expect(minPathSum([[]])).toBe(0);
+        });
+    });
+
+    describe('numSquares - Perfect Squares (LC279)', () => {
+        test('fewest perfect squares summing to n', () => {
+            expect(numSquares(12)).toBe(3); // 4+4+4, NOT greedy 9+1+1+1
+            expect(numSquares(13)).toBe(2); // 4+9
+            expect(numSquares(1)).toBe(1);
+            expect(numSquares(4)).toBe(1);
+            expect(numSquares(43)).toBe(3);
+        });
+
+        test('zero needs no squares', () => {
+            expect(numSquares(0)).toBe(0);
+        });
+    });
+
+    describe('maximalSquare - Largest all-1s square (LC221)', () => {
+        test('returns AREA, not side length', () => {
+            expect(maximalSquare([
+                ['1', '0', '1', '0', '0'],
+                ['1', '0', '1', '1', '1'],
+                ['1', '1', '1', '1', '1'],
+                ['1', '0', '0', '1', '0'],
+            ])).toBe(4);
+            expect(maximalSquare([['0', '1'], ['1', '0']])).toBe(1);
+            expect(maximalSquare([['0']])).toBe(0);
+        });
+
+        test('a full 3x3 block of ones has area 9', () => {
+            expect(maximalSquare([
+                ['1', '1', '1'],
+                ['1', '1', '1'],
+                ['1', '1', '1'],
+            ])).toBe(9);
+        });
+
+        test('handles empty input', () => {
+            expect(maximalSquare([])).toBe(0);
+            expect(maximalSquare([[]])).toBe(0);
+        });
+    });
+
+    describe('longestPalindromeSubseq - Range DP (LC516)', () => {
+        test('longest palindromic subsequence length', () => {
+            expect(longestPalindromeSubseq('bbbab')).toBe(4); // "bbbb"
+            expect(longestPalindromeSubseq('cbbd')).toBe(2);  // "bb"
+            expect(longestPalindromeSubseq('a')).toBe(1);
+            expect(longestPalindromeSubseq('abcde')).toBe(1);
+            expect(longestPalindromeSubseq('racecar')).toBe(7);
+        });
+
+        test('handles empty string', () => {
+            expect(longestPalindromeSubseq('')).toBe(0);
+        });
+    });
+
+    describe('numTrees - Unique BSTs / Catalan numbers (LC96)', () => {
+        test('counts structurally distinct BSTs', () => {
+            expect(numTrees(1)).toBe(1);
+            expect(numTrees(2)).toBe(2);
+            expect(numTrees(3)).toBe(5);
+            expect(numTrees(4)).toBe(14);
+            expect(numTrees(5)).toBe(42);
+        });
+
+        test('the empty tree counts as one shape', () => {
+            expect(numTrees(0)).toBe(1);
+        });
+    });
+
+    describe('maxCoins - Burst Balloons, interval DP (LC312)', () => {
+        test('bursts in the optimal order', () => {
+            expect(maxCoins([3, 1, 5, 8])).toBe(167);
+            expect(maxCoins([1, 5])).toBe(10);
+            expect(maxCoins([5])).toBe(5);
+        });
+
+        test('handles empty input', () => {
+            expect(maxCoins([])).toBe(0);
+        });
+    });
+
+    describe('lengthOfLISPatience - LIS in O(n log n) (LC300)', () => {
+        test('agrees with the O(n^2) table version', () => {
+            const inputs = [
+                [10, 9, 2, 5, 3, 7, 101, 18],
+                [0, 1, 0, 3, 2, 3],
+                [7, 7, 7, 7],
+                [1, 2, 3, 4, 5],
+                [5, 4, 3, 2, 1],
+            ];
+            inputs.forEach((nums) => {
+                expect(lengthOfLISPatience(nums)).toBe(lengthOfLIS(nums));
+            });
+        });
+
+        test('known values', () => {
+            expect(lengthOfLISPatience([10, 9, 2, 5, 3, 7, 101, 18])).toBe(4);
+            expect(lengthOfLISPatience([7, 7, 7, 7])).toBe(1);
+            expect(lengthOfLISPatience([])).toBe(0);
+        });
+    });
+
+    describe('maxProfitCooldown - State machine DP (LC309)', () => {
+        test('respects the one-day cooldown after selling', () => {
+            expect(maxProfitCooldown([1, 2, 3, 0, 2])).toBe(3);
+            expect(maxProfitCooldown([1])).toBe(0);
+            expect(maxProfitCooldown([2, 1])).toBe(0);
+            expect(maxProfitCooldown([1, 2, 4])).toBe(3);
+        });
+
+        test('handles empty input', () => {
+            expect(maxProfitCooldown([])).toBe(0);
         });
     });
 });

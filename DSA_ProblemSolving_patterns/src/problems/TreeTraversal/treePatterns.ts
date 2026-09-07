@@ -1210,3 +1210,294 @@ export function findShortestPathInFullBinaryTree(i: number, j: number): number {
 
     return movesA + movesB;
 }
+
+/**
+ * ----------------------------------------------------------------------------
+ * DIAMETER OF BINARY TREE (LeetCode 543)
+ * ----------------------------------------------------------------------------
+ * PROBLEM: return the length (in EDGES) of the longest path between any two
+ * nodes in the tree. That path does not have to pass through the root.
+ *
+ * MENTAL MODEL: this is `maxDepth` with a second job bolted on. At every node
+ * there is a candidate answer — the path that goes DOWN the left subtree, up
+ * through this node, and back DOWN the right subtree, i.e.
+ * leftDepth + rightDepth edges. The diameter is the best such candidate over
+ * every node, so one post-order pass can compute it while it computes depth.
+ *
+ * ⭐ THE PATTERN WORTH TAKING AWAY — "RETURN ONE THING, RECORD ANOTHER":
+ * the recursion RETURNS the depth (what the parent needs) but RECORDS the
+ * diameter in an outer variable (what the caller needs). Those two are
+ * different quantities, and trying to return the diameter directly is what
+ * makes people fail this problem. The same split powers `maxPathSum` (LC124)
+ * above: return the best straight-down path, record the best bent path.
+ *
+ * WHY NOT CALL maxDepth INSIDE THE LOOP? Because computing depth separately at
+ * every node re-walks the same subtrees and degrades to O(n²). Carrying both
+ * facts out of a single pass is the whole optimisation — the same lesson as
+ * "is this tree balanced" below.
+ *
+ * REASONING / STEPS:
+ *   1. Base case: a null child has depth 0 and contributes no path.
+ *   2. Post-order: get leftDepth and rightDepth.
+ *   3. RECORD: leftDepth + rightDepth is the longest path bending at this node
+ *      — compare it against the best seen so far.
+ *   4. RETURN: 1 + max(leftDepth, rightDepth), the depth the parent asked for.
+ *
+ * DRY-RUN on        1
+ *                  / \
+ *                 2   3
+ *                / \
+ *               4   5
+ *   depth(4) = 1, depth(5) = 1        → at 4 and 5, bend = 0 + 0 = 0
+ *   at node 2: left=1, right=1        → bend = 1 + 1 = 2   ← best so far
+ *   at node 3: left=0, right=0        → bend = 0
+ *   at node 1: left=depth(2)=2, right=depth(3)=1 → bend = 2 + 1 = 3  ✓
+ *   diameter = 3 edges (the path 4 → 2 → 1 → 3, or 5 → 2 → 1 → 3)
+ *
+ * ⚠️ EDGES, NOT NODES: that path touches 4 nodes but has 3 edges, and LeetCode
+ * wants 3. A single-node tree has diameter 0, not 1.
+ *
+ * @example
+ * // Real-world: the longest hop-to-hop distance in a tree-shaped network.
+ * diameterOfBinaryTree(root); // 3
+ * diameterOfBinaryTree(null); // 0
+ *
+ * Time:  O(n) — one post-order pass, each node visited once.
+ * Space: O(h) — recursion stack.
+ */
+export function diameterOfBinaryTree(root: TreeNode | null): number {
+    let diameter = 0; // RECORDED here; the recursion returns depth instead
+
+    function depth(node: TreeNode | null): number {
+        if (!node) return 0;
+
+        const leftDepth = depth(node.left);
+        const rightDepth = depth(node.right);
+
+        // The path that BENDS at this node — a candidate for the answer, but
+        // never something the parent can use.
+        diameter = Math.max(diameter, leftDepth + rightDepth);
+
+        // What the parent actually asked for: how deep is everything below me.
+        return 1 + Math.max(leftDepth, rightDepth);
+    }
+
+    depth(root);
+    return diameter;
+}
+
+/**
+ * ----------------------------------------------------------------------------
+ * BALANCED BINARY TREE (LeetCode 110)
+ * ----------------------------------------------------------------------------
+ * PROBLEM: is the tree height-balanced — i.e. at EVERY node, do the two
+ * subtree heights differ by at most 1?
+ *
+ * MENTAL MODEL: the naive reading is "for each node, compute both heights and
+ * compare". That is correct and O(n²), because each height computation walks a
+ * whole subtree and you do it at every node. This problem is the canonical
+ * demonstration of the folder's headline lesson:
+ *
+ *   ⭐ THE WASTE IN TREE PROBLEMS IS RARELY DOING TOO MUCH WORK PER NODE —
+ *      IT IS RE-WALKING NODES YOU HAVE ALREADY WALKED.
+ *
+ * THE FIX: make one post-order pass return BOTH facts at once — the height,
+ * and whether the subtree was balanced. Here that is encoded with a sentinel:
+ * return the real height when balanced, and -1 to mean "already unbalanced,
+ * stop caring about the height". Once a -1 appears it propagates straight to
+ * the top, which also prunes the remaining work.
+ *
+ * REASONING / STEPS:
+ *   1. Base case: null has height 0 and is balanced.
+ *   2. Get the left height; if it is -1, fail fast — no need to look right.
+ *   3. Get the right height; if it is -1, fail fast.
+ *   4. If |left - right| > 1, THIS node is the violation → return -1.
+ *   5. Otherwise return the honest height, 1 + max(left, right).
+ *
+ * DRY-RUN on the unbalanced   1
+ *                            / \
+ *                           2   2
+ *                          / \
+ *                         3   3
+ *                        /
+ *                       4
+ *   height(4) = 1
+ *   height(3-left) = 1 + max(1, 0) = 2
+ *   height(3-right) = 1
+ *   at node 2 (left): |2 - 1| = 1 → ok, height = 3
+ *   at node 2 (right): height = 1
+ *   at node 1: |3 - 1| = 2 > 1 → return -1 → answer false  ✓
+ *
+ * 🔗 The sentinel trick ("one return value carrying two meanings") is worth
+ * comparing with `diameterOfBinaryTree` above, which instead carries the second
+ * fact in a closure variable. Both avoid the O(n²) re-walk; pick whichever
+ * reads more clearly for the problem in front of you.
+ *
+ * @example
+ * isBalanced(root);  // true / false
+ * isBalanced(null);  // true — an empty tree is balanced
+ *
+ * Time:  O(n) — one pass (the naive version is O(n²)).
+ * Space: O(h) — recursion stack.
+ */
+export function isBalanced(root: TreeNode | null): boolean {
+    // Returns the height, or -1 meaning "a violation was already found below".
+    function height(node: TreeNode | null): number {
+        if (!node) return 0;
+
+        const leftHeight = height(node.left);
+        if (leftHeight === -1) return -1; // fail fast, skip the right subtree
+
+        const rightHeight = height(node.right);
+        if (rightHeight === -1) return -1;
+
+        if (Math.abs(leftHeight - rightHeight) > 1) {
+            return -1; // this node is the violation
+        }
+
+        return 1 + Math.max(leftHeight, rightHeight);
+    }
+
+    return height(root) !== -1;
+}
+
+/**
+ * ----------------------------------------------------------------------------
+ * COUNT GOOD NODES IN BINARY TREE (LeetCode 1448)
+ * ----------------------------------------------------------------------------
+ * PROBLEM: a node is "good" if no node on the path from the root down to it
+ * has a value GREATER than its own. Count the good nodes.
+ *
+ * MENTAL MODEL: every other problem in this file so far has combined answers
+ * on the way UP (post-order). This one is the opposite and that contrast is the
+ * reason to study it: what a node needs is a fact about its ANCESTORS — the
+ * biggest value seen on the way down. Information that flows downward is
+ * carried in a PARAMETER, not in a return value.
+ *
+ * ⭐ THE RULE TO REMEMBER:
+ *     state that flows DOWN the tree  → pass it as an argument (pre-order)
+ *     answers that flow UP the tree   → return it (post-order)
+ *   Choosing the wrong direction is what makes a tree problem feel impossible.
+ *   Here, "max on the path so far" can only be known by the caller, so it goes
+ *   down as an argument; the count comes back up as a sum.
+ *
+ * REASONING / STEPS:
+ *   1. Start at the root with maxSoFar = -Infinity, so the root always counts
+ *      (nothing above it can exceed it).
+ *   2. At each node: it is good if node.val >= maxSoFar.
+ *   3. Recurse into both children with the UPDATED maximum,
+ *      max(maxSoFar, node.val).
+ *   4. Return this node's own 1-or-0 plus both children's counts.
+ *
+ * DRY-RUN on        3            (maxSoFar shown in parentheses)
+ *                  / \
+ *                 1   4
+ *                /   / \
+ *               3   1   5
+ *   node 3 root (-∞): 3 >= -∞      → GOOD, children get max = 3
+ *   node 1      (3):  1 <  3       → not good, children get max = 3
+ *   node 3      (3):  3 >= 3       → GOOD  ⭐ note the >=, not >
+ *   node 4      (3):  4 >= 3       → GOOD, children get max = 4
+ *   node 1      (4):  1 <  4       → not good
+ *   node 5      (4):  5 >= 4       → GOOD
+ *   total = 4  ✓
+ *
+ * ⚠️ THE OFF-BY-ONE THAT MATTERS: the test is `>=`, not `>`. A node equal to
+ * the running maximum is still good — nothing on its path is GREATER than it.
+ * Using `>` quietly undercounts on trees with duplicate values.
+ *
+ * @example
+ * // Real-world: how many records set a new all-time high along their branch.
+ * goodNodes(root); // 4
+ * goodNodes(null); // 0
+ *
+ * Time:  O(n) — one pre-order pass.
+ * Space: O(h) — recursion stack.
+ */
+export function goodNodes(root: TreeNode | null): number {
+    // maxSoFar travels DOWN as an argument — see THE RULE above.
+    function count(node: TreeNode | null, maxSoFar: number): number {
+        if (!node) return 0;
+
+        // >= because equalling the running maximum still counts as good.
+        const self = node.val >= maxSoFar ? 1 : 0;
+        const nextMax = Math.max(maxSoFar, node.val);
+
+        return self + count(node.left, nextMax) + count(node.right, nextMax);
+    }
+
+    return count(root, -Infinity);
+}
+
+/**
+ * ----------------------------------------------------------------------------
+ * BINARY TREE INORDER TRAVERSAL (LeetCode 94)
+ * ----------------------------------------------------------------------------
+ * PROBLEM: return the node values in in-order (left, node, right).
+ *
+ * WHY THIS DESERVES ITS OWN ENTRY: in-order is not just one traversal among
+ * three — on a BST it emits the values in SORTED ORDER, which is the single
+ * most-used BST fact in interviews. `isValidBST` and `kthSmallest` above are
+ * both really "walk in-order and check/count as you go". Having the bare
+ * traversal here makes that relationship explicit.
+ *
+ * ⭐ PRE / IN / POST ARE ONE WALK, NOT THREE ALGORITHMS. The route through the
+ * tree is identical; the only difference is WHEN a node does its own work:
+ *     pre-order   node, then both children     — top-down, copying a tree
+ *     in-order    left child, node, right      — sorted order on a BST
+ *     post-order  both children, then node     — bottom-up, depth/diameter/sums
+ * If you can say which of the three a problem needs, you have usually already
+ * solved it.
+ *
+ * REASONING / STEPS (the iterative version below, which is the follow-up):
+ *   1. Walk as far LEFT as possible, pushing every node onto a stack. The
+ *      stack now holds the chain of ancestors you still owe a visit to.
+ *   2. Pop one — everything to its left is finished, so NOW record its value.
+ *   3. Move to its right child and repeat step 1 from there.
+ *   4. Done when both the stack is empty and there is no current node.
+ *
+ * DRY-RUN on     1
+ *                 \
+ *                  2
+ *                 /
+ *                3
+ *   push 1 (no left child) → stack [1]
+ *   pop 1 → out [1]; move to right child 2
+ *   push 2, then push its left child 3 → stack [2,3]
+ *   pop 3 → out [1,3]; no right child
+ *   pop 2 → out [1,3,2]; no right child → done  ✓
+ *
+ * WHY KEEP AN ITERATIVE VERSION AT ALL? Recursion is shorter and is the right
+ * answer first. But the stack version is what an interviewer asks for next, and
+ * it is the honest answer when the tree is deep enough that O(h) recursion
+ * would blow the call stack.
+ *
+ * @example
+ * inorderTraversal(root); // [1, 3, 2]
+ * inorderTraversal(null); // []
+ *
+ * Time:  O(n) — each node pushed and popped exactly once.
+ * Space: O(h) — the stack holds at most one root-to-leaf chain.
+ */
+export function inorderTraversal(root: TreeNode | null): number[] {
+    const values: number[] = [];
+    const stack: TreeNode[] = [];
+    let current: TreeNode | null = root;
+
+    while (current !== null || stack.length > 0) {
+        // 1. Run down the left spine, remembering every node passed.
+        while (current !== null) {
+            stack.push(current);
+            current = current.left;
+        }
+
+        // 2. Nothing left of this node remains — visit it now.
+        const node = stack.pop()!;
+        values.push(node.val);
+
+        // 3. Its left side and itself are done; continue in its right subtree.
+        current = node.right;
+    }
+
+    return values;
+}

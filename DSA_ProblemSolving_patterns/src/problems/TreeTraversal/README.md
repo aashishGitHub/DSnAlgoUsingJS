@@ -73,6 +73,7 @@ This guide connects the core **tree data structures** in this repo (Binary Tree,
 
 - **Binary Tree traversals & classic problems**  
   - File: `DSA_ProblemSolving_patterns/src/problems/TreeTraversal/treePatterns.ts`  
+  - Tests: `treePatterns.test.ts` — 68 tests covering every exported function.
   - Contains:
     - `TreeNode` class (binary tree node).
     - Implementations for core binary tree problems:
@@ -90,6 +91,11 @@ This guide connects the core **tree data structures** in this repo (Binary Tree,
       - Path Sum I & II (112, 113)
       - Right Side View (199)
       - Count Complete Tree Nodes (222)
+      - Inorder Traversal (94) — iterative, with the pre/in/post contrast
+      - Balanced Binary Tree (110) — the O(n²) → O(n) sentinel trick
+      - Diameter of Binary Tree (543) — "return one thing, record another"
+      - Count Good Nodes (1448) — state flowing DOWN as a parameter
+      - Shortest path in a 1-indexed full binary tree (no tree built)
 
 - **Max Binary Heap (array‑based complete binary tree)**  
   - File: `DataStructures/Heap/Max_binary_heap.js`  
@@ -161,3 +167,34 @@ When you come back to revise:
 4. **Re‑implement 2–3 problems** from `treePatterns.ts` from scratch
    (e.g. max depth, invert tree, level order, right side view) to lock in the concepts.
 
+## The three directions of information flow
+
+Most tree problems are decided by ONE question: *which way does the information
+travel?* Get this right and the code writes itself.
+
+| Flow | How to carry it | Traversal | Examples here |
+|---|---|---|---|
+| Answers come UP from children | `return` a value | post-order | `maxDepth`, `isBalanced`, `countNodes`, `maxPathSum` |
+| State goes DOWN from ancestors | pass an **argument** | pre-order | `goodNodes` (max on the path), `hasPathSum` (remaining sum), `isValidBST` (min/max bounds) |
+| Two different facts at once | `return` one, **record** the other in a closure | post-order | `diameterOfBinaryTree` (returns depth, records diameter), `maxPathSum` (returns one-armed gain, records bent path) |
+
+That last row is the one people fail. When a problem asks for something a
+parent cannot use — a path that *bends* at a node — you cannot return it; you
+record it on the side and return what the parent actually needs.
+
+**Also worth internalising:** the O(n²) trap. Calling `maxDepth` inside a
+per-node loop (in `isBalanced` or `diameterOfBinaryTree`) re-walks subtrees you
+have already walked. Carrying both facts out of a single pass is what brings it
+back to O(n) — the folder's headline lesson.
+
+## Go counterpart
+
+`trees` in the [Go tree](../../../../Go/trees/trees.go) implements **the same 22
+problems**, verified function-by-function. JS's `Codec` class corresponds to
+Go's `Serialize`/`Deserialize` pair.
+
+JS carries the teaching; the Go file adds only `GO NOTE` comments where Go
+genuinely differs — pointer vs value identity when comparing nodes (`==` on
+two `*TreeNode` compares addresses), the `append` aliasing bug that silently
+corrupts `PathSum` results, `1<<h` instead of `math.Pow` in `CountNodes`, and
+integer division already flooring in `FindShortestPathInFullBinaryTree`.

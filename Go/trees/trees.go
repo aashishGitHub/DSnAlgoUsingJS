@@ -443,3 +443,254 @@ func Deserialize(data string) *TreeNode {
 	}
 	return build()
 }
+
+// ---------------------------------------------------------------------------
+// PARITY BLOCK — mirrored from the JavaScript side
+// (DSA_ProblemSolving_patterns/src/problems/TreeTraversal/treePatterns.ts).
+//
+// The teaching narrative — mental model, dry-runs, why each traversal order is
+// the one the problem needs — lives in the JS file. Documented here is only
+// what Go does differently, marked "GO NOTE".
+// ---------------------------------------------------------------------------
+
+// LowestCommonAncestor is LC236: the LCA in a PLAIN binary tree, with no
+// ordering to exploit. O(n) time, O(h) space. JS: lowestCommonAncestor.
+//
+// Compare LowestCommonAncestorBST above: there, comparing values discards half
+// the tree at every step (O(h), one downward walk). Here nothing hints where a
+// value lives, so both subtrees must be searched. Being asked LC235 right
+// after LC236 is a test of whether you notice and exploit the extra structure.
+//
+// THE RETURN VALUE CARRIES TWO MEANINGS, which is the trick: "I found one of
+// the targets" on the way up, and "I am the split point" once both sides have
+// reported a find. A node that hears back from BOTH children is the LCA.
+//
+// GO NOTE — p and q are VALUES (ints), not *TreeNode, matching
+// LowestCommonAncestorBST's signature in this package. LeetCode's Go template
+// passes nodes and compares pointers; values are equivalent here because
+// LeetCode guarantees unique values, and they keep the two LCA functions
+// callable the same way. If duplicate values were possible you would have to
+// switch to pointer identity (node == p), since == on two *TreeNode compares
+// ADDRESSES, while comparing the structs (*node == *p) would compare fields
+// and match unrelated look-alike nodes.
+func LowestCommonAncestor(root *TreeNode, p, q int) *TreeNode {
+	if root == nil || root.Val == p || root.Val == q {
+		return root // found a target, or ran out of tree
+	}
+
+	left := LowestCommonAncestor(root.Left, p, q)
+	right := LowestCommonAncestor(root.Right, p, q)
+
+	switch {
+	case left != nil && right != nil:
+		return root // one target on each side → this node is the split point
+	case left != nil:
+		return left // both targets are somewhere below-left
+	default:
+		return right
+	}
+}
+
+// BuildTreeFromInorderPostorder rebuilds a tree from its inorder and postorder
+// traversals (LC106). O(n) time and space.
+// JS: buildTreeFromInorderPostorder.
+//
+// THE KEY FACTS: postorder's LAST element is always the root (preorder's FIRST
+// is, which is the only real difference from LC105). Inorder then splits into
+// everything left of the root and everything right of it, giving the two
+// subtree sizes. Consume postorder from the BACK, and build the RIGHT subtree
+// before the left — because the right subtree's nodes sit closer to the end.
+//
+// GO NOTE — the index map turns the O(n) "find the root in inorder" scan into
+// O(1), making the whole build O(n) instead of O(n²). Two Go specifics:
+//   - map[int]int must be created with make (or a literal); writing to a nil
+//     map panics, unlike reading from one, which quietly returns the zero value.
+//   - postIdx is captured by the closure and mutated, so build() must not be
+//     called concurrently — the shared cursor is the whole mechanism.
+func BuildTreeFromInorderPostorder(inorder, postorder []int) *TreeNode {
+	if len(inorder) == 0 || len(inorder) != len(postorder) {
+		return nil
+	}
+
+	indexOf := make(map[int]int, len(inorder))
+	for i, v := range inorder {
+		indexOf[v] = i
+	}
+
+	postIdx := len(postorder) - 1
+
+	// build owns the inorder range [lo, hi]; it consumes postorder backwards.
+	var build func(lo, hi int) *TreeNode
+	build = func(lo, hi int) *TreeNode {
+		if lo > hi {
+			return nil
+		}
+		rootVal := postorder[postIdx]
+		postIdx--
+
+		node := &TreeNode{Val: rootVal}
+		mid := indexOf[rootVal]
+
+		// RIGHT FIRST — its nodes are the ones nearest the end of postorder.
+		node.Right = build(mid+1, hi)
+		node.Left = build(lo, mid-1)
+		return node
+	}
+
+	return build(0, len(inorder)-1)
+}
+
+// HasPathSum reports whether some ROOT-TO-LEAF path sums to target (LC112).
+// O(n) time, O(h) space. JS: hasPathSum.
+//
+// THE TWO TRAPS, both worth stating out loud:
+//   - The path must end at a LEAF. Stopping at an internal node whose running
+//     sum happens to match is wrong.
+//   - An empty tree has NO paths, so it is false even for target 0. Returning
+//     true there is the most common wrong answer.
+//
+// Subtracting as you descend (rather than accumulating) keeps the leaf test to
+// a single comparison: at a leaf, the remainder must be exactly its value.
+func HasPathSum(root *TreeNode, target int) bool {
+	if root == nil {
+		return false // no path exists at all — not "a path summing to 0"
+	}
+	if root.Left == nil && root.Right == nil {
+		return target == root.Val // leaf: the remainder must land exactly
+	}
+	remaining := target - root.Val
+	return HasPathSum(root.Left, remaining) || HasPathSum(root.Right, remaining)
+}
+
+// PathSum collects EVERY root-to-leaf path summing to target (LC113).
+// O(n·h) time (each of up to n/2 leaves copies a path of length h),
+// O(h) working space. JS: pathSum.
+//
+// The backtracking shape: append on the way down, pop on the way back up, so
+// one shared slice represents the current path instead of allocating a new one
+// per node.
+//
+// GO NOTE — ⚠️ THE APPEND ALIASING BUG THIS PROBLEM IS FAMOUS FOR IN GO.
+// You MUST copy the path before storing it:
+//
+//	out = append(out, slices.Clone(path))   // correct
+//	out = append(out, path)                 // BUG: stores a VIEW
+//
+// A slice is a pointer to a backing array, so storing `path` directly means
+// every stored result aliases the same array — later backtracking overwrites
+// answers you already "saved", and you finish with N copies of whichever path
+// was explored last. JS has no such trap because `[...path]` is idiomatic and
+// `path.slice()` is what people reach for anyway; in Go the aliasing version
+// compiles, runs, and silently returns wrong data.
+func PathSum(root *TreeNode, target int) [][]int {
+	out := [][]int{}
+	path := []int{}
+
+	var walk func(node *TreeNode, remaining int)
+	walk = func(node *TreeNode, remaining int) {
+		if node == nil {
+			return
+		}
+
+		path = append(path, node.Val) // choose
+		remaining -= node.Val
+
+		if node.Left == nil && node.Right == nil && remaining == 0 {
+			// Clone: storing `path` itself would alias the backing array.
+			out = append(out, append([]int(nil), path...))
+		} else {
+			walk(node.Left, remaining)
+			walk(node.Right, remaining)
+		}
+
+		path = path[:len(path)-1] // un-choose (backtrack)
+	}
+
+	walk(root, target)
+	return out
+}
+
+// CountNodes counts the nodes of a COMPLETE binary tree faster than O(n)
+// (LC222). O((log n)²) time, O(log n) space. JS: countNodes.
+//
+// WHY IT BEATS THE OBVIOUS COUNT: "1 + left + right" visits every node and
+// ignores the completeness guarantee. Instead, walk strictly left and strictly
+// right. If those two heights are EQUAL, completeness proves the subtree is
+// PERFECT, and a perfect tree's size is the closed form 2^h - 1 — no traversal
+// needed. Only when they differ do you recurse, and then on a smaller problem.
+//
+// GO NOTE — the size is computed as a bit shift, 1<<height - 1, rather than
+// math.Pow. math.Pow returns a float64 and would need converting back, which
+// invites a rounding error for large heights; shifting is exact integer
+// arithmetic. Reaching for a shift where a power of two is meant is the
+// idiomatic Go move.
+func CountNodes(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+
+	leftHeight, rightHeight := 0, 0
+	for n := root; n != nil; n = n.Left {
+		leftHeight++
+	}
+	for n := root; n != nil; n = n.Right {
+		rightHeight++
+	}
+
+	if leftHeight == rightHeight {
+		return 1<<leftHeight - 1 // perfect subtree: exact closed form
+	}
+
+	return 1 + CountNodes(root.Left) + CountNodes(root.Right)
+}
+
+// FindShortestPathInFullBinaryTree returns the number of edges between nodes
+// labelled i and j in an implicit 1-indexed full binary tree, where the root
+// is 1 and node x's children are 2x and 2x+1. O(log(max(i,j))) time, O(1)
+// space. JS: findShortestPathInFullBinaryTree.
+//
+// NO TREE IS EVER BUILT. That labelling makes "go to my parent" pure
+// arithmetic — parent(x) = x/2 — so this reduces to the LCA idea above:
+// lift the deeper label until both sit at the same depth, then lift both in
+// lockstep until they meet. Every lift is one edge, so the total number of
+// lifts IS the answer.
+//
+// GO NOTE — integer division x/2 truncates toward zero, which for positive
+// labels is exactly the floor this problem wants, so no explicit floor is
+// needed (contrast JS, where / is float division and Math.floor is required).
+// Equivalent and marginally more idiomatic for a halving: x >> 1.
+func FindShortestPathInFullBinaryTree(i, j int) int {
+	depthOf := func(x int) int {
+		d := 0
+		for ; x > 1; x >>= 1 {
+			d++
+		}
+		return d
+	}
+
+	a, b := i, j
+	depthA, depthB := depthOf(a), depthOf(b)
+	movesA, movesB := 0, 0
+
+	// Lift the deeper label until the two depths match.
+	for depthA > depthB {
+		a >>= 1
+		depthA--
+		movesA++
+	}
+	for depthB > depthA {
+		b >>= 1
+		depthB--
+		movesB++
+	}
+
+	// Now lift both together until they land on the same ancestor (the LCA).
+	for a != b {
+		a >>= 1
+		b >>= 1
+		movesA++
+		movesB++
+	}
+
+	return movesA + movesB
+}

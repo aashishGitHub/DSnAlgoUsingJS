@@ -6,7 +6,7 @@ a new idea, only a new combination.*
 
 > **Every snippet in this document is copied from compiling, tested Go code.**
 > The module lives beside this file. Run `cd Go && go test ./...` — 22 packages,
-> 171 solution functions, 169 test functions, all passing. Where a claim is a
+> 193 solution functions, 205 test functions, all passing. Where a claim is a
 > judgement call rather than a fact (which approach an interviewer prefers, how
 > a name is pronounced in practice), it is marked as such.
 

@@ -13,7 +13,7 @@ columns accordingly:
 
 | Column | How it was checked | Confidence |
 |---|---|---|
-| **Go** | Function-level. Every entry is a named function with a passing test. `cd Go && go test ./...` → 22 packages, 171 functions, 169 tests. | High |
+| **Go** | Function-level. Every entry is a named function with a passing test. `cd Go && go test ./...` → 22 packages, 193 functions, 205 tests. | High |
 | **TS** | Folder- and spot-check level: the folder exists and named functions were grepped. I did **not** re-verify every TypeScript function against its tests in this pass. | Moderate |
 | **Gaps** | Grepped the whole repo for each pattern's canonical function names, then opened the hits to separate real implementations from comment mentions. | High |
 

@@ -246,3 +246,198 @@ func TestSerializeRoundTrip(t *testing.T) {
 		}
 	}
 }
+
+// ---------------------------------------------------------------------------
+// PARITY BLOCK tests — mirrored from the JavaScript side.
+// ---------------------------------------------------------------------------
+
+func TestLowestCommonAncestor(t *testing.T) {
+	// [3,5,1,6,2,0,8,null,null,7,4]
+	root := FromLevelOrder([]int{3, 5, 1, 6, 2, 0, 8, Null, Null, 7, 4})
+	cases := []struct{ p, q, want int }{
+		{5, 1, 3},
+		{5, 4, 5}, // one target is an ancestor of the other
+		{7, 4, 2},
+		{6, 4, 5},
+		{0, 8, 1},
+	}
+	for _, c := range cases {
+		got := LowestCommonAncestor(root, c.p, c.q)
+		if got == nil || got.Val != c.want {
+			t.Errorf("LowestCommonAncestor(%d, %d) = %v, want %d", c.p, c.q, got, c.want)
+		}
+	}
+}
+
+func TestLowestCommonAncestorEmpty(t *testing.T) {
+	if got := LowestCommonAncestor(nil, 1, 2); got != nil {
+		t.Errorf("LowestCommonAncestor(nil) = %v, want nil", got)
+	}
+}
+
+func TestBuildTreeFromInorderPostorder(t *testing.T) {
+	root := BuildTreeFromInorderPostorder(
+		[]int{9, 3, 15, 20, 7},
+		[]int{9, 15, 7, 20, 3},
+	)
+	if got, want := flatten(LevelOrder(root)), []int{3, 9, 20, 15, 7}; !slices.Equal(got, want) {
+		t.Errorf("BuildTreeFromInorderPostorder level order = %v, want %v", got, want)
+	}
+}
+
+// LC105 and LC106 must rebuild the SAME tree from the same original.
+func TestBuildTreeFromInorderPostorderAgreesWithPreorderBuild(t *testing.T) {
+	fromPre := BuildTree([]int{3, 9, 20, 15, 7}, []int{9, 3, 15, 20, 7})
+	fromPost := BuildTreeFromInorderPostorder([]int{9, 3, 15, 20, 7}, []int{9, 15, 7, 20, 3})
+	if !IsSameTree(fromPre, fromPost) {
+		t.Error("LC105 and LC106 rebuilt different trees from the same tree")
+	}
+}
+
+func TestBuildTreeFromInorderPostorderEdgeCases(t *testing.T) {
+	if got := BuildTreeFromInorderPostorder(nil, nil); got != nil {
+		t.Errorf("empty input = %v, want nil", got)
+	}
+	// Mismatched lengths must not panic.
+	if got := BuildTreeFromInorderPostorder([]int{1, 2}, []int{1}); got != nil {
+		t.Errorf("mismatched lengths = %v, want nil", got)
+	}
+	single := BuildTreeFromInorderPostorder([]int{1}, []int{1})
+	if single == nil || single.Val != 1 {
+		t.Errorf("single node = %v, want a node holding 1", single)
+	}
+}
+
+func TestHasPathSum(t *testing.T) {
+	root := FromLevelOrder([]int{5, 4, 8, 11, Null, 13, 4, 7, 2, Null, Null, Null, 1})
+	if !HasPathSum(root, 22) {
+		t.Error("HasPathSum(root, 22) = false, want true (5+4+11+2)")
+	}
+	if HasPathSum(root, 100) {
+		t.Error("HasPathSum(root, 100) = true, want false")
+	}
+}
+
+func TestHasPathSumMustEndAtLeaf(t *testing.T) {
+	// 1 -> 2. The running sum is 1 at the root, but the root is not a leaf,
+	// so target 1 must NOT match.
+	root := FromLevelOrder([]int{1, 2})
+	if HasPathSum(root, 1) {
+		t.Error("HasPathSum stopped at an internal node; the path must reach a leaf")
+	}
+	if !HasPathSum(root, 3) {
+		t.Error("HasPathSum(1->2, 3) = false, want true")
+	}
+}
+
+func TestHasPathSumEmptyTreeIsFalseEvenForZero(t *testing.T) {
+	if HasPathSum(nil, 0) {
+		t.Error("HasPathSum(nil, 0) = true; an empty tree has no root-to-leaf paths")
+	}
+}
+
+func TestPathSum(t *testing.T) {
+	root := FromLevelOrder([]int{5, 4, 8, 11, Null, 13, 4, 7, 2, Null, Null, 5, 1})
+	got := PathSum(root, 22)
+	want := [][]int{{5, 4, 11, 2}, {5, 8, 4, 5}}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("PathSum(root, 22) = %v, want %v", got, want)
+	}
+}
+
+// Guards the append-aliasing bug called out in the doc comment: if the results
+// shared one backing array, the two paths would be identical (or corrupted).
+func TestPathSumResultsAreIndependentCopies(t *testing.T) {
+	root := FromLevelOrder([]int{5, 4, 8, 11, Null, 13, 4, 7, 2, Null, Null, 5, 1})
+	got := PathSum(root, 22)
+	if len(got) != 2 {
+		t.Fatalf("expected 2 paths, got %d", len(got))
+	}
+	if slices.Equal(got[0], got[1]) {
+		t.Error("the two stored paths are identical — results are aliasing one array")
+	}
+	// Mutating one result must not disturb the other.
+	got[0][0] = -999
+	if got[1][0] == -999 {
+		t.Error("mutating one path changed another — results share a backing array")
+	}
+}
+
+func TestPathSumNoMatch(t *testing.T) {
+	if got := PathSum(FromLevelOrder([]int{1, 2, 3}), 5); len(got) != 0 {
+		t.Errorf("PathSum with no matching path = %v, want empty", got)
+	}
+	if got := PathSum(nil, 0); len(got) != 0 {
+		t.Errorf("PathSum(nil, 0) = %v, want empty", got)
+	}
+}
+
+func TestCountNodes(t *testing.T) {
+	cases := []struct {
+		vals []int
+		want int
+	}{
+		{[]int{1, 2, 3, 4, 5, 6}, 6},
+		{[]int{1, 2, 3, 4, 5, 6, 7}, 7}, // perfect → closed-form path
+		{[]int{1, 2, 3, 4}, 4},
+		{[]int{1}, 1},
+		{nil, 0},
+	}
+	for _, c := range cases {
+		if got := CountNodes(FromLevelOrder(c.vals)); got != c.want {
+			t.Errorf("CountNodes(%v) = %d, want %d", c.vals, got, c.want)
+		}
+	}
+}
+
+// The fast path must agree with a plain full count on every complete shape.
+func TestCountNodesAgreesWithNaiveCount(t *testing.T) {
+	var naive func(*TreeNode) int
+	naive = func(n *TreeNode) int {
+		if n == nil {
+			return 0
+		}
+		return 1 + naive(n.Left) + naive(n.Right)
+	}
+	for size := 0; size <= 40; size++ {
+		vals := make([]int, size)
+		for i := range vals {
+			vals[i] = i + 1
+		}
+		root := FromLevelOrder(vals)
+		if got, want := CountNodes(root), naive(root); got != want {
+			t.Errorf("CountNodes for a complete tree of %d nodes = %d, want %d", size, got, want)
+		}
+	}
+}
+
+func TestFindShortestPathInFullBinaryTree(t *testing.T) {
+	cases := []struct{ i, j, want int }{
+		{1, 2, 1},  // parent and child
+		{2, 4, 1},  // parent and child
+		{5, 3, 3},  // 5-2-1-3
+		{4, 5, 2},  // siblings
+		{7, 6, 2},  // siblings
+		{8, 15, 6}, // opposite edges, via the root
+		{1, 1, 0},  // a node is zero edges from itself
+		{7, 7, 0},
+	}
+	for _, c := range cases {
+		if got := FindShortestPathInFullBinaryTree(c.i, c.j); got != c.want {
+			t.Errorf("FindShortestPathInFullBinaryTree(%d, %d) = %d, want %d",
+				c.i, c.j, got, c.want)
+		}
+	}
+}
+
+func TestFindShortestPathInFullBinaryTreeIsSymmetric(t *testing.T) {
+	for i := 1; i <= 20; i++ {
+		for j := 1; j <= 20; j++ {
+			a := FindShortestPathInFullBinaryTree(i, j)
+			b := FindShortestPathInFullBinaryTree(j, i)
+			if a != b {
+				t.Fatalf("asymmetric for (%d,%d): %d vs %d", i, j, a, b)
+			}
+		}
+	}
+}

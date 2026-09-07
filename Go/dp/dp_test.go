@@ -1,6 +1,9 @@
 package dp
 
-import "testing"
+import (
+	"math/big"
+	"testing"
+)
 
 func TestClimbStairs(t *testing.T) {
 	cases := []struct{ n, want int }{{1, 1}, {2, 2}, {3, 3}, {4, 5}, {5, 8}, {10, 89}}
@@ -298,5 +301,352 @@ func TestLowerBoundHelper(t *testing.T) {
 	}
 	if got := lowerBound(nil, 1); got != 0 {
 		t.Errorf("lowerBound(nil,1) = %d, want 0", got)
+	}
+}
+
+// ---------------------------------------------------------------------------
+// PARITY BLOCK tests — the problems mirrored from the JavaScript side.
+// ---------------------------------------------------------------------------
+
+func TestMinPathSum(t *testing.T) {
+	cases := []struct {
+		grid [][]int
+		want int
+	}{
+		{[][]int{{1, 3, 1}, {1, 5, 1}, {4, 2, 1}}, 7},
+		{[][]int{{1, 2, 3}, {4, 5, 6}}, 12},
+		{[][]int{{5}}, 5},
+		{[][]int{{1, 2}, {1, 1}}, 3},
+		{nil, 0},
+	}
+	for _, c := range cases {
+		if got := MinPathSum(c.grid); got != c.want {
+			t.Errorf("MinPathSum(%v) = %d, want %d", c.grid, got, c.want)
+		}
+	}
+}
+
+func TestMinPathSumDoesNotMutateInput(t *testing.T) {
+	grid := [][]int{{1, 3, 1}, {1, 5, 1}, {4, 2, 1}}
+	MinPathSum(grid)
+	want := [][]int{{1, 3, 1}, {1, 5, 1}, {4, 2, 1}}
+	for r := range grid {
+		for c := range grid[r] {
+			if grid[r][c] != want[r][c] {
+				t.Fatalf("MinPathSum mutated the caller's grid at [%d][%d]", r, c)
+			}
+		}
+	}
+}
+
+func TestNumSquares(t *testing.T) {
+	cases := []struct{ n, want int }{
+		{0, 0}, {1, 1}, {4, 1}, {12, 3}, {13, 2}, {43, 3}, {100, 1},
+	}
+	for _, c := range cases {
+		if got := NumSquares(c.n); got != c.want {
+			t.Errorf("NumSquares(%d) = %d, want %d", c.n, got, c.want)
+		}
+	}
+}
+
+func TestMaximalSquare(t *testing.T) {
+	cases := []struct {
+		matrix [][]byte
+		want   int
+	}{
+		{[][]byte{
+			[]byte("10100"),
+			[]byte("10111"),
+			[]byte("11111"),
+			[]byte("10010"),
+		}, 4},
+		{[][]byte{[]byte("01"), []byte("10")}, 1},
+		{[][]byte{[]byte("0")}, 0},
+		{[][]byte{[]byte("111"), []byte("111"), []byte("111")}, 9},
+		{nil, 0},
+	}
+	for _, c := range cases {
+		if got := MaximalSquare(c.matrix); got != c.want {
+			t.Errorf("MaximalSquare(%s) = %d, want %d", c.matrix, got, c.want)
+		}
+	}
+}
+
+func TestLongestPalindromeSubseq(t *testing.T) {
+	cases := []struct {
+		s    string
+		want int
+	}{
+		{"bbbab", 4}, {"cbbd", 2}, {"a", 1}, {"abcde", 1}, {"racecar", 7}, {"", 0},
+	}
+	for _, c := range cases {
+		if got := LongestPalindromeSubseq(c.s); got != c.want {
+			t.Errorf("LongestPalindromeSubseq(%q) = %d, want %d", c.s, got, c.want)
+		}
+	}
+}
+
+func TestNumTrees(t *testing.T) {
+	cases := []struct{ n, want int }{
+		{0, 1}, {1, 1}, {2, 2}, {3, 5}, {4, 14}, {5, 42}, {6, 132},
+	}
+	for _, c := range cases {
+		if got := NumTrees(c.n); got != c.want {
+			t.Errorf("NumTrees(%d) = %d, want %d", c.n, got, c.want)
+		}
+	}
+}
+
+func TestMaxCoins(t *testing.T) {
+	cases := []struct {
+		nums []int
+		want int
+	}{
+		{[]int{3, 1, 5, 8}, 167},
+		{[]int{1, 5}, 10},
+		{[]int{5}, 5},
+		{nil, 0},
+	}
+	for _, c := range cases {
+		if got := MaxCoins(c.nums); got != c.want {
+			t.Errorf("MaxCoins(%v) = %d, want %d", c.nums, got, c.want)
+		}
+	}
+}
+
+func TestMaxCoinsDoesNotMutateInput(t *testing.T) {
+	nums := []int{3, 1, 5, 8}
+	MaxCoins(nums)
+	want := []int{3, 1, 5, 8}
+	for i := range nums {
+		if nums[i] != want[i] {
+			t.Fatalf("MaxCoins mutated the caller's slice at %d: %v", i, nums)
+		}
+	}
+}
+
+func TestUniquePathsWithObstacles(t *testing.T) {
+	cases := []struct {
+		grid [][]int
+		want int
+	}{
+		{[][]int{{0, 0, 0}, {0, 1, 0}, {0, 0, 0}}, 2},
+		{[][]int{{0, 1}, {0, 0}}, 1},
+		{[][]int{{1}}, 0},                    // start blocked
+		{[][]int{{0, 0}, {1, 1}, {0, 0}}, 0}, // fully walled off
+		{[][]int{{0, 0, 0}, {0, 0, 0}}, 3},   // no obstacles at all
+		{nil, 0},
+	}
+	for _, c := range cases {
+		if got := UniquePathsWithObstacles(c.grid); got != c.want {
+			t.Errorf("UniquePathsWithObstacles(%v) = %d, want %d", c.grid, got, c.want)
+		}
+	}
+}
+
+func TestCanJump(t *testing.T) {
+	cases := []struct {
+		nums []int
+		want bool
+	}{
+		{[]int{2, 3, 1, 1, 4}, true},
+		{[]int{3, 2, 1, 0, 4}, false},
+		{[]int{0}, true},
+		{[]int{2, 0, 0}, true},
+		{[]int{1, 0, 1, 0}, false},
+	}
+	for _, c := range cases {
+		if got := CanJump(c.nums); got != c.want {
+			t.Errorf("CanJump(%v) = %v, want %v", c.nums, got, c.want)
+		}
+	}
+}
+
+func TestJump(t *testing.T) {
+	cases := []struct {
+		nums []int
+		want int
+	}{
+		{[]int{2, 3, 1, 1, 4}, 2},
+		{[]int{2, 3, 0, 1, 4}, 2},
+		{[]int{0}, 0},
+		{[]int{1, 2}, 1},
+	}
+	for _, c := range cases {
+		if got := Jump(c.nums); got != c.want {
+			t.Errorf("Jump(%v) = %d, want %d", c.nums, got, c.want)
+		}
+	}
+}
+
+func TestMaxSubArray(t *testing.T) {
+	cases := []struct {
+		nums []int
+		want int
+	}{
+		{[]int{-2, 1, -3, 4, -1, 2, 1, -5, 4}, 6},
+		{[]int{1}, 1},
+		{[]int{5, 4, -1, 7, 8}, 23},
+		{[]int{-3, -1, -2}, -1}, // all negative: the least-bad single element
+		{nil, 0},
+	}
+	for _, c := range cases {
+		if got := MaxSubArray(c.nums); got != c.want {
+			t.Errorf("MaxSubArray(%v) = %d, want %d", c.nums, got, c.want)
+		}
+	}
+}
+
+func TestMinCostClimbingStairs(t *testing.T) {
+	cases := []struct {
+		cost []int
+		want int
+	}{
+		{[]int{10, 15, 20}, 15},
+		{[]int{1, 100, 1, 1, 1, 100, 1, 1, 100, 1}, 6},
+		{[]int{5}, 0},
+		{nil, 0},
+	}
+	for _, c := range cases {
+		if got := MinCostClimbingStairs(c.cost); got != c.want {
+			t.Errorf("MinCostClimbingStairs(%v) = %d, want %d", c.cost, got, c.want)
+		}
+	}
+}
+
+func TestCombinationSum4(t *testing.T) {
+	cases := []struct {
+		nums   []int
+		target int
+		want   int
+	}{
+		{[]int{1, 2, 3}, 4, 7}, // ORDER matters: 1+2 and 2+1 both count
+		{[]int{9}, 3, 0},
+		{[]int{1, 2, 3}, 0, 1},
+	}
+	for _, c := range cases {
+		if got := CombinationSum4(c.nums, c.target); got != c.want {
+			t.Errorf("CombinationSum4(%v, %d) = %d, want %d", c.nums, c.target, got, c.want)
+		}
+	}
+}
+
+// CombinationSum4 counts permutations, CoinChange2 counts combinations — the
+// only difference is loop order. Pinning the contrast stops a future "fix" of
+// one from silently turning it into the other.
+func TestCombinationSum4VsCoinChange2LoopOrder(t *testing.T) {
+	nums := []int{1, 2, 3}
+	if perms, combos := CombinationSum4(nums, 4), CoinChange2(4, nums); perms == combos {
+		t.Errorf("permutations (%d) should differ from combinations (%d) for %v/target 4",
+			perms, combos, nums)
+	}
+}
+
+func TestKnapsack01(t *testing.T) {
+	cases := []struct {
+		weights, values []int
+		capacity, want  int
+	}{
+		{[]int{1, 3, 4, 5}, []int{1, 4, 5, 7}, 7, 9},
+		{[]int{1, 2, 3}, []int{6, 10, 12}, 5, 22},
+		{[]int{5}, []int{10}, 4, 0}, // does not fit
+		{[]int{1, 2}, []int{1, 2}, 0, 0},
+		{[]int{1, 2}, []int{1}, 5, 0}, // mismatched lengths guard
+	}
+	for _, c := range cases {
+		if got := Knapsack01(c.weights, c.values, c.capacity); got != c.want {
+			t.Errorf("Knapsack01(%v, %v, %d) = %d, want %d",
+				c.weights, c.values, c.capacity, got, c.want)
+		}
+	}
+}
+
+// Each item may be taken ONCE. With an upward capacity loop this returns 4
+// (item reused four times); the downward loop is what keeps it at 1.
+func TestKnapsack01DoesNotReuseItems(t *testing.T) {
+	if got := Knapsack01([]int{1}, []int{1}, 4); got != 1 {
+		t.Errorf("Knapsack01 reused a 0/1 item: got %d, want 1", got)
+	}
+}
+
+func TestFindTargetSumWays(t *testing.T) {
+	cases := []struct {
+		nums   []int
+		target int
+		want   int
+	}{
+		{[]int{1, 1, 1, 1, 1}, 3, 5},
+		{[]int{1}, 1, 1},
+		{[]int{1}, 2, 0},    // unreachable
+		{[]int{1, 2}, 2, 0}, // parity: target+total is odd
+	}
+	for _, c := range cases {
+		if got := FindTargetSumWays(c.nums, c.target); got != c.want {
+			t.Errorf("FindTargetSumWays(%v, %d) = %d, want %d",
+				c.nums, c.target, got, c.want)
+		}
+	}
+}
+
+// MaxProductPath returns the RAW best product (matching the JS maxProductPath).
+func TestMaxProductPath(t *testing.T) {
+	cases := []struct {
+		grid [][]int
+		want int
+	}{
+		{[][]int{{1, -2, 1}, {1, -2, 1}, {3, -4, 1}}, 8}, // two negatives cancel
+		{[][]int{{1, 3}, {0, -4}}, 0},
+		{[][]int{{2, 3}, {4, 5}}, 40}, // 2→4→5 beats 2→3→5
+		{[][]int{{5}}, 5},
+		// Every path here multiplies the same five values, so all routes tie
+		// at -36; the raw version reports it, LC1594 would report -1.
+		{[][]int{{-1, -2, -3}, {-2, -3, -3}, {-3, -3, -2}}, -36},
+		{nil, 0},
+	}
+	for _, c := range cases {
+		if got := MaxProductPath(c.grid); got != c.want {
+			t.Errorf("MaxProductPath(%v) = %d, want %d", c.grid, got, c.want)
+		}
+	}
+}
+
+// MaxProductPathMod applies the LeetCode 1594 contract instead: -1 for a
+// negative best product, otherwise the product mod 1e9+7.
+func TestMaxProductPathMod(t *testing.T) {
+	cases := []struct {
+		grid [][]int
+		want int
+	}{
+		{[][]int{{-1, -2, -3}, {-2, -3, -3}, {-3, -3, -2}}, -1}, // negative → -1
+		{[][]int{{1, -2, 1}, {1, -2, 1}, {3, -4, 1}}, 8},
+		{[][]int{{1, 3}, {0, -4}}, 0},
+		{[][]int{{2, 3}, {4, 5}}, 40},
+		{nil, -1},
+	}
+	for _, c := range cases {
+		if got := MaxProductPathMod(c.grid); got != c.want {
+			t.Errorf("MaxProductPathMod(%v) = %d, want %d", c.grid, got, c.want)
+		}
+	}
+}
+
+// The big.Int path must stay exact where the plain int path silently wraps.
+// A 4x4 grid of 1000s has product 1000^7 = 1e21, well past 2^63.
+func TestMaxProductPathModExactBeyondInt64(t *testing.T) {
+	grid := [][]int{
+		{1000, 1000, 1000, 1000},
+		{1000, 1000, 1000, 1000},
+		{1000, 1000, 1000, 1000},
+		{1000, 1000, 1000, 1000},
+	}
+	// 1000^7 mod (1e9+7): computed independently below with big.Int so the
+	// assertion does not just re-run the implementation's own arithmetic.
+	want := new(big.Int).Mod(
+		new(big.Int).Exp(big.NewInt(1000), big.NewInt(7), nil),
+		big.NewInt(1_000_000_007),
+	)
+	if got := MaxProductPathMod(grid); int64(got) != want.Int64() {
+		t.Errorf("MaxProductPathMod(1000s) = %d, want %d", got, want.Int64())
 	}
 }

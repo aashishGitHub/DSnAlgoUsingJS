@@ -5,6 +5,13 @@
 
 ## The incremental method for every DP problem
 
+> The full version of this — **the five recipe questions (choice, state,
+> transition, base case, order) and the 4-rung ladder** — is at the top of
+> [`dpPatterns.ts`](dpPatterns.ts), written for a first-time reader. Every
+> problem in that file carries a **`RECIPE APPLIED`** block answering the same
+> five questions, so you practise one method 30+ times instead of memorising
+> 30 tricks.
+
 1. **Write the brute-force recursion** — just encode the choices. Exponential, correct.
 2. **Name the waste** — point at the subproblem being recomputed (`ways(3)` called 2ᵏ times).
 3. **Memoize it** (top-down: recursion + cache) — usually a 3-line change.
@@ -16,7 +23,7 @@ Interview tip: top-down is the fastest to get *correct* live; offer bottom-up + 
 
 ### Canonical (typed)
 
-- **`dpPatterns.ts`** — 25 problems across the sub-families:
+- **`dpPatterns.ts`** — 33 problems across the sub-families:
   - *Linear / choice*: `climbStairs`, `minCostClimbingStairs` (LC746),
     `rob` / `rob2` (House Robber I/II)
   - *Subsequence*: `lengthOfLIS`, `longestCommonSubsequence`
@@ -25,9 +32,20 @@ Interview tip: top-down is the fastest to get *correct* live; offer bottom-up + 
     `combinationSum4` (LC377, count permutations), `wordBreak`
   - *0/1 knapsack*: `knapsack01` (+`knapsack01Table`), `canPartition` (LC416),
     `findTargetSumWays` (LC494)
-  - *Grid*: `uniquePaths`, `uniquePathsWithObstacles`, `maxProductPath` variants
-  - *Strings*: `minDistance` (edit distance), `countSubstrings` (LC647)
-  - *Other*: `canJump` / `jump`, `numDecodings`, `maxProduct`, `maxSubArray`
+  - *Grid*: `uniquePaths`, `uniquePathsWithObstacles`, `maxProductPath` variants,
+    `minPathSum` (LC64, full ladder), `maximalSquare` (LC221)
+  - *Strings*: `minDistance` (edit distance), `countSubstrings` (LC647),
+    `longestPalindromeSubseq` (LC516)
+  - *Interval DP*: `maxCoins` (LC312 Burst Balloons) — the "burst LAST, not
+    first" flip; this is the category the header table used to advertise
+    without implementing
+  - *Counting by split*: `numTrees` (LC96, Catalan — choose the root, multiply
+    the two sides; same move as interval DP)
+  - *State machine*: `maxProfitCooldown` (LC309) — three modes, three rolling
+    variables, and the "snapshot yesterday first" bug it is easy to write
+  - *Other*: `canJump` / `jump`, `numDecodings`, `maxProduct`, `maxSubArray`,
+    `numSquares` (LC279, coin change with generated coins),
+    `lengthOfLISPatience` (LC300 in O(n log n) — the follow-up to `lengthOfLIS`)
 - **`TwoSequencesDP/`** — the 2D two-string family with its own
   [README](TwoSequencesDP/README.md): LCS (`longestCommonSubsequence.js` +
   hand-written typings), `editDistance.ts`, `deleteOperation.ts`,
@@ -57,6 +75,7 @@ runnable functions for these — read these first:
 | Partition Equal Subset Sum | `…BruteForce` → `…Memo` → `canPartition` |
 | Target Sum | `…BruteForce` → `…Memo` → `findTargetSumWays` |
 | Palindromic Substrings | `…BruteForce` → `…DP` → `countSubstrings` |
+| Min Path Sum | `minPathSumBruteForce` → `minPathSumMemo` → `minPathSum` |
 
 The remaining problems ship only their final solution; space optimization is
 described in prose in their doc comments rather than as a second function.
@@ -92,14 +111,37 @@ is good revision. **None of these are exported**, so none are reachable from
 | Subsequence | best over all `j < i` | lengthOfLIS |
 | Two sequences | 2D `dp[i][j]` | LCS, edit distance |
 | Grid | `dp[r][c]` from top/left | uniquePaths |
-| State machine | one var per state | stock w/ cooldown/fee → [`2Pointers/bestTimeToBuySell.ts`](../2Pointers/bestTimeToBuySell.ts) variations 3–6 |
+| State machine | one var per state | `maxProfitCooldown` (LC309) here; more variations in [`2Pointers/bestTimeToBuySell.ts`](../2Pointers/bestTimeToBuySell.ts) 3–6 |
+| Interval | `dp[i][j]` over a range, split on k | `maxCoins` (LC312) |
 
-**Still to practice**: interval DP (Burst Balloons, Matrix Chain — the file
-header's category table advertises Interval DP but no interval problem is
-implemented), digit DP, Distinct Subsequences (LC115), and Regular Expression /
-Wildcard Matching (LC10/LC44).
+**Still to practice**: digit DP, Distinct Subsequences (LC115), Regular
+Expression / Wildcard Matching (LC10/LC44), Palindrome Partitioning II (LC132),
+and the rest of the stock family (LC123/188 — LC121 is in
+[`2Pointers/bestTimeToBuySell.ts`](../2Pointers/bestTimeToBuySell.ts), LC309 is
+`maxProfitCooldown` here).
+
+~~Interval DP~~ is now covered by `maxCoins` (LC312).
 
 ## Related Patterns
 
 - Kadane's maximum subarray ([`SlidingWindow/kadaneMaxSubarray.ts`](../SlidingWindow/kadaneMaxSubarray.ts)) — the 1-variable DP
 - Backtracking ([`Backtracking/`](../Backtracking/backtrackingPatterns.ts)) — DP's exhaustive cousin: memoize a backtrack and it becomes top-down DP
+
+## Go counterpart
+
+`dp` in the [Go tree](../../../../Go/dp/dp.go) implements **the same 31
+problems** (LC5 excepted — on the JS side it lives in
+[`Strings/longestPalindromicSubstring.ts`](../Strings/longestPalindromicSubstring.ts)
+rather than being duplicated here).
+
+The division of labour is deliberate:
+
+- **JS carries the teaching** — recipe questions, visualisations, the ladder.
+- **Go carries only the Go-specific notes**, marked `GO NOTE`, e.g. why
+  `math.MaxInt` is a trap once you add to it (`MinPathSum`), `byte` vs `rune`
+  when a grid is `[][]byte` (`MaximalSquare`), why a 2D slice needs an explicit
+  allocation loop (`LongestPalindromeSubseq`), the `append` aliasing trap
+  (`MaxCoins`), and integer-division truncation with no warning
+  (`FindTargetSumWays`).
+
+Read the JS doc block first, then the Go note for the same problem.

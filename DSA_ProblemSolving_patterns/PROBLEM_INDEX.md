@@ -4,8 +4,11 @@
 
 > **Two language tracks.** This index covers the **TypeScript** implementations
 > under `src/problems/`. The **Go** track lives in [`Go/`](../Go/) — 22 pattern
-> packages, 171 solution functions, 169 tests, all passing — with its own single
+> packages, 193 solution functions, 205 tests, all passing — with its own single
 > revision document, [`Go/GO_INTERVIEW_QA.md`](../Go/GO_INTERVIEW_QA.md).
+>
+> **Parity between the tracks is tracked in
+> [§13 JS ↔ Go parity](#13-js--go-parity) at the bottom of this file.**
 
 ---
 
@@ -382,3 +385,56 @@ files (adversarially verified by a 17-agent review pass).**
 *Total Problems: 130+ — reorganization COMPLETE (0 files awaiting organization)*
 *Repo health: 600+ tests green, `tsc --noEmit` clean*
 
+---
+
+## 13. JS ↔ Go parity
+
+The two trees are being brought to the same problem set, **pattern by pattern**.
+
+**The division of labour** (so neither side duplicates the other's job):
+
+- **JS carries the teaching**: the five recipe questions, visualisations, the
+  brute-force → memoise → tabulate → roll ladder, real-world framings.
+- **Go carries only what Go does differently**, marked `GO NOTE` in the doc
+  comment — `math.MaxInt` as a sentinel you must not add to, `byte` vs `rune`,
+  2D slices needing an explicit allocation loop, `append` aliasing, integer
+  division truncating silently, `big.Int` mutating its receiver.
+
+Read the JS doc block for a problem first, then that problem's Go note.
+
+### Status
+
+| JS pattern | Go package | Parity | Notes |
+|---|---|---|---|
+| `DynamicProgramming/` | `dp` | ✅ **complete** | 31 problems + variants on both sides, incl. interval DP (LC312) and a state machine (LC309). LC5 is not duplicated into DP — on the JS side it lives in `Strings/longestPalindromicSubstring.ts`. |
+| `2Pointers/` | `twopointers` | ⏳ pending | JS is much broader here (the stock family LC121/122/123/188 lives in this folder). |
+| `SlidingWindow/` | `slidingwindow` | ⏳ pending | Go is broader (LC3/76/239/424/567). |
+| `HashMap/` | `hashmap` | ⏳ pending | Two-way gap. |
+| `BinarySearch/` | `binarysearch` | ⏳ pending | JS-only: LC69/240/287/367. |
+| `Stack/` | `stack` | ⏳ pending | JS-only: LC22/85/394/496/503. |
+| `LinkedList/` + `FastSlowPointers/` | `linkedlist` | ⏳ pending | ⚠️ Structural mismatch: JS splits these into two folders, Go keeps one package. Decide the target shape before syncing. |
+| `MergeIntervals/` | `intervals` | ⏳ pending | Two-way gap. |
+| `CyclicSort/` | `cyclicsort` | ⏳ pending | Go is broader (LC41/268/442/448). |
+| `Heap/` | `heaptopk` | ⏳ pending | Small gap both ways. |
+| `TreeTraversal/` | `trees` | ✅ **complete** | 22 problems both sides. Go gained LC236/106/112/113/222 + the 1-indexed full-binary-tree path; JS gained LC543/110/1448/94. JS's `Codec` class maps to Go's `Serialize`/`Deserialize`. The JS folder also gained its first test file (68 tests) — it had none. |
+| `Trie/` | `trie` | ⏳ pending | JS-only: LC79. |
+| `Graph/` + `IslandsMatrix/` | `graphs` `toposort` `shortestpath` `matrix` | ⏳ pending | ⚠️ Structural mismatch: the grid/islands problems sit in `IslandsMatrix/` on the JS side but in `graphs`/`matrix` on the Go side, so a raw problem-number diff overstates the gap. |
+| `UnionFind/` | `unionfind` | ⏳ pending | Nearly at parity. |
+| `Backtracking/` | `backtracking` | ⏳ pending | Go-only: LC22/51/131. |
+| `BitManipulation/` | `mathbits` | ⏳ pending | Two-way gap; Go's package is wider in scope than the JS folder. |
+| `Arrays/` `Strings/` `easy/` `Misc/` | — | ⏳ no counterpart | Needs a decision: fold into existing Go packages, or create new ones. |
+| — | `design` `greedy` `prefixsum` | ⏳ no counterpart | Go-only packages; no JS folder exists yet. |
+
+### Caveat on measuring the gap
+
+A raw diff of LeetCode numbers between folders **overstates** the work, for two
+reasons worth knowing before planning:
+
+1. **Prose cross-references count as hits.** A problem merely *mentioned* as
+   "see also LC64" reads as present to a text search.
+2. **The two trees group problems differently** (the `IslandsMatrix`/`graphs`
+   and `FastSlowPointers`/`linkedlist` splits above). A problem can be present
+   on both sides under different packages and still appear as a gap.
+
+So each pattern needs a **function-level** comparison, the way `dp` was done,
+rather than a number diff. Expect the real gap to be smaller than a naive count.

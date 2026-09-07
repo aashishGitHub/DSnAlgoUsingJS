@@ -32,8 +32,21 @@ go test ./...              # 22 packages
 go vet ./... && gofmt -l . # both silent
 ```
 
-**Current state:** 22 packages, 171 solution functions, 169 test functions, all
+**Current state:** 22 packages, 193 solution functions, 205 test functions, all
 passing; `go vet` and `gofmt` clean.
+
+## JS ↔ Go parity
+
+The two trees are being brought to the same problem set, pattern by pattern.
+The teaching narrative (recipe questions, visualisations, the brute-force →
+memoise → tabulate → roll ladder) lives on the **JS** side; the Go side carries
+only what Go does differently, marked `GO NOTE` in the doc comment.
+
+| Pattern | Parity | Notes |
+|---|---|---|
+| `dp` | ✅ complete | 31 problems both sides. LC5 lives in JS under `Strings/longestPalindromicSubstring.ts` rather than being duplicated into the DP file. |
+| `trees` | ✅ complete | 22 problems both sides. JS's `Codec` class maps to Go's `Serialize`/`Deserialize`. |
+| all others | ⏳ pending | See the gap table in [../DSA_ProblemSolving_patterns/PROBLEM_INDEX.md](../DSA_ProblemSolving_patterns/PROBLEM_INDEX.md) |
 
 ## Conventions
 
