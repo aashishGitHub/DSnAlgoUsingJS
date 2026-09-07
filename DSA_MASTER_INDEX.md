@@ -51,7 +51,7 @@ above it.
 | 9 | Binary Search on the **answer** | ✅ | 🟡 | `binarysearch.MinEatingSpeed` · TS has `minEatingSpeed` in `binarySearchPatterns.ts` |
 | 10 | Lower/upper bound templates | ✅ | 🟡 | `binarysearch.LowerBound`/`UpperBound` |
 | 11 | Stack (matching, evaluation) | ✅ | 🟡 | [Go/stack/](Go/stack/) · TS only `easy/validParenthesis_STACK.ts` |
-| 12 | **Monotonic Stack** (next greater, histogram) | ✅ | ❌ | `stack.DailyTemperatures`, `LargestRectangleArea` — *no TS equivalent* |
+| 12 | **Monotonic Stack** (next greater, histogram) | ✅ | ✅ | `stack.DailyTemperatures`, `LargestRectangleArea` · TS [`Stack/stackPatterns.ts`](DSA_ProblemSolving_patterns/src/problems/Stack/stackPatterns.ts) |
 | 13 | Monotonic Deque (window max) | ✅ | 🟡 | `slidingwindow.MaxSlidingWindow` |
 | 14 | Fast & Slow Pointers (Floyd) | ✅ | ✅ | [Go/linkedlist/](Go/linkedlist/) · `FastSlowPointers/` |
 | 15 | Linked-list rewiring | ✅ | ✅ | [Go/linkedlist/](Go/linkedlist/) · `DataStructures/LinkedList/` 📦 |
@@ -64,11 +64,11 @@ above it.
 |---|---|:--:|:--:|---|
 | 18 | Heap / Top-K | ✅ | 🟡 | [Go/heaptopk/](Go/heaptopk/) · TS has `topKFrequentHeap/Sort/BucketSort` but no reusable heap type — only `DataStructures/Heap/` 📦 |
 | 19 | QuickSelect | ✅ | 🟡 | `heaptopk.FindKthLargestQuickSelect` · `Arrays/kthLargest.js` 📦 |
-| 20 | Two Heaps (streaming median) | ✅ | ❌ | `heaptopk.MedianFinder` — *no TS equivalent* |
+| 20 | Two Heaps (streaming median) | ✅ | ✅ | `heaptopk.MedianFinder` · TS [`Heap/heapPatterns.ts`](DSA_ProblemSolving_patterns/src/problems/Heap/heapPatterns.ts) (`MedianFinder`, plus a reusable `PriorityQueue`) |
 | 21 | Tree DFS (combine subtree answers) | ✅ | ✅ | [Go/trees/](Go/trees/) · `TreeTraversal/` |
 | 22 | Tree BFS (levels) | ✅ | ✅ | `trees.LevelOrder` · `TreeTraversal/treePatterns.ts` |
 | 23 | BST properties | ✅ | ✅ | `trees.IsValidBST`, `KthSmallest` · `DataStructures/Tree/` 📦 |
-| 24 | Trie | ✅ | ❌ | [Go/trie/](Go/trie/) · TS none; `DataStructures/Trie/index.js` 📦 |
+| 24 | Trie | ✅ | ✅ | [Go/trie/](Go/trie/) · TS [`Trie/triePatterns.ts`](DSA_ProblemSolving_patterns/src/problems/Trie/triePatterns.ts) (LC208/211/212) |
 | 25 | Design / composition (LRU, TimeMap) | ✅ | 🟡 | [Go/design/](Go/design/) · `HashMap/hashMapPatterns.ts`, `DataStructures/LRUCache/` 📦 |
 
 ### Tier 4 — Graphs
@@ -108,7 +108,7 @@ above it.
 | # | Pattern | Go | TS | Where |
 |---|---|:--:|:--:|---|
 | 48 | Bit manipulation | ✅ | 🟡 | [Go/mathbits/](Go/mathbits/) · `HashMap/hashSetPatterns.ts` has `singleNumber` only |
-| 49 | Matrix transforms (rotate/spiral/zeroes) | ✅ | ✅ | [Go/matrix/](Go/matrix/) · `Arrays/arrayPatternProblems.ts` |
+| 49 | Matrix transforms (rotate/spiral/zeroes) | ✅ | ✅ | [Go/matrix/](Go/matrix/) · `Arrays/arrayPatternProblems.ts` — `rotateMatrix90`, `spiralOrder`, `setZeroes` |
 | 50 | Math: primes, GCD, fast power | 🟡 | 🟡 | `mathbits.MyPow` · `Misc/superPrime.ts`, `easy/GCD_of_strings.ts` |
 | 51 | **Boyer-Moore majority vote** | ❌ | ❌ | — *see gap A4* |
 | 52 | **String matching (KMP / Rabin-Karp)** | ❌ | ❌ | — *see gap A5* |
@@ -140,7 +140,7 @@ above it.
 |---|---|---|
 | **Go** | `LowestCommonAncestor` for a **general binary tree** (LC236) | Go has only the BST variant. **LC236 is in Blind 75** — correcting my own claim from the previous session, where I listed the Blind 75 gaps but omitted this one |
 | **Go** | RandomizedSet (LC380), `nextPermutation` (LC31), `countInversions` | All three exist in `Arrays/arrayPatternProblems.ts` |
-| **TS** | Trie, monotonic stack, Dijkstra/Bellman-Ford, two-heaps median, Clone Graph, TimeMap, and four backtracking problems (N-Queens, Generate Parentheses, Word Search, Palindrome Partitioning) | Each exists and is tested on the Go side. TS `Backtracking/` currently has only `subsets`, `subsetsWithDup`, `permute`, `combinationSum`, `letterCombinations` |
+| **TS** | Dijkstra/Bellman-Ford/MST, TimeMap, LFU, and two backtracking problems (N-Queens, Palindrome Partitioning) | Each exists and is tested on the Go side. Closed since this table was written: Trie, monotonic stack, two-heaps median, Clone Graph, Generate Parentheses, Word Search, bit manipulation, merge-k-lists, Set Matrix Zeroes |
 
 ### Tier B — senior / less frequent (worth knowing, not urgent)
 

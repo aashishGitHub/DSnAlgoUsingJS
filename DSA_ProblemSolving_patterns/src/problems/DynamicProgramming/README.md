@@ -14,24 +14,73 @@ Interview tip: top-down is the fastest to get *correct* live; offer bottom-up + 
 
 ## Files in this folder
 
-### Canonical (typed, tested)
+### Canonical (typed)
 
-- **`dpPatterns.ts`** — 18 problems across the sub-families: climbStairs, rob/rob2 (House Robber I/II), lengthOfLIS, longestCommonSubsequence, wordBreak, coinChange, uniquePaths(+obstacles), canJump/jump, numDecodings, maxProduct, maxSubArray, minDistance (edit distance), maxProductPath variants.
-- **`TwoSequencesDP/`** — the 2D two-string family with its own [README](TwoSequencesDP/README.md): LCS (`longestCommonSubsequence.js` + typings), `editDistance.ts`, `deleteOperation.ts`, `interleavingString.ts`.
+- **`dpPatterns.ts`** — 25 problems across the sub-families:
+  - *Linear / choice*: `climbStairs`, `minCostClimbingStairs` (LC746),
+    `rob` / `rob2` (House Robber I/II)
+  - *Subsequence*: `lengthOfLIS`, `longestCommonSubsequence`
+  - *Unbounded knapsack*: `coinChange` (LC322, minimize),
+    `coinChange2`/`change` (LC518, count combinations),
+    `combinationSum4` (LC377, count permutations), `wordBreak`
+  - *0/1 knapsack*: `knapsack01` (+`knapsack01Table`), `canPartition` (LC416),
+    `findTargetSumWays` (LC494)
+  - *Grid*: `uniquePaths`, `uniquePathsWithObstacles`, `maxProductPath` variants
+  - *Strings*: `minDistance` (edit distance), `countSubstrings` (LC647)
+  - *Other*: `canJump` / `jump`, `numDecodings`, `maxProduct`, `maxSubArray`
+- **`TwoSequencesDP/`** — the 2D two-string family with its own
+  [README](TwoSequencesDP/README.md): LCS (`longestCommonSubsequence.js` +
+  hand-written typings), `editDistance.ts`, `deleteOperation.ts`,
+  `interleavingString.ts`. **Untested**, and its LCS is still `.js` + a `.d.ts`
+  rather than typed source.
+
+> ⚠️ **Two problems are implemented twice.** `minDistance` (LC72) and
+> `longestCommonSubsequence` (LC1143) exist both here and in `TwoSequencesDP/`,
+> with **different return types** — the versions here return a number, the
+> `TwoSequencesDP` ones return the DP table. Only `dpPatterns.ts` is re-exported
+> from `src/problems/index.ts`, so the barrel does not collide, but pick
+> deliberately when importing directly.
+
+### Where the 4-step method is actually demonstrated
+
+The method above is prescribed for every problem but only *shown* as separate
+runnable functions for these — read these first:
+
+| Problem | Ladder |
+|---|---|
+| Climbing Stairs | `climbStairsBruteForce` → `climbStairsMemo` → `climbStairs` |
+| Coin Change | `coinChangeBruteForce` → `coinChangeMemo` → `coinChange` |
+| Min Cost Climbing Stairs | `…BruteForce` → `…Memo` → `minCostClimbingStairs` |
+| Combination Sum IV | `…BruteForce` → `…Memo` → `combinationSum4` |
+| Coin Change II | `…BruteForce` → `…Memo` → `coinChange2` |
+| 0/1 Knapsack | `…BruteForce` → `…Memo` → `knapsack01Table` → `knapsack01` |
+| Partition Equal Subset Sum | `…BruteForce` → `…Memo` → `canPartition` |
+| Target Sum | `…BruteForce` → `…Memo` → `findTargetSumWays` |
+| Palindromic Substrings | `…BruteForce` → `…DP` → `countSubstrings` |
+
+The remaining problems ship only their final solution; space optimization is
+described in prose in their doc comments rather than as a second function.
+
+**Three problems worth studying side by side**: `coinChange` (LC322) minimizes coin
+count, `coinChange2` (LC518) counts combinations, `combinationSum4` (LC377)
+counts permutations — same input shape, one table, and the only structural
+difference between the last two is which loop is on the outside.
 
 ### Legacy first-attempt studies (`.js`)
 
-Kept deliberately — comparing your first attempt against the canonical version is good revision:
+Kept deliberately — comparing your first attempt against the canonical version
+is good revision. **None of these are exported**, so none are reachable from
+`src/problems/index.ts`.
 
-| Study file | Canonical version |
-|---|---|
-| `fibonacci.js` | `dpPatterns.ts` → `climbStairs` (same recurrence) |
-| `houseRobber.js` | `dpPatterns.ts` → `rob`, `rob2` |
-| `coinChange.js` | `dpPatterns.ts` → `coinChange` |
-| `longestIncreasingSubsequence.js` | `dpPatterns.ts` → `lengthOfLIS` |
-| `maxSumIncreasingSubsequence.js` | LIS variant (max sum instead of length) |
-| `lisAdjacentDiffOne.js` | LIS variant (adjacent difference = 1) |
-| `knapsack.js` | 0/1 knapsack — the choice-based 2D template |
+| Study file | Status | Canonical version |
+|---|---|---|
+| `fibonacci.js` | ⚠️ runs `console.log` at import | `dpPatterns.ts` → `climbStairs` (same recurrence) |
+| `houseRobber.js` | 🐛 `robCircularStreet` is missing its `return` — always `undefined` | `dpPatterns.ts` → `rob`, `rob2` |
+| `coinChange.js` | ⚠️ runs at import; returns `-1` for amount 0. Historically the folder's only top-down solution | `dpPatterns.ts` → `coinChange`, `coinChangeMemo` |
+| `longestIncreasingSubsequence.js` | 🐛 first function uses `L[i] + L[j]` instead of `L[j] + 1`; second one is correct | `dpPatterns.ts` → `lengthOfLIS` |
+| `maxSumIncreasingSubsequence.js` | 🐛 despite the name it computes LIS **length**, not max sum, and is buggy (`L[i] += 1`) | the real max-sum variant is **not** implemented anywhere |
+| `lisAdjacentDiffOne.js` | 🐛 **empty stub** — declares `curr`/`max`, no body | not implemented anywhere |
+| `knapsack.js` | 🐛 calls an undefined `knapSack` (capital S) with swapped args; plain recursion, **no DP table** | `dpPatterns.ts` → `knapsack01` (typed, tabulated, space-rolled) |
 
 ## The sub-families (full treatment: [DP_Patterns_Cheat_Sheet.md](../../../DP_Patterns_Cheat_Sheet.md))
 
@@ -45,7 +94,10 @@ Kept deliberately — comparing your first attempt against the canonical version
 | Grid | `dp[r][c]` from top/left | uniquePaths |
 | State machine | one var per state | stock w/ cooldown/fee → [`2Pointers/bestTimeToBuySell.ts`](../2Pointers/bestTimeToBuySell.ts) variations 3–6 |
 
-**Still to practice** (from the DP learning guide): interval DP (Burst Balloons), digit DP.
+**Still to practice**: interval DP (Burst Balloons, Matrix Chain — the file
+header's category table advertises Interval DP but no interval problem is
+implemented), digit DP, Distinct Subsequences (LC115), and Regular Expression /
+Wildcard Matching (LC10/LC44).
 
 ## Related Patterns
 

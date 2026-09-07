@@ -12,13 +12,15 @@
 
 Every code snippet here is deliberately short. The point is the *step between* the snippets — that step is what you say out loud in an interview.
 
-> **Practising in Go?** [`Go/GO_INTERVIEW_QA.md`](Go/GO_INTERVIEW_QA.md) is the
+> **Practising in Go?** [`Go/GO_INTERVIEW_QA.md`](../Go/GO_INTERVIEW_QA.md) is the
 > companion document: the same patterns arranged as a Q&A ladder, with a
 > JavaScript→Go translation table, `container/heap` boilerplate, and Go-specific
 > gotchas. Every snippet there is copied from compiling, tested code
-> (`cd Go && go test ./...`). It also covers four areas this guide does not:
-> **Trie**, **Design (LRU / TimeMap)**, **shortest paths (Dijkstra,
-> Bellman-Ford)**, and **bit manipulation**.
+> (`cd Go && go test ./...`). Two areas remain Go-only: **shortest paths
+> (Dijkstra, Bellman-Ford, MST)** and **TimeMap / LFU design**. Trie and bit
+> manipulation now exist on the TS side too — see
+> [`src/problems/Trie/`](src/problems/Trie/) and
+> [`src/problems/BitManipulation/`](src/problems/BitManipulation/).
 
 ---
 

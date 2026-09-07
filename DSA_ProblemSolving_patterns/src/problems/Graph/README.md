@@ -31,19 +31,53 @@ neighbor an edge):
 
 ## Adjacency-list graph patterns — `graphPatterns.ts`
 
-Now implemented in this folder (typed; tests to follow):
+Implemented in this folder (typed):
+
+**Primitives**
 
 - [x] `buildAdjacencyList` — step zero of every graph problem (directed/undirected)
 - [x] `bfsTraversal` / `dfsTraversal` — with the visited-on-enqueue discipline
+- [x] `GraphNode` — the node-reference input shape (Clone Graph's world)
+
+**Components & ordering**
+
 - [x] `countComponents` — Number of Connected Components (LC323)
 - [x] `topologicalSort` — Kahn's algorithm, cycle detection for free
+- [x] `topologicalSortDFS` — the DFS variant: post-order reversed, with
+      white/gray/black colouring (a plain visited set cannot detect cycles)
 - [x] `canFinish` / `findOrder` — Course Schedule I & II (LC207/210)
 
-Still to add:
+**Blind 75 / commonly asked**
 
-- [ ] Clone Graph (BFS + old→new node map)
-- [ ] Word Ladder (BFS on an implicit word graph)
-- [ ] Union-Find (the other connected-components tool)
+- [x] `cloneGraph` — Clone Graph (LC133): traversal + an old→new `Map` that
+      doubles as the visited set
+- [x] `validTree` — Graph Valid Tree (LC261): exactly n-1 edges AND connected
+- [x] `alienOrder` — Alien Dictionary (LC269): derive edges from adjacent-word
+      first differences, then topologically sort them
+- [x] `ladderLength` — Word Ladder (LC127): BFS on an implicit graph, with
+      wildcard bucketing to avoid the O(N²) neighbour scan
+- [x] `isBipartite` — LC785: BFS 2-colouring; restart at every component
+- [x] `findRedundantConnection` — LC684: the first union that fails, built on
+      the existing [`../UnionFind/`](../UnionFind/) DSU
+
+**Union-Find lives in its own folder** — see
+[`../UnionFind/unionFind.ts`](../UnionFind/unionFind.ts) for `UnionFind`
+(path compression + union by rank), `countComponentsUnionFind` and
+`hasCycleUndirected`. Use the DSU when edges arrive incrementally or
+connectivity queries interleave with merges; use the DFS sweep
+(`countComponents`) when the graph is static.
+
+Not covered here (weighted graphs, a deliberate next tier):
+
+- [ ] Dijkstra / Network Delay Time (LC743) — needs a min-heap
+- [ ] Bellman-Ford / Cheapest Flights Within K Stops (LC787)
+- [ ] Minimum spanning trees (Kruskal is Union-Find over sorted edges)
+
+> **Tests:** this folder has no vitest file yet. The implementations were
+> verified by running every function against its LeetCode sample plus a
+> randomized cross-check of `topologicalSortDFS` against Kahn's, but that
+> check was not committed. Note `PROBLEM_INDEX.md` currently marks Graph as
+> "smoke ✅", which overstates the position.
 
 ## Related Patterns
 

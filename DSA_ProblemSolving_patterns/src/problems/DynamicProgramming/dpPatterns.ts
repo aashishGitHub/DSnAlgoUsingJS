@@ -138,6 +138,56 @@
  * Time:  O(n) - single pass
  * Space: O(1) - only 2 variables (optimized from O(n))
  */
+/**
+ * ----------------------------------------------------------------------------
+ * STEP 1 — BRUTE FORCE (the rung before `climbStairs` below)
+ * ----------------------------------------------------------------------------
+ * Encode the choice and nothing else: from step n you arrived from n-1 or n-2.
+ * Correct, and unusable past n ≈ 40.
+ *
+ * NAME THE WASTE: ways(5) calls ways(4) and ways(3); ways(4) calls ways(3)
+ * AGAIN. The whole left subtree of ways(3) is recomputed from scratch. That
+ * single observation — an overlapping subproblem — is what licenses a cache.
+ *
+ * @example
+ * climbStairsBruteForce(5); // 8
+ *
+ * Time: O(2ⁿ). Space: O(n) call stack.
+ */
+export function climbStairsBruteForce(n: number): number {
+  // Same base cases as the canonical `climbStairs` below: 1 step = 1 way,
+  // 2 steps = 2 ways. (LeetCode guarantees n >= 1.)
+  if (n <= 2) return n;
+  return climbStairsBruteForce(n - 1) + climbStairsBruteForce(n - 2);
+}
+
+/**
+ * ----------------------------------------------------------------------------
+ * STEP 2 — MEMOIZE (same recursion, one cache — O(2ⁿ) → O(n))
+ * ----------------------------------------------------------------------------
+ * @example
+ * climbStairsMemo(45); // 1836311903
+ *
+ * Time: O(n). Space: O(n).
+ */
+export function climbStairsMemo(n: number): number {
+  const memo = new Map<number, number>();
+
+  function ways(step: number): number {
+    if (step <= 2) return step; // matches `climbStairs` exactly
+    if (memo.has(step)) return memo.get(step)!;
+
+    const total = ways(step - 1) + ways(step - 2);
+    memo.set(step, total);
+    return total;
+  }
+
+  return ways(n);
+}
+
+/**
+ * STEP 3 — TABULATE + ROLL TO O(1) ★ OPTIMAL (below).
+ */
 export function climbStairs(n: number): number {
   // Base cases: 1 step = 1 way, 2 steps = 2 ways
   if (n <= 2) return n;
@@ -218,10 +268,11 @@ export function climbStairs(n: number): number {
  *
  * Answer: $12 (rob houses 0, 2, 4: $2 + $9 + $1 = $12)
  *
- * Wait, that's wrong! Let's verify: $2 + $9 + $1 = $12 ✓
- * Alternative: $7 + $3 = $10 (worse)
- * Alternative: $2 + $9 = $11 (worse)
- * So $12 is correct! ✨
+ * Verify against the alternatives:
+ *   $2 + $9 + $1 = $12  ← best
+ *   $7 + $3      = $10
+ *   $2 + $9      = $11
+ * So $12 is correct ✨
  *
  * ============================================================================
  * 🔑 KEY INSIGHT: The Include/Exclude Pattern
@@ -799,6 +850,71 @@ export function wordBreak(s: string, wordDict: string[]): boolean {
  * ============================================================================
  * Time:  O(amount × numCoins) - for each amount, try all coins
  * Space: O(amount) - dp array
+ */
+/**
+ * ----------------------------------------------------------------------------
+ * STEP 1 — BRUTE FORCE (the rung before `coinChange` below)
+ * ----------------------------------------------------------------------------
+ * Try every coin at every step and keep the shallowest success. Correct, and
+ * exponential: the same `remaining` is re-solved through many different coin
+ * orders — 5 then 2 and 2 then 5 both land on the same subproblem.
+ *
+ * Returns Infinity internally for "unreachable" so Math.min composes cleanly;
+ * the -1 that LeetCode wants is applied once at the boundary.
+ *
+ * @example
+ * coinChangeBruteForce([1, 2, 5], 11); // 3  (5 + 5 + 1)
+ *
+ * Time: O(amountⁿ). Space: O(amount) call stack.
+ */
+export function coinChangeBruteForce(coins: number[], amount: number): number {
+  function fewest(remaining: number): number {
+    if (remaining === 0) return 0;
+    if (remaining < 0) return Infinity; // overshot this branch
+
+    let best = Infinity;
+    for (const coin of coins) {
+      best = Math.min(best, 1 + fewest(remaining - coin));
+    }
+    return best;
+  }
+
+  const answer = fewest(amount);
+  return answer === Infinity ? -1 : answer;
+}
+
+/**
+ * ----------------------------------------------------------------------------
+ * STEP 2 — MEMOIZE (top-down; the fastest route to a CORRECT answer live)
+ * ----------------------------------------------------------------------------
+ * @example
+ * coinChangeMemo([1, 2, 5], 11); // 3
+ * coinChangeMemo([2], 3);        // -1
+ *
+ * Time: O(amount × coins). Space: O(amount).
+ */
+export function coinChangeMemo(coins: number[], amount: number): number {
+  const memo = new Map<number, number>();
+
+  function fewest(remaining: number): number {
+    if (remaining === 0) return 0;
+    if (remaining < 0) return Infinity;
+    if (memo.has(remaining)) return memo.get(remaining)!;
+
+    let best = Infinity;
+    for (const coin of coins) {
+      best = Math.min(best, 1 + fewest(remaining - coin));
+    }
+    memo.set(remaining, best);
+    return best;
+  }
+
+  const answer = fewest(amount);
+  return answer === Infinity ? -1 : answer;
+}
+
+/**
+ * STEP 3 — TABULATE ★ OPTIMAL (below). Bottom-up, no recursion depth limit.
  */
 export function coinChange(coins: number[], amount: number): number {
   // dp[i] = minimum coins to make amount i
@@ -2187,4 +2303,936 @@ export function maxProductPathMod(matrix: number[][]): number {
     }
 
     return Number(result % BigInt(MOD));
+}
+
+/**
+ * ============================================================================
+ * 19. Min Cost Climbing Stairs (LeetCode 746) - THE LADDER, DEMONSTRATED
+ * ============================================================================
+ *
+ * PROBLEM: `cost[i]` is the price of stepping OFF stair i. You may start at
+ * index 0 or index 1, and each move climbs 1 or 2 stairs. Reach the top (index
+ * `n`, one past the last stair) for the minimum total cost.
+ *
+ * Real-World: a toll road where each on-ramp charges a fee and you may skip at
+ * most one exit at a time — what is the cheapest way to the end?
+ *
+ * ----------------------------------------------------------------------------
+ * THIS PROBLEM IS THE FOLDER'S WORKED EXAMPLE OF THE 4-STEP METHOD
+ * ----------------------------------------------------------------------------
+ * The README prescribes: brute force → name the waste → memoize → tabulate →
+ * roll to O(1). Below, each step is a SEPARATE exported function so the
+ * progression can be read, run and compared rather than just described.
+ *
+ * ============================================================================
+ * 🔑 KEY INSIGHT
+ * ============================================================================
+ * To stand at position i you must have come from i-1 or i-2, and you paid that
+ * stair's cost to leave it:
+ *
+ *   minCost(i) = min( minCost(i-1) + cost[i-1], minCost(i-2) + cost[i-2] )
+ *
+ * Base: minCost(0) = minCost(1) = 0 — starting at either is free.
+ * Answer: minCost(n) — the top is one PAST the last stair. Off-by-one here is
+ * the single most common wrong submission.
+ *
+ * ============================================================================
+ * DRY RUN: cost = [10, 15, 20]
+ * ============================================================================
+ * ┌───┬────────────────────────────────────────────┬────────┐
+ * │ i │ from i-1 / from i-2                        │ dp[i]  │
+ * ├───┼────────────────────────────────────────────┼────────┤
+ * │ 0 │ base                                       │ 0      │
+ * │ 1 │ base (free start)                          │ 0      │
+ * │ 2 │ dp[1]+cost[1]=15  vs  dp[0]+cost[0]=10     │ 10     │
+ * │ 3 │ dp[2]+cost[2]=30  vs  dp[1]+cost[1]=15     │ 15  ✨ │
+ * └───┴────────────────────────────────────────────┴────────┘
+ * Answer: 15 — start at stair 1, pay 15, jump two straight to the top.
+ *
+ * Time: O(n)  Space: O(1) for the final version
+ */
+
+/**
+ * STEP 1 — BRUTE FORCE. Just encode the choice; correct but exponential.
+ * Every call re-solves both smaller positions, and those overlap heavily:
+ * minCost(5) needs minCost(3) via TWO different routes, and recomputes it both
+ * times. That duplication is the "waste" the next step removes.
+ *
+ * @example
+ * minCostClimbingStairsBruteForce([10, 15, 20]); // 15
+ *
+ * Time: O(2ⁿ) — a binary recursion tree. Space: O(n) call stack.
+ */
+export function minCostClimbingStairsBruteForce(cost: number[]): number {
+  function minCost(i: number): number {
+    if (i <= 1) return 0; // starting at 0 or 1 is free
+    return Math.min(
+      minCost(i - 1) + cost[i - 1], // arrived by a single step
+      minCost(i - 2) + cost[i - 2]  // arrived by a double step
+    );
+  }
+  return minCost(cost.length);
+}
+
+/**
+ * STEP 2 — MEMOIZE. The identical recursion plus a cache: a 3-line change that
+ * collapses O(2ⁿ) to O(n), because each position is now solved exactly once.
+ * This is the version to write first in an interview — it is the fastest route
+ * to a CORRECT answer, and tabulation is the natural follow-up.
+ *
+ * @example
+ * minCostClimbingStairsMemo([1, 100, 1, 1, 1, 100, 1, 1, 100, 1]); // 6
+ *
+ * Time: O(n) — n distinct subproblems, O(1) work each. Space: O(n).
+ */
+export function minCostClimbingStairsMemo(cost: number[]): number {
+  const memo = new Map<number, number>();
+
+  function minCost(i: number): number {
+    if (i <= 1) return 0;
+    if (memo.has(i)) return memo.get(i)!; // already solved — do not recurse
+
+    const best = Math.min(
+      minCost(i - 1) + cost[i - 1],
+      minCost(i - 2) + cost[i - 2]
+    );
+    memo.set(i, best);
+    return best;
+  }
+
+  return minCost(cost.length);
+}
+
+/**
+ * STEP 3 — TABULATE, THEN ROLL TO O(1) ★ OPTIMAL.
+ * Bottom-up removes the recursion; then notice the recurrence only ever reads
+ * dp[i-1] and dp[i-2], so the whole array collapses into two variables.
+ *
+ * @example
+ * // Real-world: cheapest sequence of toll booths, allowed to skip one at a time.
+ * minCostClimbingStairs([10, 15, 20]);                              // 15
+ * minCostClimbingStairs([1, 100, 1, 1, 1, 100, 1, 1, 100, 1]);      // 6
+ *
+ * Time: O(n) — single pass. Space: O(1) — two rolling variables.
+ */
+export function minCostClimbingStairs(cost: number[]): number {
+  // prev2 = best cost to reach i-2, prev1 = best cost to reach i-1
+  let prev2 = 0;
+  let prev1 = 0;
+
+  for (let i = 2; i <= cost.length; i++) {
+    const current = Math.min(prev1 + cost[i - 1], prev2 + cost[i - 2]);
+    prev2 = prev1; // slide the window forward one stair
+    prev1 = current;
+  }
+
+  return prev1;
+}
+
+/**
+ * ============================================================================
+ * 20. Combination Sum IV (LeetCode 377) - COUNTING PERMUTATIONS
+ * ============================================================================
+ *
+ * PROBLEM: given distinct positive integers `nums` and a `target`, count the
+ * number of ORDERED sequences that sum to target. (1,1,2) and (2,1,1) count
+ * separately — despite the problem's name, this counts permutations.
+ *
+ * Real-World: how many distinct sequences of coin taps reach an exact amount on
+ * a vending machine, where tap order is visibly different to the user.
+ *
+ * ============================================================================
+ * 🔑 KEY INSIGHT — the loop order IS the answer
+ * ============================================================================
+ * This problem and Coin Change II (#21 below) have nearly identical code and
+ * count DIFFERENT things. The ONLY structural difference is which loop is
+ * outer, and it is the single most-tested DP subtlety in interviews:
+ *
+ *   TARGET outer, NUMS inner  → PERMUTATIONS (order matters)   ← this problem
+ *   COINS  outer, TARGET inner → COMBINATIONS (order ignored)  ← #21
+ *
+ * WHY: with target outer, every amount is completed by trying every number as
+ * the LAST element, so each ordering is reached by a different final choice.
+ * With coins outer, coin k is never considered before coin k-1 is exhausted, so
+ * a multiset can only be built in one canonical order — orderings collapse.
+ *
+ * Recurrence: dp[t] = Σ dp[t - num] for every num ≤ t;  dp[0] = 1.
+ * dp[0] = 1 is "the empty sequence sums to 0" — the seed that makes the whole
+ * count non-zero, not an edge case.
+ *
+ * ============================================================================
+ * DRY RUN: nums = [1, 2, 3], target = 4
+ * ============================================================================
+ * ┌───┬──────────────────────────────────────────┬───────┐
+ * │ t │ dp[t] = dp[t-1] + dp[t-2] + dp[t-3]      │ value │
+ * ├───┼──────────────────────────────────────────┼───────┤
+ * │ 0 │ seed: the empty sequence                 │ 1     │
+ * │ 1 │ dp[0]                                    │ 1     │
+ * │ 2 │ dp[1] + dp[0]                            │ 2     │
+ * │ 3 │ dp[2] + dp[1] + dp[0]                    │ 4     │
+ * │ 4 │ dp[3] + dp[2] + dp[1]  = 4 + 2 + 1       │ 7  ✨ │
+ * └───┴──────────────────────────────────────────┴───────┘
+ * The 7: (1,1,1,1) (1,1,2) (1,2,1) (2,1,1) (2,2) (1,3) (3,1)
+ *
+ * FOLLOW-UP interviewers love: "what if negatives were allowed?" Then sequences
+ * can be infinitely long (+1 -1 +1 -1 …), the count is unbounded, and you would
+ * need a cap on sequence length to make the question well-posed.
+ */
+
+/**
+ * STEP 1 — BRUTE FORCE: try every number at every position.
+ *
+ * @example
+ * combinationSum4BruteForce([1, 2, 3], 4); // 7
+ *
+ * Time: O(nᵗ) exponential. Space: O(t) call stack.
+ */
+export function combinationSum4BruteForce(nums: number[], target: number): number {
+  function count(remaining: number): number {
+    if (remaining === 0) return 1; // one complete sequence found
+    if (remaining < 0) return 0;   // overshot — dead end
+
+    let total = 0;
+    for (const num of nums) total += count(remaining - num);
+    return total;
+  }
+  return count(target);
+}
+
+/**
+ * STEP 2 — MEMOIZE on `remaining`, the only thing that varies.
+ *
+ * @example
+ * combinationSum4Memo([1, 2, 3], 4); // 7
+ *
+ * Time: O(target × n). Space: O(target).
+ */
+export function combinationSum4Memo(nums: number[], target: number): number {
+  const memo = new Map<number, number>();
+
+  function count(remaining: number): number {
+    if (remaining === 0) return 1;
+    if (remaining < 0) return 0;
+    if (memo.has(remaining)) return memo.get(remaining)!;
+
+    let total = 0;
+    for (const num of nums) total += count(remaining - num);
+    memo.set(remaining, total);
+    return total;
+  }
+
+  return count(target);
+}
+
+/**
+ * STEP 3 — TABULATE ★ OPTIMAL. Target outer, nums inner → permutations.
+ *
+ * @example
+ * // Real-world: distinct ordered tap sequences that reach an exact amount.
+ * combinationSum4([1, 2, 3], 4); // 7  — order matters, so (1,2,1) ≠ (2,1,1)
+ * combinationSum4([9], 3);       // 0
+ *
+ * Time: O(target × n). Space: O(target).
+ */
+export function combinationSum4(nums: number[], target: number): number {
+  const dp = new Array<number>(target + 1).fill(0);
+  dp[0] = 1; // the empty sequence — the seed every other count is built from
+
+  // TARGET is the outer loop → each amount tries every num as its LAST element
+  // → orderings are counted separately.
+  for (let t = 1; t <= target; t++) {
+    for (const num of nums) {
+      if (num <= t) dp[t] += dp[t - num];
+    }
+  }
+
+  return dp[target];
+}
+
+/**
+ * ============================================================================
+ * 21. Coin Change II (LeetCode 518) - COUNTING COMBINATIONS
+ * ============================================================================
+ *
+ * PROBLEM: given coin denominations and an `amount`, count how many distinct
+ * COMBINATIONS of coins sum to it. {1,1,2} and {2,1,1} are the same multiset
+ * and count ONCE.
+ *
+ * Real-World: how many distinct ways can a cash drawer make exactly $2.35? The
+ * order coins leave the drawer is irrelevant — only the multiset matters.
+ *
+ * ============================================================================
+ * 🔑 KEY INSIGHT — read this next to #20 above
+ * ============================================================================
+ * Same recurrence, loops swapped. Putting COINS on the outside means each coin
+ * is fully considered before the next one is introduced, so a multiset is only
+ * ever assembled in one canonical (non-decreasing) order and permutations
+ * collapse into a single count.
+ *
+ * ┌──────────────────────┬───────────────────┬──────────────────────────┐
+ * │                      │ Coin Change II    │ Combination Sum IV       │
+ * │                      │ (LC518, #21)      │ (LC377, #20)             │
+ * ├──────────────────────┼───────────────────┼──────────────────────────┤
+ * │ counts               │ combinations      │ permutations             │
+ * │ outer loop           │ coins             │ target                   │
+ * │ inner loop           │ target            │ nums                     │
+ * │ [1,2], target 3      │ 2 → {1,1,1}, {1,2}│ 3 → (1,1,1), (1,2), (2,1)│
+ * │                      │ order ignored     │ (1,2) and (2,1) differ   │
+ * └──────────────────────┴───────────────────┴──────────────────────────┘
+ *
+ * That one row is the whole lesson: the SAME two multisets, but the
+ * permutation count splits {1,2} into two orderings while the combination
+ * count keeps it as one.
+ *
+ * Also contrast with `coinChange` (#7, LC322) which MINIMIZES coin count on the
+ * same input shape. Three problems, one table, three different questions —
+ * a favourite interview progression.
+ *
+ * ============================================================================
+ * DRY RUN: coins = [1, 2, 5], amount = 5
+ * ============================================================================
+ * dp starts [1,0,0,0,0,0]  (dp[0] = 1: one way to make nothing)
+ *   after coin 1: [1,1,1,1,1,1]   only all-ones
+ *   after coin 2: [1,1,2,2,3,3]   e.g. dp[4]: {1×4}, {1,1,2}, {2,2}
+ *   after coin 5: [1,1,2,2,3,4]   dp[5] gains {5} → 4  ✨
+ * The 4: {1,1,1,1,1} {1,1,1,2} {1,2,2} {5}
+ *
+ * ⚠️ The inner loop runs FORWARD (t = coin → amount). That is deliberate: a
+ * coin may be reused, so dp[t - coin] must already include this same coin.
+ * Compare knapsack01 (#22), which runs BACKWARD precisely to forbid reuse.
+ */
+
+/**
+ * STEP 1 — BRUTE FORCE: at each coin index, either take it (staying on the same
+ * index, since coins are unlimited) or skip to the next. Fixing an index and
+ * never going back is what stops permutations being double-counted.
+ *
+ * @example
+ * coinChange2BruteForce([1, 2, 5], 5); // 4
+ *
+ * Time: exponential. Space: O(amount) call stack.
+ */
+export function coinChange2BruteForce(coins: number[], amount: number): number {
+  function count(index: number, remaining: number): number {
+    if (remaining === 0) return 1;
+    if (remaining < 0 || index >= coins.length) return 0;
+
+    // take coins[index] again (index unchanged) OR move past it forever
+    return count(index, remaining - coins[index]) + count(index + 1, remaining);
+  }
+  return count(0, amount);
+}
+
+/**
+ * STEP 2 — MEMOIZE on the (index, remaining) pair — BOTH vary, so both are part
+ * of the cache key. Memoizing on `remaining` alone would be wrong here and is a
+ * classic interview slip.
+ *
+ * @example
+ * coinChange2Memo([1, 2, 5], 5); // 4
+ *
+ * Time: O(coins × amount). Space: O(coins × amount).
+ */
+export function coinChange2Memo(coins: number[], amount: number): number {
+  const memo = new Map<string, number>();
+
+  function count(index: number, remaining: number): number {
+    if (remaining === 0) return 1;
+    if (remaining < 0 || index >= coins.length) return 0;
+
+    const key = `${index},${remaining}`;
+    if (memo.has(key)) return memo.get(key)!;
+
+    const total =
+      count(index, remaining - coins[index]) + count(index + 1, remaining);
+    memo.set(key, total);
+    return total;
+  }
+
+  return count(0, amount);
+}
+
+/**
+ * STEP 3 — TABULATE ★ OPTIMAL. Coins outer, amount inner → combinations.
+ * The 2D table over (coin index, amount) rolls to 1D because each row only
+ * reads the row above and cells to its left.
+ *
+ * @example
+ * // Real-world: distinct ways a cash drawer can make exact change.
+ * coinChange2([1, 2, 5], 5); // 4  — {1×5} {1,1,1,2} {1,2,2} {5}
+ * coinChange2([2], 3);       // 0
+ * coinChange2([1], 0);       // 1  — the empty selection makes 0
+ *
+ * Time: O(coins × amount). Space: O(amount).
+ */
+export function coinChange2(coins: number[], amount: number): number {
+  const dp = new Array<number>(amount + 1).fill(0);
+  dp[0] = 1; // exactly one way to make 0: take nothing
+
+  // COINS is the outer loop → each coin is finished before the next starts,
+  // so {1,2} and {2,1} are never both counted.
+  for (const coin of coins) {
+    // FORWARD, because coins are unlimited: dp[t - coin] may already use `coin`.
+    for (let t = coin; t <= amount; t++) {
+      dp[t] += dp[t - coin];
+    }
+  }
+
+  return dp[amount];
+}
+
+/** LeetCode names this function `change`. Alias kept for recall. */
+export const change = coinChange2;
+
+/**
+ * ============================================================================
+ * 22. 0/1 Knapsack - THE TAKE-OR-SKIP TEMPLATE
+ * ============================================================================
+ *
+ * PROBLEM: given item weights and values and a capacity, maximize total value.
+ * Each item may be taken AT MOST ONCE — that "0 or 1" is the whole difference
+ * from coinChange/coinChange2, where items are unlimited.
+ *
+ * Real-World: which subset of features fits in one release sprint to maximize
+ * delivered value? Each feature is built once or not at all.
+ *
+ * ============================================================================
+ * 🔑 KEY INSIGHT — why this template is worth memorizing
+ * ============================================================================
+ * Two problems below (#23 Partition Equal Subset Sum, #24 Target Sum) are this
+ * function wearing a costume. Learning the template once buys three problems.
+ *
+ * At each item you have exactly two choices:
+ *   SKIP:  dp[i][c] = dp[i-1][c]
+ *   TAKE:  dp[i][c] = values[i-1] + dp[i-1][c - weights[i-1]]   (if it fits)
+ *   dp[i][c] = max(SKIP, TAKE)
+ *
+ * ⚠️ THE BACKWARD-LOOP RULE (the #1 knapsack bug):
+ * When rolling to 1D, the capacity loop must run BACKWARD. Going forward would
+ * let dp[c - w] already contain the current item, silently turning 0/1 knapsack
+ * into UNBOUNDED knapsack. Forward = reuse allowed (coinChange2, #21).
+ * Backward = each item used at most once. One loop direction, two problems.
+ *
+ * ============================================================================
+ * DRY RUN: weights = [1, 3, 4, 5], values = [1, 4, 5, 7], capacity = 7
+ * ============================================================================
+ *      c:   0   1   2   3   4   5   6   7
+ *   none:   0   0   0   0   0   0   0   0
+ *   w=1:    0   1   1   1   1   1   1   1
+ *   w=3:    0   1   1   4   5   5   5   5    (4 alone, or 1+4=5 at c=4)
+ *   w=4:    0   1   1   4   5   6   6   9    (c=7: 3+4 → 4+5 = 9) ✨
+ *   w=5:    0   1   1   4   5   7   8   9    (c=7 stays 9; 7+1=8 < 9 at c=6→8)
+ * Answer: 9 — take items of weight 3 and 4 (values 4 + 5).
+ *
+ * Time: O(n × capacity)  Space: O(capacity) for the rolled version
+ */
+
+/**
+ * STEP 1 — BRUTE FORCE: enumerate every subset via take/skip.
+ *
+ * @example
+ * knapsack01BruteForce([1, 3, 4, 5], [1, 4, 5, 7], 7); // 9
+ *
+ * Time: O(2ⁿ). Space: O(n) call stack.
+ */
+export function knapsack01BruteForce(
+  weights: number[],
+  values: number[],
+  capacity: number
+): number {
+  function best(index: number, remaining: number): number {
+    if (index >= weights.length || remaining <= 0) return 0;
+
+    const skip = best(index + 1, remaining);
+    if (weights[index] > remaining) return skip; // does not fit — no choice
+
+    const take = values[index] + best(index + 1, remaining - weights[index]);
+    return Math.max(skip, take);
+  }
+  return best(0, capacity);
+}
+
+/**
+ * STEP 2 — MEMOIZE on (index, remaining).
+ *
+ * @example
+ * knapsack01Memo([1, 3, 4, 5], [1, 4, 5, 7], 7); // 9
+ *
+ * Time: O(n × capacity). Space: O(n × capacity).
+ */
+export function knapsack01Memo(
+  weights: number[],
+  values: number[],
+  capacity: number
+): number {
+  const memo = new Map<string, number>();
+
+  function best(index: number, remaining: number): number {
+    if (index >= weights.length || remaining <= 0) return 0;
+
+    const key = `${index},${remaining}`;
+    if (memo.has(key)) return memo.get(key)!;
+
+    const skip = best(index + 1, remaining);
+    const take =
+      weights[index] > remaining
+        ? skip
+        : values[index] + best(index + 1, remaining - weights[index]);
+
+    const answer = Math.max(skip, take);
+    memo.set(key, answer);
+    return answer;
+  }
+
+  return best(0, capacity);
+}
+
+/**
+ * STEP 3 — TABULATE (2D). The version to draw on the whiteboard: the table IS
+ * the explanation, and reading it back proves the recurrence.
+ *
+ * @example
+ * knapsack01Table([1, 3, 4, 5], [1, 4, 5, 7], 7); // 9
+ *
+ * Time: O(n × capacity). Space: O(n × capacity).
+ */
+export function knapsack01Table(
+  weights: number[],
+  values: number[],
+  capacity: number
+): number {
+  const n = weights.length;
+  // dp[i][c] = best value using the first i items within capacity c
+  const dp: number[][] = Array.from({ length: n + 1 }, () =>
+    new Array<number>(capacity + 1).fill(0)
+  );
+
+  for (let i = 1; i <= n; i++) {
+    for (let c = 0; c <= capacity; c++) {
+      dp[i][c] = dp[i - 1][c]; // SKIP item i-1
+      if (weights[i - 1] <= c) {
+        // TAKE it: add its value to the best of the REMAINING capacity,
+        // using only earlier items (row i-1) so it cannot be taken twice.
+        dp[i][c] = Math.max(dp[i][c], values[i - 1] + dp[i - 1][c - weights[i - 1]]);
+      }
+    }
+  }
+
+  return dp[n][capacity];
+}
+
+/**
+ * STEP 4 — ROLL TO 1D ★ OPTIMAL. Each row reads only the row above, so one
+ * array suffices — provided the capacity loop runs BACKWARD (see the rule in
+ * the header above).
+ *
+ * @example
+ * // Real-world: pick the feature set that maximizes value within one sprint.
+ * knapsack01([1, 3, 4, 5], [1, 4, 5, 7], 7); // 9
+ *
+ * Time: O(n × capacity). Space: O(capacity).
+ */
+export function knapsack01(
+  weights: number[],
+  values: number[],
+  capacity: number
+): number {
+  const dp = new Array<number>(capacity + 1).fill(0);
+
+  for (let i = 0; i < weights.length; i++) {
+    // BACKWARD: guarantees dp[c - weights[i]] is still the PREVIOUS row's value,
+    // i.e. a state where item i has not been used yet.
+    for (let c = capacity; c >= weights[i]; c--) {
+      dp[c] = Math.max(dp[c], values[i] + dp[c - weights[i]]);
+    }
+  }
+
+  return dp[capacity];
+}
+
+/**
+ * ============================================================================
+ * 23. Partition Equal Subset Sum (LeetCode 416) - KNAPSACK IN DISGUISE
+ * ============================================================================
+ *
+ * PROBLEM: can `nums` be split into two subsets with equal sums?
+ *
+ * Real-World: can this batch of jobs be split across two identical machines so
+ * both finish at the same time?
+ *
+ * ============================================================================
+ * 🔑 KEY INSIGHT — the reframe is the whole problem
+ * ============================================================================
+ * "Split into two equal halves" = "find a subset summing to total/2". The other
+ * subset is then forced. So this is 0/1 knapsack (#22) with weight = value =
+ * nums[i], asking feasibility instead of maximum.
+ *
+ * TWO O(1) REJECTIONS BEFORE ANY DP — say these out loud, they earn credit:
+ *   1. An ODD total can never split evenly → false immediately.
+ *   2. (Optional) any single element greater than total/2 makes it impossible.
+ *
+ * Recurrence: dp[s] = dp[s] || dp[s - num], capacity loop BACKWARD (each number
+ * is used at most once — the same 0/1 rule as #22).
+ *
+ * ============================================================================
+ * DRY RUN: nums = [1, 5, 11, 5] → total 22 → target 11
+ * ============================================================================
+ *   start:        dp[0]=true, everything else false
+ *   after 1:      reachable {0,1}
+ *   after 5:      reachable {0,1,5,6}
+ *   after 11:     reachable {0,1,5,6,11,12,16,17}   → dp[11] is now true ✨
+ *   after 5:      reachable also {10,11,...}
+ *   → true: {11} and {1,5,5} both sum to 11.
+ * Counter-example [1,2,3,5]: total 11 is ODD → false without any DP work.
+ *
+ * Time: O(n × total/2)  Space: O(total/2)
+ */
+
+/**
+ * STEP 1 — BRUTE FORCE: take-or-skip over every element.
+ *
+ * @example
+ * canPartitionBruteForce([1, 5, 11, 5]); // true
+ *
+ * Time: O(2ⁿ). Space: O(n).
+ */
+export function canPartitionBruteForce(nums: number[]): boolean {
+  const total = nums.reduce((sum, n) => sum + n, 0);
+  if (total % 2 !== 0) return false; // odd total can never split evenly
+
+  function reachable(index: number, remaining: number): boolean {
+    if (remaining === 0) return true;
+    if (index >= nums.length || remaining < 0) return false;
+    return (
+      reachable(index + 1, remaining - nums[index]) || // take
+      reachable(index + 1, remaining)                  // skip
+    );
+  }
+
+  return reachable(0, total / 2);
+}
+
+/**
+ * STEP 2 — MEMOIZE on (index, remaining).
+ *
+ * @example
+ * canPartitionMemo([1, 5, 11, 5]); // true
+ *
+ * Time: O(n × total). Space: O(n × total).
+ */
+export function canPartitionMemo(nums: number[]): boolean {
+  const total = nums.reduce((sum, n) => sum + n, 0);
+  if (total % 2 !== 0) return false;
+
+  const memo = new Map<string, boolean>();
+
+  function reachable(index: number, remaining: number): boolean {
+    if (remaining === 0) return true;
+    if (index >= nums.length || remaining < 0) return false;
+
+    const key = `${index},${remaining}`;
+    if (memo.has(key)) return memo.get(key)!;
+
+    const answer =
+      reachable(index + 1, remaining - nums[index]) ||
+      reachable(index + 1, remaining);
+    memo.set(key, answer);
+    return answer;
+  }
+
+  return reachable(0, total / 2);
+}
+
+/**
+ * STEP 3 — TABULATE ★ OPTIMAL: a boolean 0/1 knapsack over reachable sums.
+ *
+ * @example
+ * // Real-world: can these jobs be split across two machines evenly?
+ * canPartition([1, 5, 11, 5]); // true  ({11} and {1,5,5})
+ * canPartition([1, 2, 3, 5]);  // false (total 11 is odd)
+ *
+ * Time: O(n × total/2). Space: O(total/2).
+ */
+export function canPartition(nums: number[]): boolean {
+  const total = nums.reduce((sum, n) => sum + n, 0);
+  if (total % 2 !== 0) return false; // O(1) rejection — no DP needed
+
+  const target = total / 2;
+  const dp = new Array<boolean>(target + 1).fill(false);
+  dp[0] = true; // sum 0 is always reachable: take nothing
+
+  for (const num of nums) {
+    // BACKWARD — 0/1: each number contributes at most once (see #22's rule).
+    for (let s = target; s >= num; s--) {
+      dp[s] = dp[s] || dp[s - num];
+    }
+  }
+
+  return dp[target];
+}
+
+/**
+ * ============================================================================
+ * 24. Target Sum (LeetCode 494) - SUBSET SUM AFTER AN ALGEBRA TRICK
+ * ============================================================================
+ *
+ * PROBLEM: assign a '+' or '-' to each number in `nums` so the expression
+ * evaluates to `target`. Count the assignments.
+ *
+ * Real-World: how many ways can a set of credits and debits be signed so the
+ * ledger lands on an exact balance?
+ *
+ * ============================================================================
+ * 🔑 KEY INSIGHT — turn signs into a subset choice
+ * ============================================================================
+ * Let P be the numbers given '+' and N those given '-'. Then:
+ *
+ *     P - N = target          and          P + N = total
+ *   ⇒ 2P = total + target
+ *   ⇒ P = (total + target) / 2
+ *
+ * So "count sign assignments" becomes "count subsets summing to P" — the
+ * counting form of 0/1 knapsack (#22). This algebraic reframe is the entire
+ * difficulty; the DP afterwards is six lines.
+ *
+ * ⚠️ TWO GUARDS the reframe forces, both easy to forget:
+ *   1. (total + target) must be EVEN — otherwise P is not an integer → 0 ways.
+ *   2. |target| must be ≤ total — otherwise P is out of range → 0 ways.
+ *
+ * ⚠️ ZEROS: a 0 can be signed '+' or '-' with the same result, so each zero
+ * DOUBLES the count. The subset-sum formulation handles this automatically
+ * (dp[0] starts at 1 and each zero adds dp[s] to itself) — but only if the
+ * loop is written over sums rather than over "distinct subsets".
+ *
+ * ============================================================================
+ * DRY RUN: nums = [1,1,1,1,1], target = 3 → total = 5
+ * ============================================================================
+ *   P = (5 + 3) / 2 = 4  → count subsets of [1,1,1,1,1] summing to 4
+ *   dp starts [1,0,0,0,0]
+ *   after each 1, dp becomes (backward loop over s):
+ *     [1,1,0,0,0] → [1,2,1,0,0] → [1,3,3,1,0] → [1,4,6,4,1] → [1,5,10,10,5]
+ *   dp[4] = 5  ✨  (choose which ONE of the five 1s gets the minus sign)
+ *
+ * Time: O(n × total)  Space: O(total)
+ */
+
+/**
+ * STEP 1 — BRUTE FORCE: branch on '+' and '-' at every position.
+ *
+ * @example
+ * findTargetSumWaysBruteForce([1, 1, 1, 1, 1], 3); // 5
+ *
+ * Time: O(2ⁿ). Space: O(n).
+ */
+export function findTargetSumWaysBruteForce(nums: number[], target: number): number {
+  function count(index: number, runningSum: number): number {
+    if (index === nums.length) return runningSum === target ? 1 : 0;
+    return (
+      count(index + 1, runningSum + nums[index]) +
+      count(index + 1, runningSum - nums[index])
+    );
+  }
+  return count(0, 0);
+}
+
+/**
+ * STEP 2 — MEMOIZE on (index, runningSum). Note the running sum can be
+ * negative, so a Map keyed by a string beats a plain array here.
+ *
+ * @example
+ * findTargetSumWaysMemo([1, 1, 1, 1, 1], 3); // 5
+ *
+ * Time: O(n × total). Space: O(n × total).
+ */
+export function findTargetSumWaysMemo(nums: number[], target: number): number {
+  const memo = new Map<string, number>();
+
+  function count(index: number, runningSum: number): number {
+    if (index === nums.length) return runningSum === target ? 1 : 0;
+
+    const key = `${index},${runningSum}`;
+    if (memo.has(key)) return memo.get(key)!;
+
+    const total =
+      count(index + 1, runningSum + nums[index]) +
+      count(index + 1, runningSum - nums[index]);
+    memo.set(key, total);
+    return total;
+  }
+
+  return count(0, 0);
+}
+
+/**
+ * STEP 3 — REFRAME + TABULATE ★ OPTIMAL: count subsets summing to
+ * (total + target) / 2.
+ *
+ * @example
+ * // Real-world: ways to sign a ledger's entries to hit an exact balance.
+ * findTargetSumWays([1, 1, 1, 1, 1], 3); // 5
+ * findTargetSumWays([1], 1);             // 1
+ * findTargetSumWays([1], 2);             // 0  (|target| > total)
+ *
+ * Time: O(n × total). Space: O(total).
+ */
+export function findTargetSumWays(nums: number[], target: number): number {
+  const total = nums.reduce((sum, n) => sum + n, 0);
+
+  // Guard 1: |target| beyond what the numbers can reach at all.
+  if (Math.abs(target) > total) return 0;
+  // Guard 2: P = (total + target)/2 must be a whole number.
+  if ((total + target) % 2 !== 0) return 0;
+
+  const subsetTarget = (total + target) / 2;
+  const dp = new Array<number>(subsetTarget + 1).fill(0);
+  dp[0] = 1; // one way to reach sum 0: the empty subset
+
+  for (const num of nums) {
+    // BACKWARD — each number is assigned a sign exactly once.
+    for (let s = subsetTarget; s >= num; s--) {
+      dp[s] += dp[s - num];
+    }
+  }
+
+  return dp[subsetTarget];
+}
+
+/**
+ * ============================================================================
+ * 25. Palindromic Substrings (LeetCode 647) - COUNT, DON'T COLLECT
+ * ============================================================================
+ *
+ * PROBLEM: count how many substrings of `s` are palindromes. Substrings at
+ * different positions count separately even if they look identical: "aaa" has
+ * 6 ("a","a","a","aa","aa","aaa").
+ *
+ * Real-World: scoring how much symmetry a DNA read contains, or detecting
+ * mirrored token runs in a log stream.
+ *
+ * ============================================================================
+ * 🔑 KEY INSIGHT — two valid solutions, know both
+ * ============================================================================
+ * (a) EXPAND AROUND CENTRE — a palindrome is defined by its centre, and there
+ *     are 2n-1 centres (n single characters + n-1 gaps between them). Push out
+ *     from each while the ends match. O(n²) time, O(1) SPACE.
+ * (b) DP TABLE — dp[i][j] = "s[i..j] is a palindrome" =
+ *     s[i] === s[j] AND (the inside is a palindrome or shorter than 2 chars).
+ *     O(n²) time and O(n²) space, but it generalizes to Longest Palindromic
+ *     Subsequence and friends.
+ *
+ * Same time complexity; (a) wins on space, (b) wins on transferability. Saying
+ * exactly that is the answer interviewers are listening for.
+ *
+ * ⚠️ THE ODD/EVEN TRAP: expanding only from single characters finds "aba" but
+ * MISSES "abba". Both centre kinds must be tried — the most common bug here.
+ *
+ * ⚠️ DP FILL ORDER: dp[i][j] depends on dp[i+1][j-1] — a shorter, more inward
+ * span. So i must sweep BOTTOM-UP (or iterate by increasing length); a naive
+ * top-down i loop reads cells that are not filled yet.
+ *
+ * ============================================================================
+ * DRY RUN: s = "aaa"
+ * ============================================================================
+ *   centre 0   ("a")    → "a"                        → 1
+ *   centre 0-1 ("aa")   → "aa"                       → 1
+ *   centre 1   ("a")    → "a", then "aaa"            → 2
+ *   centre 1-2 ("aa")   → "aa"                       → 1
+ *   centre 2   ("a")    → "a"                        → 1
+ *   total = 6  ✨
+ *
+ * Related: `Strings/longestPalindromicSubstring.ts` solves LC5 with the same
+ * expand-around-centre engine — return the longest span instead of counting.
+ *
+ * Time: O(n²)  Space: O(1) for the optimal version
+ */
+
+/**
+ * STEP 1 — BRUTE FORCE: generate every substring, test each for palindromicity.
+ *
+ * @example
+ * countSubstringsBruteForce("aaa"); // 6
+ *
+ * Time: O(n³) — O(n²) substrings × O(n) to check each. Space: O(n).
+ */
+export function countSubstringsBruteForce(s: string): number {
+  function isPalindrome(text: string): boolean {
+    let left = 0;
+    let right = text.length - 1;
+    while (left < right) {
+      if (text[left] !== text[right]) return false;
+      left++;
+      right--;
+    }
+    return true;
+  }
+
+  let count = 0;
+  for (let i = 0; i < s.length; i++) {
+    for (let j = i; j < s.length; j++) {
+      if (isPalindrome(s.slice(i, j + 1))) count++;
+    }
+  }
+  return count;
+}
+
+/**
+ * STEP 2 — DP TABLE: reuse the shorter span's answer instead of rescanning it.
+ * Drops the O(n) inner check to O(1), giving O(n²).
+ *
+ * @example
+ * countSubstringsDP("abc"); // 3
+ *
+ * Time: O(n²). Space: O(n²).
+ */
+export function countSubstringsDP(s: string): number {
+  const n = s.length;
+  // dp[i][j] = is s[i..j] a palindrome?
+  const dp: boolean[][] = Array.from({ length: n }, () =>
+    new Array<boolean>(n).fill(false)
+  );
+  let count = 0;
+
+  // i descends so that dp[i+1][j-1] (the inside) is already computed.
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = i; j < n; j++) {
+      // Ends match AND (the span is ≤ 2 chars, so there is no inside to check,
+      // OR the inside is itself a palindrome).
+      if (s[i] === s[j] && (j - i < 2 || dp[i + 1][j - 1])) {
+        dp[i][j] = true;
+        count++;
+      }
+    }
+  }
+
+  return count;
+}
+
+/**
+ * STEP 3 — EXPAND AROUND CENTRE ★ OPTIMAL (same O(n²) time, O(1) space).
+ *
+ * @example
+ * // Real-world: how much mirrored structure does this sequence contain?
+ * countSubstrings("abc"); // 3  ("a", "b", "c")
+ * countSubstrings("aaa"); // 6
+ *
+ * Time: O(n²) — 2n-1 centres × O(n) expansion. Space: O(1).
+ */
+export function countSubstrings(s: string): number {
+  let count = 0;
+
+  function expand(left: number, right: number): void {
+    // Every step outward that still matches is one more palindrome.
+    while (left >= 0 && right < s.length && s[left] === s[right]) {
+      count++;
+      left--;
+      right++;
+    }
+  }
+
+  for (let centre = 0; centre < s.length; centre++) {
+    expand(centre, centre);     // ODD  length: "aba"
+    expand(centre, centre + 1); // EVEN length: "abba" — do not forget this one
+  }
+
+  return count;
 }

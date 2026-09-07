@@ -726,3 +726,89 @@ export class RandomizedSet<T> {
     }
 }
 
+
+/**
+ * ----------------------------------------------------------------------------
+ * SET MATRIX ZEROES (LeetCode 73) — in place, O(1) extra space
+ * ----------------------------------------------------------------------------
+ * PROBLEM: if any cell is 0, set its ENTIRE row and column to 0. Do it in place.
+ *
+ * ⚠️ THE TRAP THAT DEFINES THIS PROBLEM: zeroing rows as you find them corrupts
+ * the input you are still reading. A freshly written 0 is indistinguishable
+ * from an original 0, so the next scan treats it as a new trigger and the
+ * zeroes cascade until the whole matrix is blank. The two passes below exist
+ * entirely to separate DETECTION from APPLICATION.
+ *
+ * THE LADDER:
+ *   1. Copy the matrix           → O(m·n) space
+ *   2. Two marker Sets           → O(m + n) space  (the obvious good answer)
+ *   3. Use row 0 and column 0 as those markers → O(1) space  ★ implemented here
+ *
+ * WHY COLUMN 0 NEEDS ITS OWN FLAG: cell [0][0] is shared by the first row's
+ * marker strip and the first column's, so one bit cannot represent both. A
+ * separate `firstColumnHasZero` boolean disambiguates it. Missing this is the
+ * usual failure on the O(1) version.
+ *
+ * WHY THE SECOND PASS RUNS BACKWARD-ISH (interior first): the marker strips must
+ * be read while still intact, so the interior is written first and the strips
+ * themselves are zeroed last.
+ *
+ * DRY-RUN on [[1,1,1],[1,0,1],[1,1,1]]:
+ *   pass 1: cell [1][1] is 0 → mark row strip [0][1] = 0 and column strip [1][0] = 0
+ *           matrix now [[1,0,1],[0,0,1],[1,1,1]]  (markers only)
+ *   pass 2 (interior r,c >= 1): [1][1],[1][2] zeroed by row marker;
+ *           [2][1] zeroed by column marker
+ *   → [[1,0,1],[0,0,0],[1,0,1]]  ✨
+ *
+ * @example
+ * const m = [[0, 1, 2, 0], [3, 4, 5, 2], [1, 3, 1, 5]];
+ * setZeroes(m);
+ * // m is now [[0,0,0,0],[0,4,5,0],[0,3,1,0]]
+ *
+ * Time:  O(m · n). Space: O(1) — the first row and column ARE the bookkeeping.
+ */
+export function setZeroes(matrix: number[][]): void {
+    if (matrix.length === 0 || matrix[0].length === 0) {
+        return;
+    }
+
+    const rows = matrix.length;
+    const cols = matrix[0].length;
+
+    // [0][0] would have to mean two things at once, so column 0 gets its own flag.
+    let firstColumnHasZero = false;
+
+    // PASS 1 — detect only. Record findings in the first row / first column.
+    for (let r = 0; r < rows; r++) {
+        if (matrix[r][0] === 0) {
+            firstColumnHasZero = true;
+        }
+        for (let c = 1; c < cols; c++) {
+            if (matrix[r][c] === 0) {
+                matrix[r][0] = 0;   // this ROW must be cleared
+                matrix[0][c] = 0;   // this COLUMN must be cleared
+            }
+        }
+    }
+
+    // PASS 2 — apply to the interior first, while the marker strips are intact.
+    for (let r = 1; r < rows; r++) {
+        for (let c = 1; c < cols; c++) {
+            if (matrix[r][0] === 0 || matrix[0][c] === 0) {
+                matrix[r][c] = 0;
+            }
+        }
+    }
+
+    // Now the strips themselves, since nothing reads them any more.
+    if (matrix[0][0] === 0) {
+        for (let c = 0; c < cols; c++) {
+            matrix[0][c] = 0;       // the first ROW had a zero
+        }
+    }
+    if (firstColumnHasZero) {
+        for (let r = 0; r < rows; r++) {
+            matrix[r][0] = 0;
+        }
+    }
+}

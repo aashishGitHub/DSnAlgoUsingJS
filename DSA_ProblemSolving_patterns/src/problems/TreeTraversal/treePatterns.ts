@@ -443,3 +443,63 @@ export function countNodes(root: TreeNode | null): number {
     
     return 1 + countNodes(root.left) + countNodes(root.right);
 }
+
+/**
+ * ----------------------------------------------------------------------------
+ * LOWEST COMMON ANCESTOR OF A **BST** (LeetCode 235)
+ * ----------------------------------------------------------------------------
+ * The BST-specific counterpart to `lowestCommonAncestor` (LC236) above. Same
+ * question, but the search-tree ordering turns it from a full traversal into a
+ * single walk down one path.
+ *
+ * THE INSIGHT: in a BST the values themselves say which way to go.
+ *   - both targets SMALLER than the node → the split must be in the left subtree
+ *   - both targets LARGER  than the node → it must be in the right subtree
+ *   - otherwise they straddle this node (or one IS this node) → this is the LCA
+ * The first node where the two targets stop agreeing on direction is exactly
+ * the point where their paths diverge, which is the definition of the LCA.
+ *
+ * WHY IT BEATS THE GENERIC VERSION: LC236 must explore both subtrees because a
+ * plain binary tree gives no clue where a value lives — O(n) time, O(h) stack.
+ * Here each comparison discards an entire subtree, so it is O(h) time and can
+ * be written iteratively in O(1) space. Being asked LC235 right after LC236 is
+ * a test of whether you notice the extra structure and exploit it.
+ *
+ * DRY-RUN on the BST [6,2,8,0,4,7,9], p = 2, q = 8:
+ *   node 6: 2 < 6 but 8 > 6 → they straddle → 6 is the LCA  ✓
+ * And for p = 2, q = 4:
+ *   node 6: both < 6 → go left
+ *   node 2: 2 is the node itself → straddle case → 2 is the LCA  ✓
+ *   (a node can be its own descendant's ancestor — the usual gotcha)
+ *
+ * @example
+ * // Real-world: the narrowest category containing two items in a sorted taxonomy.
+ * lowestCommonAncestorBST(root, node2, node8); // node 6
+ * lowestCommonAncestorBST(root, node2, node4); // node 2
+ *
+ * Time:  O(h) — h = height; O(log n) balanced, O(n) degenerate.
+ * Space: O(1) — iterative, no recursion stack.
+ */
+export function lowestCommonAncestorBST(
+    root: TreeNode | null,
+    p: TreeNode | null,
+    q: TreeNode | null
+): TreeNode | null {
+    if (root === null || p === null || q === null) {
+        return null;
+    }
+
+    let node: TreeNode | null = root;
+
+    while (node !== null) {
+        if (p.val < node.val && q.val < node.val) {
+            node = node.left;      // both targets are smaller — discard the right
+        } else if (p.val > node.val && q.val > node.val) {
+            node = node.right;     // both are larger — discard the left
+        } else {
+            return node;           // they diverge here (or one IS here)
+        }
+    }
+
+    return null;
+}

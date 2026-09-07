@@ -65,6 +65,33 @@ export * from './Graph/graphPatterns';
 // Union-Find / DSU Pattern (connectivity, components, undirected cycle detection)
 export * from './UnionFind/unionFind';
 
+// Trie / Prefix Tree Pattern (LC208 Trie, LC211 wildcard search, LC212 Word Search II)
+export * from './Trie/triePatterns';
+
+// Bit Manipulation Pattern (XOR cancelling, n&(n-1), n&-n)
+// Note: `missingNumberXOR` / `singleNumberXOR` are named for their technique
+// because `missingNumber` (CyclicSort) and `singleNumber` (HashMap) already
+// own those names — three patterns, same problems, deliberately comparable.
+export * from './BitManipulation/bitPatterns';
+
+// Stack Pattern (monotonic stack, MinStack, RPN, nested decoding)
+export * from './Stack/stackPatterns';
+
+// Heap / Priority Queue Pattern (reusable PriorityQueue, two-heaps median, top-k)
+export * from './Heap/heapPatterns';
+
+// Linked List Pattern (rewiring: merge two / merge k)
+// Note: exported by NAME rather than `export *` because the module re-exports
+// `ListNode`, which FastSlowPointers also exports — a duplicate star-export
+// would make the name ambiguous and silently drop it from this barrel.
+// `ListNode` stays canonical in FastSlowPointers.
+export {
+    mergeTwoLists,
+    mergeKLists,
+    mergeKListsBruteForce,
+    mergeKListsDivide,
+} from './LinkedList/linkedListPatterns';
+
 // Arrays Pattern (each file: brute-force → optimized ladder)
 export * from './Arrays/productExceptSelf';
 export * from './Arrays/rotateArray';
@@ -73,8 +100,11 @@ export * from './Arrays/flattenArray';
 export * from './Arrays/maxMin';
 export * from './Arrays/increasingStreaks';
 // Note: kthLargest.js is the gold-standard reference (imported directly by its
-// test); arrayPatternProblems.ts is NOT re-exported here — it re-exports
-// sortColors from 2Pointers, which would double-export.
+// test); arrayPatternProblems.ts is NOT re-exported wholesale here — it
+// re-exports sortColors from 2Pointers, which would double-export. Its matrix
+// transforms are genuinely useful and were previously unreachable from this
+// barrel, so they are exported by name instead.
+export { setZeroes, spiralOrder, rotateMatrix90 } from './Arrays/arrayPatternProblems';
 
 // Strings Pattern
 export * from './Strings/longestPalindromicSubstring';
@@ -112,9 +142,10 @@ export * from './Misc/superPrime';
  *    - Basic search, Rotated arrays, 2D matrices
  *    - Time: O(log n), Space: O(1)
  * 
- * 5. DYNAMIC PROGRAMMING (15 problems)
- *    - 1D DP, 2D DP, Optimization problems
- *    - Time: O(n) or O(n²), Space: O(n) or O(n²)
+ * 5. DYNAMIC PROGRAMMING (25 problems)
+ *    - 1D linear, choice, knapsack (0/1 + unbounded), grid, 2-sequence string DP
+ *    - Nine of them ship the full brute-force → memo → tabulate ladder
+ *    - Time: O(n) or O(n²), Space: O(n) or O(n²), often rollable to O(1)
  * 
  * 6. TREE TRAVERSAL (17 problems)
  *    - DFS, BFS, BST operations, Tree construction
@@ -144,22 +175,48 @@ export * from './Misc/superPrime';
  *     - String manipulation, palindromes, substring search
  *     - Time: O(n) to O(n²), Space: O(1) to O(n)
  * 
- * 13. GRAPH (2 problems)
- *     - Path traversal, DFS/BFS applications
+ * 13. TRIE / PREFIX TREE (3 problems)
+ *     - Implement Trie, wildcard search, Word Search II (trie as pruning oracle)
+ *     - Time: O(L) per op where L = query length, Space: O(N * L)
+ *
+ * 14. BIT MANIPULATION (8 problems)
+ *     - XOR cancelling, n&(n-1), n&-n; JS 32-bit signed caveats
+ *     - Time: O(1) to O(32), Space: O(1)
+ *
+ * 15. STACK / MONOTONIC STACK (8 problems)
+ *     - MinStack, RPN, next-greater family, largest rectangle, nested decoding
+ *     - Time: O(n) amortized, Space: O(n)
+ *
+ * 16. HEAP / PRIORITY QUEUE (5 problems + reusable PriorityQueue)
+ *     - Top-k (size-k heap), two-heaps streaming median, k closest
+ *     - Time: O(log n) per op, Space: O(n)
+ *
+ * 17. LINKED LIST REWIRING (2 problems, 4 implementations)
+ *     - Merge two / merge k (heap and divide-and-conquer)
+ *     - Time: O(n) / O(N log k), Space: O(1) / O(k)
+ *
+ * 18. GRAPH (14 problems)
+ *     - BFS/DFS, connected components, topological sort (Kahn's + DFS colouring),
+ *       clone graph, valid tree, alien dictionary, word ladder, bipartite check
  *     - Time: O(V + E), Space: O(V)
+ *     - See also UnionFind/ for the DSU approach to connectivity
  * 
  * Total: 150+ problems covering all major DSA patterns
  * Perfect for coding interview preparation!
  * 
- * Additional Patterns Available:
- * - In-Place Reversal of Linked List
- * - Two Heaps
- * - Subsets (Bit Manipulation and Backtracking)
- * - Bitwise XOR
- * - Top K Elements
- * - K-Way Merge
- * - Topological Sort
- * - 0/1 Knapsack
- * - Fibonacci Numbers
- * - Palindromic Subsequence
+ * Now also covered (previously listed here as aspirational):
+ * - Two Heaps            -> Heap/heapPatterns.ts (MedianFinder)
+ * - Top K Elements       -> Heap/heapPatterns.ts, HashMap/topKFrequent.ts
+ * - K-Way Merge          -> LinkedList/linkedListPatterns.ts (mergeKLists)
+ * - Bitwise XOR          -> BitManipulation/bitPatterns.ts
+ * - Topological Sort     -> Graph/graphPatterns.ts (Kahn's + DFS colouring)
+ * - 0/1 Knapsack         -> DynamicProgramming/dpPatterns.ts (knapsack01)
+ * - In-Place Reversal    -> FastSlowPointers/fastSlowPointers.ts (reverseList)
+ *
+ * Still NOT implemented in this TS track (genuine gaps, not a wishlist):
+ * - Shortest paths on weighted graphs (Dijkstra, Bellman-Ford, MST)
+ * - Interval DP (Burst Balloons) and digit DP
+ * - Palindromic Subsequence (LC516); LC5 exists only as expand-around-centre
+ * - Greedy as its own home (Gas Station, Hand of Straights)
+ * - Prefix-sum problems LC303 / LC523 / LC724 and difference arrays
  */

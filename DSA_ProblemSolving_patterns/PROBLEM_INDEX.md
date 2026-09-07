@@ -3,9 +3,9 @@
 *Master reference for all DSA problems in this repository, organized by pattern for easy navigation*
 
 > **Two language tracks.** This index covers the **TypeScript** implementations
-> under `src/problems/`. The **Go** track lives in [`Go/`](Go/) — 22 pattern
+> under `src/problems/`. The **Go** track lives in [`Go/`](../Go/) — 22 pattern
 > packages, 171 solution functions, 169 tests, all passing — with its own single
-> revision document, [`Go/GO_INTERVIEW_QA.md`](Go/GO_INTERVIEW_QA.md).
+> revision document, [`Go/GO_INTERVIEW_QA.md`](../Go/GO_INTERVIEW_QA.md).
 
 ---
 
@@ -224,7 +224,7 @@
 - 🔄 **Find Index of Substring** - `findIndexOfGivenSubstring.js` - String search
 - 🔄 **Longest Palindrome** - `longestPalindrome.js` - Find longest palindrome from array of strings
 - 🔄 **All Increasing Sequences of Size K** - `allIncreasingSequenceOfSize_K.js` - Generate sequences
-- 🔄 **Kth Largest Element** - `kthLargestElementInArray.js` - Find Kth largest (Heap/QuickSelect)
+- 🔄 **Kth Largest Element** - `src/problems/Arrays/kthLargest.js` - Find Kth largest (Heap/QuickSelect)
 - 🔄 **Max Min in Array** - `max_min_inArray.js` - Find max and min
 - 🔄 **Binary Add** - `binaryAdd.js` - Add binary strings
 - 🔄 **Same** - `same.js` - Check if arrays are same (frequency)
@@ -259,11 +259,22 @@
 - ✅ **Max Binary Heap** - `Max_binary_heap.js`
 - ✅ **Priority Queue** - `priorityQueue.js`
 
+> ⚠️ These live **outside `src/`**, are plain JS with no types or tests, and are
+> not importable from the TS project. For the TS track use
+> [`src/problems/Heap/heapPatterns.ts`](src/problems/Heap/heapPatterns.ts) —
+> a typed generic `PriorityQueue<T>` with `MinHeap`/`MaxHeap`, plus `MedianFinder`
+> (LC295), `KthLargest` (LC703), `kClosest` (LC973), `lastStoneWeight` (LC1046).
+
 ### Hash Table (`DataStructures/HashTable/`):
 - ✅ **Hash Table Set and Get** - `hash_table_set_and_get.js`
 
 ### Trie (`DataStructures/Trie/`):
 - ✅ **Trie** - `index.js` - Trie implementation
+
+> ⚠️ Same caveat as Heap above: outside `src/`, untyped, untested, not importable
+> from the TS project. The TS track's trie is
+> [`src/problems/Trie/triePatterns.ts`](src/problems/Trie/triePatterns.ts) —
+> `Trie` (LC208), `WordDictionary` (LC211) and `findWords` (LC212).
 
 ### Arrays (`DataStructures/Arrays/`):
 - ✅ **Array** - `array.js` - Array utilities
@@ -272,7 +283,7 @@
 - ✅ **Find Min Days to Ship** - `findTheMinDaysToShip.js`
 
 ### Problems in Root (Need Organization):
-- 🔄 **LRU Cache** - `lru_cache_implementation.js`, `lru_function.js` - LRU cache implementation (HashMap + Doubly Linked List)
+- 🔄 **LRU Cache** - `DataStructures/LRUCache/lruCache.js`, `DataStructures/LRUCache/lruFunction.js` - LRU cache implementation (HashMap + Doubly Linked List)
 
 ---
 
@@ -297,14 +308,14 @@
 | House Robber | Dynamic Programming | `maxSubsequenceNoAdjacent_HouseRobber.js` | Medium |
 | Interleaving String | Dynamic Programming | `DynamicProgramming/TwoSequencesDP/interleavingString.ts` | Medium |
 | Is Subsequence | Two Pointers | `2Pointers/isSubsequence.ts` | Easy |
-| Kth Largest Element | Heap / QuickSelect | `kthLargestElementInArray.js` | Medium |
+| Kth Largest Element | Heap / QuickSelect | `src/problems/Arrays/kthLargest.js` | Medium |
 | Knapsack | Dynamic Programming | `knapsack.js` | Medium |
 | Longest Common Subsequence | Dynamic Programming | `longestCommonSubsequence.js` | Medium |
 | Longest Consecutive | Hash Map | `HashMap/longestConsecutive.ts` | Medium |
 | Longest Increasing Subsequence | Dynamic Programming | `longestIncreasingSubsequence.js` | Medium |
 | Longest Palindrome | String Manipulation | `longestPalindrome.js` | Medium |
 | Longest Substring No Repeats | Sliding Window | `maxSubSequence_noDuplicates_SlidingWindow.js` | Medium |
-| LRU Cache | Data Structure | `lru_cache_implementation.js` | Medium |
+| LRU Cache | Data Structure | `DataStructures/LRUCache/lruCache.js` | Medium |
 | Max Chars | Hash Map | `maxChars.js` | Easy |
 | Max Subarray Sum (Kadane's) | Dynamic Programming / Sliding Window | `maxSubArraySum_KadenceAlgo.js` | Easy |
 | Merge Intervals | Merge Intervals | `MergeIntervals/mergeIntervals.ts` | Medium |

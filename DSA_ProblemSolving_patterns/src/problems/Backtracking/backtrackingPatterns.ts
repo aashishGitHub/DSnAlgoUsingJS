@@ -221,6 +221,83 @@ export function subsetsWithDup(nums: number[]): number[][] {
 }
 
 /**
+ * ----------------------------------------------------------------------------
+ * WORD SEARCH (LeetCode 79) — backtracking on a GRID
+ * ----------------------------------------------------------------------------
+ * PROBLEM: can `word` be spelled by walking 4-directionally through adjacent
+ * cells, without reusing a cell within the same path?
+ *
+ * WHAT CHANGES vs. the array problems above: the "choices" at each step are the
+ * four neighbours rather than the remaining array slots, and the constraint is
+ * spatial — a cell already used ON THE CURRENT PATH is off limits.
+ *
+ * THE UN-CHOOSE STEP IS THE WHOLE PROBLEM. A cell must be blocked while the
+ * current path uses it and released the moment that path unwinds, because a
+ * DIFFERENT path may legitimately need it. Marking cells permanently (a plain
+ * visited set that is never cleared) is the classic wrong answer: it passes the
+ * first sample and fails as soon as two candidate paths overlap.
+ *
+ * THE O(1)-SPACE TRICK: instead of a separate visited grid, overwrite the cell
+ * with a sentinel ("#") on the way in and restore the original character on the
+ * way out. The board itself carries the path state, and it is left exactly as
+ * it was found.
+ *
+ * DRY-RUN on board [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]],
+ * word "ABCCED":
+ *   (0,0)A ✓ mark → (0,1)B ✓ → (0,2)C ✓ → (1,2)C ✓ → (2,2)E ✓ → (2,1)D ✓
+ *   index reaches word.length → true, unwinding restores every cell.
+ * Counter-example "ABCB": A ✓ B ✓ C ✓ then needs B — the only B is (0,1),
+ *   already "#" on this path → all four directions fail → backtrack → false.
+ *
+ * @example
+ * const board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]];
+ * exist(board, "ABCCED"); // true
+ * exist(board, "SEE");    // true
+ * exist(board, "ABCB");   // false — the B cannot be reused
+ *
+ * Time:  O(R · C · 4^L) — every cell as a start, four directions per step.
+ * Space: O(L) recursion depth; O(1) auxiliary thanks to in-place marking.
+ */
+export function exist(board: string[][], word: string): boolean {
+  if (board.length === 0 || board[0].length === 0 || word.length === 0) {
+    return false;
+  }
+
+  const rows = board.length;
+  const cols = board[0].length;
+
+  function search(row: number, col: number, index: number): boolean {
+    // Every character matched — done, regardless of where we are.
+    if (index === word.length) return true;
+    if (row < 0 || row >= rows || col < 0 || col >= cols) return false;
+    if (board[row][col] !== word[index]) return false; // includes the "#" case
+
+    // CHOOSE: block this cell for the duration of the current path only.
+    const original = board[row][col];
+    board[row][col] = "#";
+
+    const found =
+      search(row + 1, col, index + 1) ||
+      search(row - 1, col, index + 1) ||
+      search(row, col + 1, index + 1) ||
+      search(row, col - 1, index + 1);
+
+    // UN-CHOOSE: release the cell so other paths may use it.
+    board[row][col] = original;
+
+    return found;
+  }
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      if (search(row, col, 0)) return true;
+    }
+  }
+
+  return false;
+}
+
+/**
  * ============================================================================
  * INTERVIEW NOTES (quick revision)
  * ============================================================================
@@ -233,7 +310,13 @@ export function subsetsWithDup(nums: number[]): number[][] {
  *    to hear you know the exponential cost is inherent, then discuss pruning.
  * 3. Pruning talking points: sort-then-break beats continue; feasibility
  *    checks (remaining < 0) belong BEFORE the recursive call, not inside it.
- * 4. Follow-ups this template unlocks: N-Queens (choose = column per row,
- *    prune = attacked squares), Word Search (grid + visited un-marking),
- *    Palindrome Partitioning (choose = next cut point).
+ * 4. Grid backtracking (Word Search, above) differs from the array problems in
+ *    one way that matters: the un-choose step must RELEASE the cell, because a
+ *    different path may need it. Marking cells permanently is the classic bug.
+ *    The in-place sentinel ("#" then restore) avoids a separate visited grid.
+ * 5. Follow-ups this template still unlocks: N-Queens (choose = column per row,
+ *    prune = attacked squares), Palindrome Partitioning (choose = next cut
+ *    point), Sudoku Solver (choose = digit per empty cell). See also
+ *    ../Trie/triePatterns.ts → `findWords` (LC212), which is this same grid
+ *    walk driven by a trie so that ALL words are searched in one pass.
  */
