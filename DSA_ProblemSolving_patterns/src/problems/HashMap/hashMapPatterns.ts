@@ -16,14 +16,18 @@
  *   value→index so "have I seen my complement?" is a lookup, not a scan.
  *
  * SUB-FAMILIES IN THIS FILE:
- *   Complement lookup    twoSum
- *   Frequency / position  firstUniqChar
- *   Bijective mapping     wordPattern, isIsomorphic (need maps BOTH ways!)
- *   Prefix-sum + map      subarraySum, findMaxLength (count/earliest-index of
- *                         a running sum → subarray facts in one pass)
- *   Windows with maps     lengthOfLongestSubstring, minWindow (canonical home:
- *                         SlidingWindow/ — kept here to show the map's role)
- *   Map-backed designs    LRUCache (insertion order!), Logger, UndergroundSystem
+ *
+ *   - Complement lookup  → twoSum
+ *   - Frequency/position → firstUniqChar
+ *   - Bijective mapping  → wordPattern, isIsomorphic
+ *     These need maps in BOTH directions, not just one.
+ *   - Prefix-sum + map   → subarraySum, findMaxLength
+ *     Store the count or earliest index of each running sum, which turns
+ *     subarray questions into one pass.
+ *   - Windows with maps  → lengthOfLongestSubstring, minWindow
+ *     Their canonical home is SlidingWindow/; they are kept here to show the
+ *     map's role in the window.
+ *   - Map-backed designs → LRUCache (insertion order!), Logger, UndergroundSystem
  *
  * WHEN TO USE:
  * - Any time the inner loop of an O(n²) idea is "find/count something I've

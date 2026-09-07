@@ -16,10 +16,12 @@
  *   sorting is not merely slower — it is IMPOSSIBLE, because the data never ends.
  *
  * ⚠️ THE COUNTER-INTUITIVE BIT WORTH SAYING OUT LOUD:
- *   k LARGEST  → use a MIN-heap of size k (its root is the weakest survivor,
- *                the one to evict)
+ *   k LARGEST  → use a MIN-heap of size k
  *   k SMALLEST → use a MAX-heap of size k
- * Getting this backwards is the classic top-k mistake.
+ *
+ * Why a MIN-heap for the k largest: its root is the weakest of the k survivors,
+ * which makes it exactly the one to evict when a better element arrives.
+ * Getting this pairing backwards is the classic top-k mistake.
  *
  * WHY A HEAP IS NOT A SORTED LIST: a heap is only PARTIALLY ordered — every
  * parent beats its children, and siblings are unrelated. That weaker promise is
@@ -58,10 +60,11 @@
  * heaps are fast in practice: the layout is contiguous and cache-friendly.
  *
  * THE TWO OPERATIONS EVERYTHING IS BUILT FROM:
- *   siftUp   — a new leaf swaps upward until its parent beats it (used by push)
- *   siftDown — the root is replaced by the last leaf, then sinks until its
- *              children lose to it (used by pop)
- * Both walk one root-to-leaf path, so both are O(log n).
+ *   - siftUp (used by push): a new leaf swaps upward until its parent beats it.
+ *   - siftDown (used by pop): the root is replaced by the last leaf, which then
+ *     sinks until both of its children lose to it.
+ *
+ * Both walk a single root-to-leaf path, so both are O(log n).
  *
  * `compare(a, b) < 0` means "a has higher priority than b" — the same contract
  * as Array.prototype.sort, so a min-heap is `(a, b) => a - b`.
@@ -184,17 +187,18 @@ export class MaxHeap extends PriorityQueue<number> {
  *
  * THE INSIGHT: the median only needs the MIDDLE, so keep the data split in half
  * and never order the halves internally:
- *   - `low`  : a MAX-heap holding the smaller half → its top is the largest
- *              of the small numbers
- *   - `high` : a MIN-heap holding the larger half  → its top is the smallest
- *              of the large numbers
+ *   - `low` is a MAX-heap holding the smaller half, so its top is the LARGEST
+ *     of the small numbers.
+ *   - `high` is a MIN-heap holding the larger half, so its top is the SMALLEST
+ *     of the large numbers.
+ *
  * Those two tops are the middle elements. The median is either `low`'s top
  * (odd count) or the average of both tops (even count) — O(1) to read.
  *
  * THE TWO INVARIANTS to restate every time:
- *   1. ORDER:   every value in `low` ≤ every value in `high`
- *   2. BALANCE: sizes differ by at most 1 (this implementation lets `low` hold
- *               the extra element, so odd counts read straight off `low`)
+ *   1. ORDER — every value in `low` is ≤ every value in `high`.
+ *   2. BALANCE — their sizes differ by at most 1. This implementation lets
+ *      `low` hold the extra element, so an odd count reads straight off `low`.
  *
  * THE PUSH-THEN-REBALANCE TRICK: always push into `low`, immediately move
  * `low`'s top into `high` (which enforces invariant 1 unconditionally), then

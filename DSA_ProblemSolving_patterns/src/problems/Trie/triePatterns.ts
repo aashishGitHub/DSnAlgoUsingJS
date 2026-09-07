@@ -80,8 +80,8 @@ export class TrieNode {
  *                          └── e (isEnd ✓ "apple")
  *
  *   search("app")      → walks to the second p, isEnd is true  → true
- *   search("appl")     → walks to l, isEnd is FALSE            → false  ← the
- *                        node exists only because "apple" passes through it
+ *   search("appl")     → walks to l, isEnd is FALSE            → false
+ *       (that node exists only because "apple" passes through it)
  *   startsWith("appl") → walks to l, node exists               → true
  *   search("apricot")  → after "ap", no child "r"              → false
  *

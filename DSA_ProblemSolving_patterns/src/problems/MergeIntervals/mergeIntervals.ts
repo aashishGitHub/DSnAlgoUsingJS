@@ -23,13 +23,15 @@
  * scheduling variants say no.
  *
  * SUB-FAMILIES IN THIS FILE:
- *   Merge/insert           merge, insert
- *   Intersection sweep     intervalIntersection (two sorted lists, two pointers)
- *   Counting concurrency   canAttendMeetings, minMeetingRooms,
- *                          minPlatformsForTrains (sort starts & ends separately,
- *                          sweep with a counter — the "chronological ordering" trick)
- *   Coverage/removal       removeCoveredIntervals, eraseOverlapIntervals-style
- *   Free-time/gaps         employeeFreeTime
+ *
+ *   - Merge/insert         → merge, insert
+ *   - Intersection sweep   → intervalIntersection
+ *     Two sorted lists walked with two pointers.
+ *   - Counting concurrency → canAttendMeetings, minMeetingRooms,
+ *     minPlatformsForTrains. Sort the start times and end times separately,
+ *     then sweep both with a counter — the "chronological ordering" trick.
+ *   - Coverage/removal     → removeCoveredIntervals, eraseOverlapIntervals-style
+ *   - Free-time/gaps       → employeeFreeTime
  *
  * RECOGNITION CUES:
  * - "meetings / bookings / ranges / schedules" + "merge, conflicts, rooms
