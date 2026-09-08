@@ -1,4 +1,7 @@
-import { describe, test, expect } from "vitest";
+import {
+    describe,
+    test,
+    expect } from "vitest";
 import {
     binarySearch,
     searchInsert,
@@ -11,7 +14,10 @@ import {
     findDuplicateBinarySearch,
     findMedianSortedArrays,
     mySqrt,
-    isPerfectSquare
+    isPerfectSquare,
+    lowerBound,
+    upperBound,
+    countOccurrences
 } from './binarySearchPatterns';
 
 describe('Binary Search Pattern Problems', () => {
@@ -120,5 +126,86 @@ describe('Binary Search Pattern Problems', () => {
             expect(isPerfectSquare(1)).toBe(true);
             expect(isPerfectSquare(0)).toBe(false);
         });
+    });
+});
+
+describe('lowerBound / upperBound / countOccurrences (the half-open templates)', () => {
+    const nums = [1, 3, 3, 3, 5, 8];
+
+    test('lowerBound finds the first value >= target', () => {
+        expect(lowerBound(nums, 3)).toBe(1);
+        expect(lowerBound(nums, 1)).toBe(0);
+        expect(lowerBound(nums, 8)).toBe(5);
+        expect(lowerBound(nums, 0)).toBe(0);
+    });
+
+    test('upperBound finds the first value > target', () => {
+        expect(upperBound(nums, 3)).toBe(4);
+        expect(upperBound(nums, 1)).toBe(1);
+        expect(upperBound(nums, 8)).toBe(6);
+        expect(upperBound(nums, 0)).toBe(0);
+    });
+
+    test('an absent target makes both bounds equal — the membership test', () => {
+        expect(lowerBound([1, 3, 5], 4)).toBe(2);
+        expect(upperBound([1, 3, 5], 4)).toBe(2);
+        expect(lowerBound([1, 3, 5], 4)).toBe(upperBound([1, 3, 5], 4));
+    });
+
+    test('a target past the end returns the length, never -1', () => {
+        expect(lowerBound([1, 2, 3], 99)).toBe(3);
+        expect(upperBound([1, 2, 3], 99)).toBe(3);
+    });
+
+    test('empty array', () => {
+        expect(lowerBound([], 1)).toBe(0);
+        expect(upperBound([], 1)).toBe(0);
+        expect(countOccurrences([], 1)).toBe(0);
+    });
+
+    test('countOccurrences is the distance between the bounds', () => {
+        expect(countOccurrences(nums, 3)).toBe(3);
+        expect(countOccurrences(nums, 1)).toBe(1);
+        expect(countOccurrences(nums, 4)).toBe(0);
+        expect(countOccurrences([7, 7, 7, 7], 7)).toBe(4);
+    });
+
+    test('lowerBound IS searchInsert on DISTINCT input (LC35\'s constraint)', () => {
+        const distinct = [1, 3, 5, 6];
+        for (const t of [0, 1, 2, 3, 4, 5, 6, 7]) {
+            expect(lowerBound(distinct, t)).toBe(searchInsert(distinct, t));
+        }
+    });
+
+    test('with DUPLICATES the two deliberately differ', () => {
+        // LC35 guarantees distinct values, so this case never arises there.
+        // searchInsert uses the exact-match template and returns whichever
+        // duplicate `mid` happens to land on; lowerBound always returns the
+        // FIRST. When you need the first occurrence, reach for lowerBound.
+        expect(searchInsert(nums, 3)).toBe(2); // some index holding 3
+        expect(lowerBound(nums, 3)).toBe(1);   // the FIRST index holding 3
+        expect(nums[searchInsert(nums, 3)]).toBe(3); // both are valid "found"
+    });
+
+    test('agrees with a brute-force linear scan on random arrays', () => {
+        const bruteLower = (a: number[], t: number) => {
+            const i = a.findIndex(v => v >= t);
+            return i === -1 ? a.length : i;
+        };
+        const bruteUpper = (a: number[], t: number) => {
+            const i = a.findIndex(v => v > t);
+            return i === -1 ? a.length : i;
+        };
+
+        for (let trial = 0; trial < 200; trial++) {
+            const len = Math.floor(Math.random() * 12);
+            const arr = Array.from({ length: len }, () => Math.floor(Math.random() * 10))
+                .sort((a, b) => a - b);
+            const target = Math.floor(Math.random() * 12) - 1;
+            expect(lowerBound(arr, target)).toBe(bruteLower(arr, target));
+            expect(upperBound(arr, target)).toBe(bruteUpper(arr, target));
+            expect(countOccurrences(arr, target))
+                .toBe(arr.filter(v => v === target).length);
+        }
     });
 });

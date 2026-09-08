@@ -453,3 +453,147 @@ function binarySearchRecursiveValueHelper(
     
     return binarySearchRecursiveValueHelper(nums, target, mid + 1, right);
 }
+
+/**
+ * ============================================================================
+ * THE TWO BOUNDARY TEMPLATES — lowerBound / upperBound
+ * ============================================================================
+ * These two are not "extra problems". They are the HALF-OPEN template, and
+ * between them they answer almost every non-exact-match binary search you will
+ * ever be asked. Learning these two shapes is worth more than memorising ten
+ * individual problems.
+ *
+ * ============================================================================
+ * 🔑 CLOSED vs HALF-OPEN — the distinction behind nearly every off-by-one
+ * ============================================================================
+ * Every function above this point uses the CLOSED template. These two use the
+ * HALF-OPEN one. Mixing them is the single most common source of binary-search
+ * bugs, so keep the difference explicit:
+ *
+ *   CLOSED    [left, right]   right = n - 1   while (left <= right)   right = mid - 1
+ *             → for EXACT MATCH. Exits with left > right, i.e. "not found".
+ *
+ *   HALF-OPEN [left, right)   right = n       while (left <  right)   right = mid
+ *             → for BOUNDARIES. Exits with left === right, and that meeting
+ *               point IS the answer — it is never "not found".
+ *
+ * The half-open version never needs a -1 anywhere, which is exactly why it
+ * cannot overshoot: `right = mid` keeps mid inside the live range, so the
+ * range always shrinks but never skips the candidate.
+ *
+ * ============================================================================
+ * WHAT EACH ONE RETURNS
+ * ============================================================================
+ *   lowerBound(nums, t) → the FIRST index whose value is >= t
+ *   upperBound(nums, t) → the FIRST index whose value is >  t
+ *
+ * ⭐ THE ONLY DIFFERENCE IS ONE CHARACTER: `<` becomes `<=`. That is the whole
+ * distinction, and being able to say so is the point of putting them together.
+ *
+ * And once you have both, three more answers are free:
+ *   - count of t          → upperBound - lowerBound
+ *   - insert position     → lowerBound            (that IS LeetCode 35)
+ *   - first/last index of t → lowerBound, and upperBound - 1  (LeetCode 34)
+ *
+ * ⚠️ ONE CAVEAT ON "lowerBound IS LeetCode 35": that holds because LC35
+ * guarantees DISTINCT values. `searchInsert` above uses the exact-match
+ * template, so on an array WITH duplicates it returns whichever matching index
+ * `mid` happens to land on — e.g. index 2 for target 3 in [1,3,3,3,5,8] —
+ * while `lowerBound` always returns the FIRST such index (1). Both are correct
+ * answers to "where is 3?"; only one answers "where does the run of 3s START?".
+ * Whenever you need a first or last occurrence, use the boundary templates.
+ *
+ * DRY-RUN on nums = [1, 3, 3, 3, 5, 8], target = 3:
+ *
+ *   index :  0   1   2   3   4   5
+ *   value :  1   3   3   3   5   8
+ *            ↑   ↑           ↑
+ *            |   |           └─ upperBound(3) = 4  (first value > 3)
+ *            |   └───────────── lowerBound(3) = 1  (first value >= 3)
+ *            └───────────────── lowerBound(1) = 0
+ *
+ *   count of 3 = 4 - 1 = 3  ✓
+ *
+ * And for a target that is absent, both collapse to the insertion point:
+ *   lowerBound([1,3,5], 4) = 2 = upperBound([1,3,5], 4)   → 4 is not present
+ * That equality is a clean membership test: `lo < n && nums[lo] === t`.
+ *
+ * @example
+ * lowerBound([1, 3, 3, 3, 5, 8], 3); // 1
+ * upperBound([1, 3, 3, 3, 5, 8], 3); // 4
+ * lowerBound([1, 3, 5], 4);          // 2  (insertion point; 4 is absent)
+ * lowerBound([1, 2, 3], 99);         // 3  (past the end — never -1)
+ *
+ * Time:  O(log n). Space: O(1).
+ */
+export function lowerBound(nums: number[], target: number): number {
+    let left = 0;
+    let right = nums.length; // HALF-OPEN: one PAST the last index
+
+    while (left < right) {
+        const mid = Math.floor(left + (right - left) / 2);
+
+        if (nums[mid] < target) {
+            left = mid + 1;  // mid is too small — it cannot be the answer
+        } else {
+            right = mid;     // mid might BE the answer, so keep it in range
+        }
+    }
+
+    return left; // left === right, and that meeting point is the boundary
+}
+
+/**
+ * ----------------------------------------------------------------------------
+ * upperBound — first index whose value is STRICTLY GREATER than target.
+ * ----------------------------------------------------------------------------
+ * Identical to `lowerBound` except for `<=` in place of `<`. See the shared
+ * doc block above for the closed-vs-half-open explanation and the dry-run.
+ *
+ * @example
+ * upperBound([1, 3, 3, 3, 5, 8], 3); // 4
+ * upperBound([1, 3, 3], 3);          // 3  (all values <= 3)
+ * upperBound([1, 3, 3], 0);          // 0  (every value is already > 0)
+ *
+ * Time: O(log n). Space: O(1).
+ */
+export function upperBound(nums: number[], target: number): number {
+    let left = 0;
+    let right = nums.length;
+
+    while (left < right) {
+        const mid = Math.floor(left + (right - left) / 2);
+
+        // The ONLY change from lowerBound: <= instead of <, so a value EQUAL
+        // to the target is also "too small" and gets skipped past.
+        if (nums[mid] <= target) {
+            left = mid + 1;
+        } else {
+            right = mid;
+        }
+    }
+
+    return left;
+}
+
+/**
+ * ----------------------------------------------------------------------------
+ * countOccurrences — how many times does target appear in a sorted array?
+ * ----------------------------------------------------------------------------
+ * The payoff for having both boundaries: the answer is the DISTANCE between
+ * them, in O(log n) rather than the O(n) a linear count would take.
+ *
+ * This is also the cleanest way to think about LeetCode 34 (First and Last
+ * Position): the range is [lowerBound, upperBound - 1], and it is empty
+ * exactly when the two bounds are equal.
+ *
+ * @example
+ * countOccurrences([1, 3, 3, 3, 5], 3); // 3
+ * countOccurrences([1, 3, 3, 3, 5], 4); // 0  (absent → bounds are equal)
+ * countOccurrences([], 1);              // 0
+ *
+ * Time: O(log n) — two binary searches. Space: O(1).
+ */
+export function countOccurrences(nums: number[], target: number): number {
+    return upperBound(nums, target) - lowerBound(nums, target);
+}
