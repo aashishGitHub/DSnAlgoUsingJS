@@ -28,6 +28,7 @@
  *
  * COMPLEXITY (inherent — the OUTPUT is exponential):
  *   subsets: O(n · 2ⁿ) | permutations: O(n · n!) | combinationSum: O(k · 2ᵗᵃʳᵍᵉᵗ)-ish
+ *   palindromePartition: O(n · 2ⁿ) | solveNQueens: O(n!)
  *   Space: O(depth) recursion + the output itself.
  *
  * THE TWO CLASSIC BUGS (memorize):
@@ -320,3 +321,187 @@ export function exist(board: string[][], word: string): boolean {
  *    ../Trie/triePatterns.ts → `findWords` (LC212), which is this same grid
  *    walk driven by a trie so that ALL words are searched in one pass.
  */
+
+/**
+ * ----------------------------------------------------------------------------
+ * 7. PALINDROME PARTITIONING (LeetCode 131) — PRUNING IS THE WHOLE PROBLEM
+ * ----------------------------------------------------------------------------
+ * PROBLEM: split `s` into pieces such that EVERY piece is a palindrome, and
+ * return all such splits.
+ *
+ * THE SHAPE: this is `combinationSum` with strings. At each position you choose
+ * how long the next piece is, then recurse from the end of that piece. The
+ * choice is "where does the current piece stop?", and the candidates are every
+ * remaining end position.
+ *
+ * ⭐ WHERE THE WORK IS SAVED — and this is the reason to study this problem:
+ * without the palindrome check you would enumerate all 2^(n-1) ways to cut a
+ * string. The check `isPalindrome(start, end)` PRUNES a whole subtree the
+ * instant a prefix is invalid, because if s[start..end] is not a palindrome,
+ * no split beginning with that piece can ever be valid. As the file header
+ * says: backtracking is never optimised asymptotically, only pruned — and
+ * pruning as HIGH in the tree as possible is the entire craft.
+ *
+ * WHY CHECK PALINDROMES WITH TWO POINTERS RATHER THAN reverse()===: comparing
+ * against a reversed copy allocates a new string per check. The two-pointer
+ * walk allocates nothing and bails at the first mismatch, which on a random
+ * string is almost immediately.
+ *
+ * DRY-RUN on "aab":
+ *   start=0: piece "a"   ✓ palindrome → recurse from 1
+ *              start=1: piece "a"  ✓ → recurse from 2
+ *                         start=2: piece "b" ✓ → start===len → record [a,a,b]
+ *              start=1: piece "ab" ✗ → PRUNED, never explored further
+ *   start=0: piece "aa"  ✓ → recurse from 2
+ *              start=2: piece "b"  ✓ → record [aa,b]
+ *   start=0: piece "aab" ✗ → PRUNED
+ *   → [["a","a","b"], ["aa","b"]]  ✓
+ *
+ * ⚠️ THE TWO CLASSIC BUGS from the file header apply here verbatim: push
+ * `[...path]` not `path`, and pop after recursing.
+ *
+ * @example
+ * palindromePartition("aab");  // [["a","a","b"], ["aa","b"]]
+ * palindromePartition("a");    // [["a"]]
+ * palindromePartition("");     // [[]] — one way to split nothing
+ *
+ * Time:  O(n · 2ⁿ) worst case (a string like "aaaa" prunes nothing, and every
+ *        one of the 2^(n-1) cuts is valid). Space: O(n) recursion + output.
+ *
+ * 🔗 The DP cousin is Palindrome Partitioning II (LC132), which asks only for
+ * the MINIMUM number of cuts — when a problem wants a count or a best rather
+ * than every arrangement, stop backtracking and reach for DP.
+ */
+export function palindromePartition(s: string): string[][] {
+    const result: string[][] = [];
+    const path: string[] = [];
+
+    // Two-pointer check on the ORIGINAL string — no substring allocated.
+    function isPalindrome(left: number, right: number): boolean {
+        while (left < right) {
+            if (s[left] !== s[right]) return false;
+            left++;
+            right--;
+        }
+        return true;
+    }
+
+    function backtrack(start: number): void {
+        // Consumed the whole string — every piece on the path was a palindrome.
+        if (start === s.length) {
+            result.push([...path]); // COPY — pushing `path` would alias it
+            return;
+        }
+
+        for (let end = start; end < s.length; end++) {
+            // PRUNE: if this piece is not a palindrome, no split starting with
+            // it can work, so skip the entire subtree below it.
+            if (!isPalindrome(start, end)) continue;
+
+            path.push(s.slice(start, end + 1)); // choose
+            backtrack(end + 1);                 // explore
+            path.pop();                         // un-choose
+        }
+    }
+
+    backtrack(0);
+    return result;
+}
+
+/**
+ * ----------------------------------------------------------------------------
+ * 8. N-QUEENS (LeetCode 51) — CONSTRAINT SETS INSTEAD OF RE-SCANNING
+ * ----------------------------------------------------------------------------
+ * PROBLEM: place n queens on an n×n board so that none attack another (no two
+ * share a row, column, or diagonal). Return every distinct board.
+ *
+ * THE SHAPE: place one queen PER ROW, so the recursion depth is the row index
+ * and the choice at each level is which column. That framing removes the row
+ * constraint for free — you never place two queens in a row because you only
+ * ever place one per level.
+ *
+ * ⭐ THE IDEA WORTH STEALING — O(1) CONFLICT CHECKS VIA THREE SETS.
+ * The naive check scans the board for attackers, O(n) per placement. Instead
+ * notice that the two diagonals have closed-form identities:
+ *
+ *     every cell on a "\" diagonal has the SAME  (row - col)
+ *     every cell on a "/" diagonal has the SAME  (row + col)
+ *
+ * So three Sets — columns, row-col, row+col — answer "is this square
+ * attacked?" in O(1). Deriving those two identities on the spot is what the
+ * problem is really testing; once you have them the backtracking is routine.
+ *
+ *      row-col on a 4×4 board          row+col on a 4×4 board
+ *        0  1  2  3                      0  1  2  3
+ *      ┌──┬──┬──┬──┐                   ┌──┬──┬──┬──┐
+ *   0  │ 0│-1│-2│-3│                0  │ 0│ 1│ 2│ 3│
+ *   1  │ 1│ 0│-1│-2│                1  │ 1│ 2│ 3│ 4│
+ *   2  │ 2│ 1│ 0│-1│                2  │ 2│ 3│ 4│ 5│
+ *   3  │ 3│ 2│ 1│ 0│                3  │ 3│ 4│ 5│ 6│
+ *      └──┴──┴──┴──┘                   └──┴──┴──┴──┘
+ *      constant down-right              constant down-left
+ *
+ * REASONING / STEPS:
+ *   1. At row r, try every column c.
+ *   2. Skip c if cols, diagonal (r-c) or antiDiagonal (r+c) is already taken.
+ *   3. Otherwise mark all three, write the queen, recurse to row r+1.
+ *   4. Un-choose: clear the three marks and the board square.
+ *   5. When r === n every row is filled — snapshot the board as strings.
+ *
+ * @example
+ * solveNQueens(4);
+ * // [[".Q..", "...Q", "Q...", "..Q."],
+ * //  ["..Q.", "Q...", "...Q", ".Q.."]]
+ * solveNQueens(1); // [["Q"]]
+ * solveNQueens(2); // []  — provably impossible
+ * solveNQueens(3); // []  — also impossible
+ *
+ * Time:  O(n!) — row 0 has n choices, row 1 at most n-1, and so on; the
+ *        constraint sets prune far below that in practice.
+ * Space: O(n) for the sets and recursion, plus the output.
+ */
+export function solveNQueens(n: number): string[][] {
+    const result: string[][] = [];
+
+    // O(1) attack tests — see the identities above.
+    const cols = new Set<number>();
+    const diagonal = new Set<number>();     // row - col  ("\" direction)
+    const antiDiagonal = new Set<number>(); // row + col  ("/" direction)
+
+    // The board as an array of char arrays, mutated in place and snapshotted.
+    const board: string[][] = Array.from({ length: n }, () =>
+        new Array<string>(n).fill('.')
+    );
+
+    function backtrack(row: number): void {
+        if (row === n) {
+            // Snapshot: join each row into a string. This is the copy step —
+            // the board itself keeps being mutated by sibling branches.
+            result.push(board.map((r) => r.join('')));
+            return;
+        }
+
+        for (let col = 0; col < n; col++) {
+            if (cols.has(col) || diagonal.has(row - col) || antiDiagonal.has(row + col)) {
+                continue; // this square is attacked — prune
+            }
+
+            // choose
+            cols.add(col);
+            diagonal.add(row - col);
+            antiDiagonal.add(row + col);
+            board[row][col] = 'Q';
+
+            backtrack(row + 1); // explore
+
+            // un-choose (all four pieces of state, or siblings see a ghost queen)
+            board[row][col] = '.';
+            cols.delete(col);
+            diagonal.delete(row - col);
+            antiDiagonal.delete(row + col);
+        }
+    }
+
+    backtrack(0);
+    return result;
+}

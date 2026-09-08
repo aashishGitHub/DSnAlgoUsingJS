@@ -120,6 +120,15 @@ export * from './easy/removeCharAtGivenIndex';
 export * from './easy/validParenthesis_STACK';
 export * from './easy/merge2StringsAlternatively';
 
+// Greedy Pattern (locally best choice, never reconsidered)
+export * from './Greedy/greedyPatterns';
+
+// Prefix Sum Pattern (precompute cumulative totals, O(1) range queries)
+export * from './PrefixSum/prefixSumPatterns';
+
+// Shortest Path Pattern (Dijkstra for non-negative weights, Bellman-Ford otherwise)
+export * from './ShortestPath/shortestPathPatterns';
+
 // Misc
 export * from './Misc/superPrime';
 
