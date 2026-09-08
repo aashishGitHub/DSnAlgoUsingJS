@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BIT MANIPULATION (LeetCode 191, 338, 190, 268, 371, 136, 137, 260)
+ * BIT MANIPULATION (LeetCode 191, 338, 190, 268, 371, 136, 137, 260, 50, 66)
  * ============================================================================
  *
  * PATTERN:
@@ -462,3 +462,144 @@ export function singleNumberIII(nums: number[]): number[] {
  *    "include element i" — the bitmask route to LC78 Subsets), swapping without
  *    a temp via XOR, and bitmask DP for travelling-salesman-style problems.
  */
+
+/**
+ * ============================================================================
+ * POW(X, N) — EXPONENTIATION BY SQUARING (LeetCode 50)
+ * ============================================================================
+ * PROBLEM: compute x raised to the power n, where n may be negative.
+ *
+ * WHY IT BELONGS IN A BIT FILE: the fast algorithm is literally reading n's
+ * BINARY EXPANSION. Multiplying x by itself n times is O(n); squaring the base
+ * while halving the exponent is O(log n), and "halve the exponent" is `n >> 1`
+ * while "is this bit set" is `n & 1`. Identities 3 and 4 from the top of this
+ * file, applied to arithmetic instead of to a mask.
+ *
+ * ============================================================================
+ * 🔑 THE IDEA
+ * ============================================================================
+ *   x¹⁰ = (x²)⁵            — an EVEN exponent just squares the base
+ *   x⁵  = x · (x²)²        — an ODD exponent peels off one factor of x first
+ *
+ * So walk n's bits from the bottom: every step squares the base, and whenever
+ * the current bit is 1 you multiply that base into the answer. That is exactly
+ * "sum of powers of two" turned into "product of squarings".
+ *
+ * DRY-RUN x = 2, n = 10 (binary 1010):
+ *   result = 1, base = 2
+ *   n=1010, bit 0 = 0 → skip;      base = 4     n → 101
+ *   n=101,  bit 0 = 1 → result = 4; base = 16   n → 10
+ *   n=10,   bit 0 = 0 → skip;      base = 256   n → 1
+ *   n=1,    bit 0 = 1 → result = 4·256 = 1024   n → 0   ✓ (2¹⁰ = 1024)
+ *   Four iterations instead of ten multiplications — and 30 instead of a
+ *   billion when n is large, which is the whole point.
+ *
+ * ============================================================================
+ * ⚠️ THE TRAPS, in the order they bite
+ * ============================================================================
+ * 1. NEGATIVE n: x⁻ⁿ = 1/xⁿ. Invert x and negate n up front, and do it
+ *    BEFORE the loop — `n >> 1` on a negative number sign-extends and never
+ *    reaches 0, so the loop would spin forever (see the JS traps section at
+ *    the top of this file).
+ * 2. n = -2³¹: negating it overflows a 32-bit signed int. Because this
+ *    function works in JS doubles rather than int32 arithmetic, plain
+ *    `n = -n` is safe here — but say the word "overflow" in an interview,
+ *    because in C++/Java you must widen to a 64-bit type first.
+ * 3. Do NOT use `>>` for the halving here for the same reason as (1); the
+ *    code below divides explicitly with Math.floor so the intent is obvious
+ *    and n is known non-negative by then.
+ *
+ * @example
+ * myPow(2, 10);    // 1024
+ * myPow(2, -2);    // 0.25
+ * myPow(2.1, 3);   // 9.261000000000001
+ * myPow(5, 0);     // 1
+ *
+ * Time:  O(log n) — one squaring per bit of n.
+ * Space: O(1) — iterative, no recursion stack.
+ */
+export function myPow(x: number, n: number): number {
+    // Handle a negative exponent FIRST, so the loop only ever sees n >= 0.
+    if (n < 0) {
+        x = 1 / x;
+        n = -n;
+    }
+
+    let result = 1;
+    let base = x;
+
+    while (n > 0) {
+        // Bit set → this power of two is part of the exponent, so fold it in.
+        if (n & 1) {
+            result *= base;
+        }
+        base *= base;              // move to the next power of two
+        n = Math.floor(n / 2);     // consume that bit
+    }
+
+    return result;
+}
+
+/**
+ * ============================================================================
+ * PLUS ONE — INCREMENT A DIGIT ARRAY (LeetCode 66)
+ * ============================================================================
+ * PROBLEM: a non-negative integer is given as an array of decimal digits, most
+ * significant first. Add one and return the resulting digit array.
+ *
+ * WHY IT IS HERE: it is CARRY PROPAGATION in base 10, and `getSum` above is
+ * the same algorithm in base 2. Seeing them side by side is the point — one
+ * uses XOR and AND to find the sum and carry bits, this one uses %10 and /10.
+ * "Addition is digits plus a carry" is the shared idea; the base is a detail.
+ *
+ * ============================================================================
+ * 🔑 THE ONLY INTERESTING CASE IS ALL NINES
+ * ============================================================================
+ * Walk from the LAST digit backwards:
+ *   - digit < 9 → increment it and you are done. Return immediately; every
+ *     digit to its left is unchanged, so there is nothing else to do.
+ *   - digit === 9 → it becomes 0 and the carry moves left.
+ *
+ * If the loop finishes without returning, every digit was a 9. The number grew
+ * a digit: [9,9,9] → [1,0,0,0]. That length change is the whole problem, and
+ * it is why you cannot just mutate in place and return.
+ *
+ * DRY-RUN [1,2,9]:
+ *   i=2: 9 → set to 0, carry on
+ *   i=1: 2 < 9 → 3, return [1,3,0]  ✓
+ *
+ * DRY-RUN [9,9]:
+ *   i=1: 9 → 0
+ *   i=0: 9 → 0
+ *   loop ends, all were nines → prepend 1 → [1,0,0]  ✓
+ *
+ * ⚠️ WHY NOT CONVERT TO A NUMBER, ADD ONE, AND CONVERT BACK? Because the
+ * array can be longer than JavaScript's exact integer range (2⁵³ ≈ 16 digits),
+ * and the conversion silently loses precision. LeetCode's constraints allow
+ * 100 digits. Digit-wise carrying has no such limit — worth saying out loud,
+ * since it is the reason the problem is posed with an array at all.
+ *
+ * @example
+ * plusOne([1, 2, 3]); // [1, 2, 4]
+ * plusOne([1, 2, 9]); // [1, 3, 0]
+ * plusOne([9, 9, 9]); // [1, 0, 0, 0]  — the array grows
+ * plusOne([0]);       // [1]
+ *
+ * Time:  O(n) — worst case (all nines) touches every digit.
+ * Space: O(1) extra if mutating in place; O(n) on the all-nines path, which
+ *        must allocate a longer array.
+ */
+export function plusOne(digits: number[]): number[] {
+    const result = [...digits]; // do not mutate the caller's array
+
+    for (let i = result.length - 1; i >= 0; i--) {
+        if (result[i] < 9) {
+            result[i]++;
+            return result; // no carry out — everything left of here is final
+        }
+        result[i] = 0;     // 9 + 1 = 10 → write 0, carry left
+    }
+
+    // Fell out of the loop, so every digit was 9 and the number gained a digit.
+    return [1, ...result];
+}
