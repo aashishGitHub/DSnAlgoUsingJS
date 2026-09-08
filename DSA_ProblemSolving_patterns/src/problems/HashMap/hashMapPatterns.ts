@@ -495,3 +495,185 @@ export class UndergroundSystem {
         return journey.totalTime / journey.count;
     }
 }
+
+/*
+ * ============================================================================
+ * LONGEST CONSECUTIVE SEQUENCE (LeetCode 128) — NOT IMPLEMENTED HERE
+ * ============================================================================
+ * Deliberately not duplicated. This folder already ships FOUR approaches to
+ * it in [`longestConsecutive.ts`](./longestConsecutive.ts):
+ *
+ *   longestConsecutive1 — Set + "only count from a run's START" ★ the O(n) one
+ *   longestConsecutive2 — map of run lengths, extended as values arrive
+ *   longestConsecutive3 — boundary map (join the runs either side)
+ *   longestConsecutive4 — sort first, then scan (O(n log n), the obvious answer)
+ *
+ * Read `longestConsecutive1` for the key insight: checking `!set.has(num - 1)`
+ * before walking a run upward is what keeps it O(n) rather than O(n²), because
+ * a value in the MIDDLE of a run is skipped and only its start walks it.
+ *
+ * Go counterpart: hashmap.LongestConsecutive (the same Set approach).
+ */
+
+/**
+ * ============================================================================
+ * ENCODE AND DECODE STRINGS (LeetCode 271)
+ * ============================================================================
+ * PROBLEM: serialise a list of strings into ONE string, and recover the exact
+ * original list. The strings may contain ANY characters.
+ *
+ * ⚠️ WHY JOINING ON A DELIMITER IS WRONG, and this is the entire problem:
+ * `strs.join(",")` fails the moment a payload contains a comma. There is no
+ * "safe" delimiter, because any character you pick may appear in the data.
+ * Every candidate answer of that shape is broken; you have to stop looking for
+ * a rarer separator and change the approach.
+ *
+ * ⭐ THE FIX — LENGTH PREFIXING: write each string as
+ *
+ *       <length>#<payload>
+ *
+ * The decoder reads digits up to the first '#', which tells it EXACTLY how
+ * many characters to take next. The payload is then copied by length, never
+ * scanned, so a '#' inside the data is just data. This is how real protocols
+ * frame messages (HTTP's Content-Length, netstrings), and saying that is a
+ * good sign you have met the problem before.
+ *
+ * DRY-RUN ["hi", "a#b", ""]:
+ *   encode → "2#hi3#a#b0#"
+ *   decode → read "2" then '#' → take 2 chars → "hi"
+ *            read "3" then '#' → take 3 chars → "a#b"   ← the '#' is DATA
+ *            read "0" then '#' → take 0 chars → ""      ← empties survive
+ *
+ * Note what this handles that a delimiter cannot: embedded '#', and EMPTY
+ * strings (a delimiter join cannot distinguish [""] from [] or ["",""]).
+ *
+ * @example
+ * encodeStrings(["hello", "world"]);   // "5#hello5#world"
+ * decodeStrings("5#hello5#world");     // ["hello", "world"]
+ * decodeStrings(encodeStrings(["a#b", ""])); // ["a#b", ""] — round trips
+ *
+ * Time:  O(total length) for both directions. Space: O(total length).
+ */
+export function encodeStrings(strs: string[]): string {
+    // Build with an array + join rather than repeated +=, so the whole thing
+    // is one allocation rather than one per string.
+    const parts: string[] = [];
+
+    for (const s of strs) {
+        parts.push(`${s.length}#${s}`);
+    }
+
+    return parts.join('');
+}
+
+/**
+ * ----------------------------------------------------------------------------
+ * decodeStrings — the inverse of `encodeStrings`. See its doc block above for
+ * why length prefixing is the only correct approach.
+ * ----------------------------------------------------------------------------
+ * @example
+ * decodeStrings("2#hi3#a#b0#"); // ["hi", "a#b", ""]
+ * decodeStrings("");            // []
+ *
+ * Time: O(n). Space: O(n) for the output.
+ */
+export function decodeStrings(encoded: string): string[] {
+    const out: string[] = [];
+    let i = 0;
+
+    while (i < encoded.length) {
+        // 1. Read the length digits up to the delimiter.
+        let hash = i;
+        while (encoded[hash] !== '#') hash++;
+        const length = Number(encoded.slice(i, hash));
+
+        // 2. Take exactly that many characters — never scan for a delimiter,
+        //    which is what makes a '#' inside the payload harmless.
+        out.push(encoded.slice(hash + 1, hash + 1 + length));
+
+        i = hash + 1 + length;
+    }
+
+    return out;
+}
+
+/**
+ * ============================================================================
+ * TIME BASED KEY-VALUE STORE (LeetCode 981)
+ * ============================================================================
+ * PROBLEM: `set(key, value, timestamp)` stores a version; `get(key, timestamp)`
+ * returns the value with the LARGEST stored timestamp that is <= the requested
+ * one, or "" if there is none.
+ *
+ * ⭐ HASH MAP FOR THE KEY, BINARY SEARCH FOR THE TIME. Neither alone is
+ * enough, and the combination is the design:
+ *
+ *   - a Map gets you from `key` to its history in O(1);
+ *   - within one key's history, "the newest version not after t" is a
+ *     BOUNDARY QUERY, which is binary search — not a scan.
+ *
+ * WHY THE HISTORY IS ALREADY SORTED: LeetCode guarantees `set` is called with
+ * strictly increasing timestamps, so appending keeps the array ordered for
+ * free. That guarantee is what licenses the binary search — if timestamps
+ * could arrive out of order you would need a sorted insert (O(n) per set) or a
+ * balanced tree. Stating that dependency out loud is the mark of having
+ * actually understood the problem rather than pattern-matched it.
+ *
+ * 🔗 The search is `upperBound - 1` from
+ * [`BinarySearch/binarySearchPatterns.ts`](../BinarySearch/binarySearchPatterns.ts):
+ * find the first entry STRICTLY AFTER t, then step back one. Reusing that
+ * template is better than hand-rolling the comparison, which is where the
+ * off-by-one lives.
+ *
+ * DRY-RUN
+ *   set("foo", "bar", 1)
+ *   get("foo", 1)  → "bar"   (exact hit)
+ *   get("foo", 3)  → "bar"   (nothing newer than 1, so the t=1 version stands)
+ *   set("foo", "bar2", 4)
+ *   get("foo", 4)  → "bar2"  (exact hit on the newer version)
+ *   get("foo", 5)  → "bar2"
+ *   get("foo", 0)  → ""      (every version is newer than the query)
+ *
+ * @example
+ * const store = new TimeMap();
+ * store.set("foo", "bar", 1);
+ * store.get("foo", 3);  // "bar"
+ * store.get("foo", 0);  // ""
+ *
+ * Time:  set O(1) amortised; get O(log v) for v versions of that key.
+ * Space: O(total number of set calls).
+ */
+export class TimeMap {
+    // key → its version history, kept sorted by timestamp (see above).
+    private store = new Map<string, { time: number; value: string }[]>();
+
+    /** Store a version. Timestamps are expected to arrive increasing. */
+    set(key: string, value: string, timestamp: number): void {
+        if (!this.store.has(key)) {
+            this.store.set(key, []);
+        }
+        this.store.get(key)!.push({ time: timestamp, value });
+    }
+
+    /** The newest value stored at or before `timestamp`, else "". */
+    get(key: string, timestamp: number): string {
+        const history = this.store.get(key);
+        if (!history || history.length === 0) return "";
+
+        // upperBound: the first index whose time is STRICTLY GREATER than
+        // the query. Everything before it is a candidate.
+        let low = 0;
+        let high = history.length;
+        while (low < high) {
+            const mid = Math.floor(low + (high - low) / 2);
+            if (history[mid].time <= timestamp) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+
+        // low === 0 means every stored version is newer than the query.
+        return low === 0 ? "" : history[low - 1].value;
+    }
+}
