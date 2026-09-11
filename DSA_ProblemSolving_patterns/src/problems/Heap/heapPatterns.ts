@@ -392,3 +392,82 @@ export function lastStoneWeight(stones: number[]): number {
  *    ../LinkedList/linkedListPatterns.ts), and task schedulers / meeting rooms
  *    II, which are heaps keyed by end time.
  */
+
+/**
+ * ============================================================================
+ * TASK SCHEDULER (LeetCode 621) — THE HEAP PROBLEM YOU SHOULD NOT USE A HEAP FOR
+ * ============================================================================
+ * PROBLEM: given task labels A–Z and a cooldown `n`, the same task cannot run
+ * again until n other intervals have passed. Return the minimum total
+ * intervals (including idles) to run every task.
+ *
+ * WHY IT LIVES IN THE HEAP FILE: the intuitive solution IS a heap — repeatedly
+ * pop the n+1 most frequent remaining tasks, run them, decrement, push back.
+ * That is O(total · log 26) and it is a perfectly good interview answer.
+ * But the problem has closed-form structure, and finding it is the better
+ * answer. Both are worth being able to give:
+ *
+ *   "The heap simulation is the intuitive solution; here is the counting one
+ *    that shows the structure" — that sentence is what distinguishes a strong
+ *    answer from a correct one.
+ *
+ * ============================================================================
+ * 🔑 THE PICTURE THAT REPLACES THE SIMULATION
+ * ============================================================================
+ * Only the MOST FREQUENT task can force idling. Lay it out first, as
+ * (maxFreq - 1) frames each of width (n + 1), then append its last run:
+ *
+ *   tasks = A A A B B C, n = 2   (maxFreq = 3 for A)
+ *
+ *   ┌──────── n+1 = 3 ────────┬──────── n+1 = 3 ────────┬─────┐
+ *   │  A     B     C          │  A     B    idle        │  A  │
+ *   └─────────────────────────┴─────────────────────────┴─────┘
+ *     └─ 2 frames of width 3 = 6 ─┘                       └ +1 ┘
+ *   total = (3-1) * (2+1) + 1 = 7
+ *
+ * Every other task drops into the gaps inside those frames. So:
+ *
+ *     answer = (maxFreq - 1) * (n + 1) + maxCount
+ *
+ * where `maxCount` is how many tasks TIE for most frequent — each tie-ing task
+ * needs its own slot in that final partial frame.
+ *
+ * ⚠️ THE max WITH tasks.length IS NOT OPTIONAL. When there are many distinct
+ * tasks, the gaps all fill up and there is no idling at all — the formula can
+ * then UNDERCOUNT. Example: tasks = A A B B C C D D E E, n = 2. The formula
+ * gives (2-1)*3 + 5 = 8, but there are 10 tasks and each takes one interval,
+ * so the answer is 10. Omitting the max is the single most common wrong
+ * submission on this problem.
+ *
+ * @example
+ * leastInterval(['A','A','A','B','B','B'], 2); // 8  (A B idle A B idle A B)
+ * leastInterval(['A','A','A','B','B','B'], 0); // 6  (no cooldown, no idles)
+ * leastInterval(['A','A','A','A','B','C','D','E'], 2); // 10
+ * leastInterval(['A','A','B','B','C','C','D','D','E','E'], 2); // 10 (the max kicks in)
+ *
+ * Time:  O(t) where t = tasks.length — one counting pass, then O(26).
+ * Space: O(1) — a fixed 26-slot tally, regardless of input size.
+ */
+export function leastInterval(tasks: string[], n: number): number {
+    if (tasks.length === 0) return 0;
+
+    // Fixed-size tally: the alphabet is bounded, so this is O(1) space.
+    const counts = new Array<number>(26).fill(0);
+    let maxFreq = 0;
+
+    for (const task of tasks) {
+        const index = task.charCodeAt(0) - 'A'.charCodeAt(0);
+        counts[index]++;
+        maxFreq = Math.max(maxFreq, counts[index]);
+    }
+
+    // How many tasks tie for the most frequent — each needs a slot in the
+    // final partial frame.
+    const maxCount = counts.filter((c) => c === maxFreq).length;
+
+    const framed = (maxFreq - 1) * (n + 1) + maxCount;
+
+    // The max is essential: with enough distinct tasks there is no idle time
+    // and the framing formula undercounts. See the warning above.
+    return Math.max(framed, tasks.length);
+}
