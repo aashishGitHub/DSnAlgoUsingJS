@@ -1,5 +1,6 @@
 import { describe, test, expect } from "vitest";
 import {
+  eraseOverlapIntervals,
   merge,
   insert,
   intervalIntersection,
@@ -574,4 +575,57 @@ describe("Merge Intervals Pattern", () => {
       ]);
     });
   });
+});
+
+describe('eraseOverlapIntervals (LC435)', () => {
+    test('removes the fewest intervals to leave no overlaps', () => {
+        expect(eraseOverlapIntervals([[1, 2], [2, 3], [3, 4], [1, 3]])).toBe(1);
+        expect(eraseOverlapIntervals([[1, 2], [1, 2], [1, 2]])).toBe(2);
+        expect(eraseOverlapIntervals([[1, 2], [2, 3]])).toBe(0);
+    });
+
+    test('touching intervals do NOT overlap (half-open semantics)', () => {
+        expect(eraseOverlapIntervals([[1, 2], [2, 3], [3, 4]])).toBe(0);
+    });
+
+    test('nested intervals keep only the shortest-ending one', () => {
+        expect(eraseOverlapIntervals([[1, 100], [2, 3], [3, 4]])).toBe(1);
+    });
+
+    test('edge cases', () => {
+        expect(eraseOverlapIntervals([])).toBe(0);
+        expect(eraseOverlapIntervals([[1, 2]])).toBe(0);
+    });
+
+    test('does not mutate the caller\'s array', () => {
+        const input = [[3, 4], [1, 2], [2, 3]];
+        eraseOverlapIntervals(input);
+        expect(input).toEqual([[3, 4], [1, 2], [2, 3]]);
+    });
+
+    test('sorting by START would give the wrong answer here', () => {
+        // The counter-example from the doc comment: by-start keeps [1,100]
+        // and removes two; the correct earliest-end greedy removes one.
+        expect(eraseOverlapIntervals([[1, 100], [2, 3], [3, 4]])).toBe(1);
+    });
+
+    test('the kept intervals really are non-overlapping', () => {
+        const intervals = [[1, 3], [2, 5], [4, 7], [6, 8], [1, 9]];
+        const removals = eraseOverlapIntervals(intervals);
+        const kept = intervals.length - removals;
+        // Reconstruct the greedy choice and verify pairwise non-overlap.
+        const sorted = [...intervals].sort((a, b) => a[1] - b[1]);
+        const chosen: number[][] = [];
+        let lastEnd = -Infinity;
+        for (const [s, e] of sorted) {
+            if (s >= lastEnd) {
+                chosen.push([s, e]);
+                lastEnd = e;
+            }
+        }
+        expect(chosen.length).toBe(kept);
+        for (let i = 1; i < chosen.length; i++) {
+            expect(chosen[i][0]).toBeGreaterThanOrEqual(chosen[i - 1][1]);
+        }
+    });
 });

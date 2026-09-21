@@ -15,7 +15,8 @@ export {
     countAnagrams,
     maxOfAllSubarrays,
     averageOfAllSubarrays,
-    findAnagrams
+    findAnagrams,
+    checkInclusion
 } from './fixedSizeSlidingWindow';
 
 // Maximum Subarray — Kadane's Algorithm (running-sum DP; O(n³)→O(n²)→O(n))
