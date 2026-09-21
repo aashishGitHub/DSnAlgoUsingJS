@@ -671,3 +671,93 @@ export function sortIntervalsByStart(intervals: number[][]): number[][] {
 export function sortIntervalsByEnd(intervals: number[][]): number[][] {
     return intervals.sort((a, b) => a[1] - b[1]);
 }
+
+/**
+ * ============================================================================
+ * NON-OVERLAPPING INTERVALS (LeetCode 435) — THE "KEEP THE MOST" GREEDY
+ * ============================================================================
+ * PROBLEM: return the MINIMUM number of intervals to remove so that the rest
+ * do not overlap.
+ *
+ * ⭐ FIRST, FLIP THE QUESTION. "Fewest to remove" is a subtraction away from
+ * "MOST to keep", and the keep-version has a clean greedy answer while the
+ * remove-version does not. Restating a minimisation as the complementary
+ * maximisation is the move worth taking from this problem:
+ *
+ *     answer = total − (largest non-overlapping subset)
+ *
+ * ============================================================================
+ * 🔑 SORT BY END, NOT BY START — and here is the proof sketch
+ * ============================================================================
+ * This is the "activity selection" greedy. Sort by END and always keep the
+ * interval that finishes EARLIEST among those that still fit.
+ *
+ * WHY EARLIEST-END IS OPTIMAL: whichever interval you keep, all it does for
+ * the rest of the problem is block everything up to its end. So the interval
+ * that ends soonest blocks the least, leaving the most room for later choices.
+ * No other single choice can do better, and swapping any optimal solution's
+ * first interval for the earliest-ending one keeps it valid and the same size.
+ *
+ * ⚠️ SORTING BY START FAILS, and it is worth being able to show it instantly:
+ *
+ *   intervals = [[1,100], [2,3], [3,4]]
+ *   by START : keep [1,100] first → it blocks everything → keep 1, remove 2 ✗
+ *   by END   : keep [2,3], then [3,4]  → keep 2, remove 1 ✓ (the answer)
+ *
+ * That one example is the whole reason the package header says the sort key
+ * IS the problem: by start to BUILD a combined range (`merge`, `insert`), by
+ * end to KEEP as many as possible (here, and `findMinArrowShots`).
+ *
+ * ============================================================================
+ * 🔗 COMPARE WITH findMinArrowShots (LC452), just above
+ * ============================================================================
+ * Identical greedy, one character apart:
+ *   - LC452 (arrows): intervals are CLOSED, so touching balloons ([1,2],[2,3])
+ *     share an arrow → the "conflict" test is `start >  lastEnd`.
+ *   - LC435 (here):   intervals are HALF-OPEN, so touching intervals do NOT
+ *     overlap and both are kept → the test is `start >= lastEnd`.
+ * Being able to say which comparison each problem needs, and why, is the
+ * difference between having memorised one and understanding both.
+ *
+ * DRY-RUN on [[1,2], [2,3], [3,4], [1,3]]:
+ *   sorted by end: [1,2], [2,3], [1,3], [3,4]
+ *   keep [1,2]                        kept = 1, lastEnd = 2
+ *   [2,3]: start 2 >= 2 → keep        kept = 2, lastEnd = 3
+ *   [1,3]: start 1 <  3 → overlaps, skip
+ *   [3,4]: start 3 >= 3 → keep        kept = 3, lastEnd = 4
+ *   removals = 4 - 3 = 1  ✓
+ *
+ * @example
+ * eraseOverlapIntervals([[1,2],[2,3],[3,4],[1,3]]); // 1
+ * eraseOverlapIntervals([[1,2],[1,2],[1,2]]);       // 2  (keep one of three)
+ * eraseOverlapIntervals([[1,2],[2,3]]);             // 0  (touching is fine)
+ * eraseOverlapIntervals([]);                        // 0
+ *
+ * Time:  O(n log n) — dominated by the sort. Space: O(n) for the sorted copy.
+ */
+export function eraseOverlapIntervals(intervals: number[][]): number {
+    if (intervals.length <= 1) return 0;
+
+    // Copy before sorting: Array.prototype.sort mutates in place, and a
+    // function that silently reorders its caller's data is a nasty surprise.
+    const sorted = [...intervals].sort((a, b) => a[1] - b[1]); // by END
+
+    let kept = 1;
+    let lastEnd = sorted[0][1];
+
+    for (let i = 1; i < sorted.length; i++) {
+        const [start, end] = sorted[i];
+
+        // >= because touching intervals do NOT overlap here (half-open).
+        // Contrast findMinArrowShots, which uses > for closed intervals.
+        if (start >= lastEnd) {
+            kept++;
+            lastEnd = end;
+        }
+        // else: this interval overlaps the one we kept — drop it. No need to
+        // update lastEnd, because sorting by end means the kept one already
+        // finishes no later than this one.
+    }
+
+    return intervals.length - kept; // flip back to "how many removed"
+}
