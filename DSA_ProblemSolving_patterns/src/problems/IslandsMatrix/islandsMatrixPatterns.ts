@@ -843,3 +843,114 @@ export function minTimeToInfectAllDetailed(grid: number[][]): {
         infectedAtEachMinute
     };
 }
+
+/**
+ * ============================================================================
+ * WALLS AND GATES (LeetCode 286) — MULTI-SOURCE BFS, THE CLEAREST EXAMPLE
+ * ============================================================================
+ * PROBLEM: a grid where 0 is a gate, -1 is a wall, and Infinity is an empty
+ * room. Fill every empty room with its distance to the NEAREST gate.
+ *
+ * ============================================================================
+ * ⭐ THE IDEA: SEED THE QUEUE WITH EVERY GATE, THEN RUN ONE BFS
+ * ============================================================================
+ * The instinct is to BFS outward from each room looking for a gate — that is
+ * O((rows·cols)²) and it is the wrong direction. Instead, invert it:
+ *
+ *   push EVERY gate into the queue BEFORE the loop starts, then expand.
+ *
+ * All gates now grow their frontiers in lockstep, one ring per level. The
+ * first gate to reach a room is by definition its nearest one, so the room's
+ * distance is simply the level at which it was reached. One traversal answers
+ * the question for every room at once.
+ *
+ * ⭐ THIS IS THE SAME ALGORITHM AS `minTimeToInfectAll` (Rotting Oranges,
+ * LC994) above — that one seeds every rotten orange, this one seeds every
+ * gate. Once you see that "nearest source" and "how long until everything is
+ * covered" are the same question asked from opposite ends, both become free.
+ *
+ * ============================================================================
+ * WHY Infinity DOUBLES AS THE VISITED SET
+ * ============================================================================
+ * A room is unvisited exactly while it still holds Infinity. Writing a real
+ * distance into it both records the answer AND marks it visited, so no
+ * separate visited grid is needed. That also makes walls (-1) and
+ * already-assigned rooms skip naturally with one comparison — a room that
+ * already has a number was reached by a nearer gate, so leaving it alone is
+ * automatically correct.
+ *
+ * ⚠️ THE BUG THIS PREVENTS: with a separate visited set it is easy to
+ * overwrite a room that a closer gate already claimed. Testing `!== Infinity`
+ * makes that impossible by construction.
+ *
+ * DRY-RUN on
+ *   ┌────┬────┬────┬────┐          ┌────┬────┬────┬────┐
+ *   │ ∞  │ -1 │ 0  │ ∞  │          │ 3  │ -1 │ 0  │ 1  │
+ *   ├────┼────┼────┼────┤          ├────┼────┼────┼────┤
+ *   │ ∞  │ ∞  │ ∞  │ -1 │   ──►    │ 2  │ 2  │ 1  │ -1 │
+ *   ├────┼────┼────┼────┤          ├────┼────┼────┼────┤
+ *   │ ∞  │ -1 │ ∞  │ -1 │          │ 1  │ -1 │ 2  │ -1 │
+ *   ├────┼────┼────┼────┤          ├────┼────┼────┼────┤
+ *   │ 0  │ -1 │ ∞  │ ∞  │          │ 0  │ -1 │ 3  │ 4  │
+ *   └────┴────┴────┴────┘          └────┴────┴────┴────┘
+ *
+ *   Two gates, at (0,2) and (3,0), both seeded at level 0. The room at (1,0)
+ *   is 2 from the top gate and 3 from the bottom one, and the top gate's
+ *   frontier arrives first — so it is written once, with 2, and never revised.
+ *
+ * ⚠️ MUTATES `rooms` in place and returns nothing, matching LeetCode's
+ * signature. Pass `copyMatrix(rooms)` if you need the original.
+ *
+ * @example
+ * const rooms = [
+ *   [Infinity, -1, 0,        Infinity],
+ *   [Infinity, Infinity, Infinity, -1],
+ *   [Infinity, -1, Infinity, -1],
+ *   [0,        -1, Infinity, Infinity],
+ * ];
+ * wallsAndGates(rooms);
+ * // rooms === [[3,-1,0,1],[2,2,1,-1],[1,-1,2,-1],[0,-1,3,4]]
+ *
+ * Time:  O(rows·cols) — every cell enters the queue at most once.
+ * Space: O(rows·cols) for the queue in the worst case.
+ */
+export function wallsAndGates(rooms: number[][]): void {
+    if (!rooms || rooms.length === 0 || rooms[0].length === 0) return;
+
+    const rows = rooms.length;
+    const cols = rooms[0].length;
+    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+
+    // SEED EVERY GATE before expanding — this is the whole technique.
+    let queue: number[][] = [];
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            if (rooms[r][c] === 0) queue.push([r, c]);
+        }
+    }
+
+    let distance = 0;
+
+    // Level-by-level, so `distance` is the number of rings expanded so far.
+    while (queue.length > 0) {
+        distance++;
+        const nextLevel: number[][] = [];
+
+        for (const [row, col] of queue) {
+            for (const [dr, dc] of directions) {
+                const nr = row + dr;
+                const nc = col + dc;
+
+                // Infinity IS the unvisited marker: this one test skips walls
+                // (-1), gates (0) and rooms a nearer gate already claimed.
+                if (!isValidPosition(nr, nc, rows, cols)) continue;
+                if (rooms[nr][nc] !== Infinity) continue;
+
+                rooms[nr][nc] = distance; // record the answer AND mark visited
+                nextLevel.push([nr, nc]);
+            }
+        }
+
+        queue = nextLevel;
+    }
+}

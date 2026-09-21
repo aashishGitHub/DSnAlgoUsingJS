@@ -1,14 +1,18 @@
-import { describe, test, expect } from "vitest";
+import {
+    describe,
+    test,
+    expect } from "vitest";
 import {
     numIslands,
     islandSizes,
-    floodFill, 
-    hasCycle, 
-    maxAreaOfIsland, 
-    solve, 
-    numIslandsBFS, 
+    floodFill,
+    hasCycle,
+    maxAreaOfIsland,
+    solve,
+    numIslandsBFS,
     pacificAtlantic,
-    minTimeToInfectAll
+    minTimeToInfectAll,
+    wallsAndGates
 } from './islandsMatrixPatterns';
 
 describe('Islands/Matrix Traversal Patterns', () => {
@@ -205,5 +209,67 @@ describe('Islands/Matrix Traversal Patterns', () => {
             const gridCopy = grid.map(row => [...row]);
             expect(minTimeToInfectAll(gridCopy)).toBe(3);
         });
+    });
+});
+
+describe('wallsAndGates (LC286, multi-source BFS)', () => {
+    const INF = Infinity;
+
+    test('fills each room with its distance to the nearest gate', () => {
+        const rooms = [
+            [INF, -1, 0, INF],
+            [INF, INF, INF, -1],
+            [INF, -1, INF, -1],
+            [0, -1, INF, INF],
+        ];
+        wallsAndGates(rooms);
+        expect(rooms).toEqual([
+            [3, -1, 0, 1],
+            [2, 2, 1, -1],
+            [1, -1, 2, -1],
+            [0, -1, 3, 4],
+        ]);
+    });
+
+    test('a single gate spreads outward', () => {
+        const rooms = [[0, INF], [INF, INF]];
+        wallsAndGates(rooms);
+        expect(rooms).toEqual([[0, 1], [1, 2]]);
+    });
+
+    test('walls are left untouched and block the spread', () => {
+        const rooms = [[0, -1, INF]];
+        wallsAndGates(rooms);
+        // The room past the wall is unreachable, so it stays Infinity.
+        expect(rooms).toEqual([[0, -1, INF]]);
+    });
+
+    test('no gates leaves every room unreachable', () => {
+        const rooms = [[INF, INF], [INF, -1]];
+        wallsAndGates(rooms);
+        expect(rooms).toEqual([[INF, INF], [INF, -1]]);
+    });
+
+    test('the nearest gate wins when two compete', () => {
+        // Room at index 1 is 1 from the left gate and 2 from the right one.
+        const rooms = [[0, INF, INF, 0]];
+        wallsAndGates(rooms);
+        expect(rooms).toEqual([[0, 1, 1, 0]]);
+    });
+
+    test('edge cases do not throw', () => {
+        expect(() => wallsAndGates([])).not.toThrow();
+        expect(() => wallsAndGates([[]])).not.toThrow();
+    });
+
+    test('agrees with minTimeToInfectAll on the max distance', () => {
+        // Rotting Oranges and Walls-and-Gates are the same BFS: the number of
+        // minutes to cover everything equals the largest room distance.
+        const rooms = [[0, INF, INF], [INF, INF, INF]];
+        wallsAndGates(rooms);
+        const maxDistance = Math.max(...rooms.flat().filter(v => v !== -1));
+
+        const grid = [[2, 1, 1], [1, 1, 1]]; // 2 = rotten (the "gate")
+        expect(minTimeToInfectAll(grid)).toBe(maxDistance);
     });
 });

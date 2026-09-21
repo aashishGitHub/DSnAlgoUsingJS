@@ -19,6 +19,7 @@ export {
     partitionLabels,
     intervalListIntersections,
     findMinArrowShots,
+    eraseOverlapIntervals,
     intervalsOverlap,
     mergeTwoIntervals,
     isIntervalCovered,

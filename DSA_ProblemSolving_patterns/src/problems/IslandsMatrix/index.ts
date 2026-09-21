@@ -24,5 +24,6 @@ export {
     copyMatrix,
     isValidPosition,
     minTimeToInfectAll,
-    minTimeToInfectAllDetailed
+    minTimeToInfectAllDetailed,
+    wallsAndGates
 } from './islandsMatrixPatterns';
