@@ -286,3 +286,100 @@ export function findAnagrams(s: string, p: string): number[] {
     
     return result;
 }
+
+/**
+ * ----------------------------------------------------------------------------
+ * PERMUTATION IN STRING (LeetCode 567)
+ * ----------------------------------------------------------------------------
+ * PROBLEM: does `s2` contain any permutation of `s1` as a CONTIGUOUS substring?
+ *
+ * MENTAL MODEL: "contains a permutation of s1" means "contains a window of
+ * length s1.length whose letter tally equals s1's tally". A permutation cares
+ * about WHICH letters and HOW MANY, never their order — so a frequency tally
+ * is a complete description of the thing you are looking for, and the window
+ * size is fixed at s1.length.
+ *
+ * 🔗 THIS IS `findAnagrams` (LC438) ASKING A YES/NO QUESTION. LC438 collects
+ * every start index; this one only needs to know whether at least one exists,
+ * so it can return early. Recognising that two problems are the same scan with
+ * a different return type is worth more than learning both — and it is exactly
+ * the observation that lets you say "I have already solved this".
+ *
+ * ============================================================================
+ * WHY A 26-SLOT ARRAY BEATS A MAP HERE
+ * ============================================================================
+ * The alphabet is bounded, so the tally is O(1) space either way — but a
+ * fixed-length array can be compared slot-by-slot in a constant 26 steps with
+ * no allocation, and it never needs the "delete the key when the count hits
+ * zero" bookkeeping that a Map does. That deletion step is a classic bug
+ * source: a Map entry holding 0 still counts toward `map.size`, so forgetting
+ * to delete it silently breaks any check that reads the size.
+ *
+ * ⭐ THE MATCH-COUNT REFINEMENT (used below): rather than re-comparing all 26
+ * slots per window, keep a running count of how many letters currently have
+ * the right frequency. Each slide changes at most two letters, so the update
+ * is O(1) and a window matches exactly when `matches === 26`. This turns
+ * O(26n) into O(n) — the same constant-factor idea as Brian Kernighan's bit
+ * trick: stop redoing work the previous step already established.
+ *
+ * DRY-RUN s1 = "ab", s2 = "eidbaooo":
+ *   window "ei" → tallies differ
+ *   window "id" → differ
+ *   window "db" → differ ('d' is not in s1)
+ *   window "ba" → tally {a:1, b:1} === s1's tally  → TRUE ✓
+ *
+ * @example
+ * checkInclusion("ab", "eidbaooo");  // true  ("ba" is a permutation of "ab")
+ * checkInclusion("ab", "eidboaoo");  // false
+ * checkInclusion("adc", "dcda");     // true  ("dca")
+ * checkInclusion("abc", "ab");       // false — s1 cannot fit in s2
+ *
+ * Time:  O(n) where n = s2.length — each character enters and leaves once.
+ * Space: O(1) — two fixed 26-slot tallies, regardless of input size.
+ */
+export function checkInclusion(s1: string, s2: string): boolean {
+    if (s1.length > s2.length) return false;
+    if (s1.length === 0) return true; // an empty string is trivially contained
+
+    const A = 'a'.charCodeAt(0);
+    const target = new Array<number>(26).fill(0);
+    const window = new Array<number>(26).fill(0);
+
+    for (const char of s1) {
+        target[char.charCodeAt(0) - A]++;
+    }
+
+    // matches = how many of the 26 letters currently have exactly the right
+    // count. Start by counting the letters that agree at zero-vs-zero.
+    let matches = 0;
+    for (let letter = 0; letter < 26; letter++) {
+        if (window[letter] === target[letter]) matches++;
+    }
+
+    for (let end = 0; end < s2.length; end++) {
+        // --- the character ENTERING the window ---
+        const entering = s2.charCodeAt(end) - A;
+        window[entering]++;
+        if (window[entering] === target[entering]) {
+            matches++;                                  // just became correct
+        } else if (window[entering] === target[entering] + 1) {
+            matches--;                                  // just overshot
+        }
+
+        // --- the character LEAVING, once the window is over-length ---
+        if (end >= s1.length) {
+            const leaving = s2.charCodeAt(end - s1.length) - A;
+            window[leaving]--;
+            if (window[leaving] === target[leaving]) {
+                matches++;                              // just became correct
+            } else if (window[leaving] === target[leaving] - 1) {
+                matches--;                              // just fell short
+            }
+        }
+
+        // All 26 letters agree → this window IS a permutation of s1.
+        if (matches === 26) return true;
+    }
+
+    return false;
+}

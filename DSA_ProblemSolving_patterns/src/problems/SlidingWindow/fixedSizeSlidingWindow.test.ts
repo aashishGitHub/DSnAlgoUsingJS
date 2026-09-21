@@ -1,13 +1,18 @@
-import { describe, it, expect } from "vitest";
+import {
+    describe,
+    it,
+    test,
+    expect } from "vitest";
 import {
   maxSumSubarrayOfSizeKBruteForce,
-  maxSumSubarrayOfSizeK,
-  firstNegativeInWindow,
-  countAnagrams,
-  maxOfAllSubarrays,
-  averageOfAllSubarrays,
-  findAnagrams,
-} from "./fixedSizeSlidingWindow";
+    maxSumSubarrayOfSizeK,
+    firstNegativeInWindow,
+    countAnagrams,
+    maxOfAllSubarrays,
+    averageOfAllSubarrays,
+    findAnagrams,
+    checkInclusion
+} from './fixedSizeSlidingWindow';
 
 describe("Fixed-Size Sliding Window", () => {
   describe("maxSumSubarrayOfSizeK (brute force vs. sliding window)", () => {
@@ -72,4 +77,43 @@ describe("Fixed-Size Sliding Window", () => {
       expect(findAnagrams("abab", "ab")).toEqual([0, 1, 2]);
     });
   });
+});
+
+describe('checkInclusion (LC567)', () => {
+    test('finds a permutation of s1 inside s2', () => {
+        expect(checkInclusion("ab", "eidbaooo")).toBe(true);
+        expect(checkInclusion("adc", "dcda")).toBe(true);
+        expect(checkInclusion("abc", "cba")).toBe(true);
+    });
+
+    test('rejects when no window matches', () => {
+        expect(checkInclusion("ab", "eidboaoo")).toBe(false);
+        expect(checkInclusion("hello", "ooolleoooleh")).toBe(false);
+    });
+
+    test('s1 longer than s2 is impossible', () => {
+        expect(checkInclusion("abc", "ab")).toBe(false);
+    });
+
+    test('edge cases', () => {
+        expect(checkInclusion("", "abc")).toBe(true);
+        expect(checkInclusion("a", "a")).toBe(true);
+        expect(checkInclusion("a", "b")).toBe(false);
+    });
+
+    test('needs the right COUNT, not just the right letters', () => {
+        // s2 contains both letters but never two 'a's adjacent to a 'b'.
+        expect(checkInclusion("aab", "abab")).toBe(true);  // "aba" -> a:2,b:1 ✓
+        expect(checkInclusion("aab", "abba")).toBe(false); // no window has a:2,b:1
+    });
+
+    test('agrees with findAnagrams — same scan, different return type', () => {
+        const pairs: [string, string][] = [
+            ["ab", "eidbaooo"], ["ab", "eidboaoo"], ["abc", "cbaebabacd"],
+            ["aab", "abab"], ["xyz", "abc"], ["a", "aaaa"],
+        ];
+        for (const [s1, s2] of pairs) {
+            expect(checkInclusion(s1, s2)).toBe(findAnagrams(s2, s1).length > 0);
+        }
+    });
 });
